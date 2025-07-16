@@ -1,3 +1,4 @@
+import { toCurrentCanvasSize } from "../../../../libs/canvas.js";
 import { registerClass } from "../../../save&load/objectCollector.js";
 import StandartObject from "../standartObject.js";
 
@@ -14,31 +15,36 @@ export default class CrosshairObject extends StandartObject {
     super.draw(canvas, ctx, toCanvas, style);
 
     ctx.strokeStyle = style.getPropertyValue("--main");
-    ctx.lineWidth = 20;
+    ctx.lineWidth = toCurrentCanvasSize(canvas, 20);
 
     const x = toCanvas(this._x);
     const y = toCanvas(this._y);
 
+    const size = toCurrentCanvasSize(canvas, this.size);
+
     ctx.strokeRect(
-      x - this.size / 2,
-      y - this.size / 2,
-      this.size,
-      this.size
+      x - size / 2,
+      y - size / 2,
+      size,
+      size
     );
 
-    ctx.setLineDash([100, 200]);
+    ctx.setLineDash([
+      toCurrentCanvasSize(canvas, 100),
+      toCurrentCanvasSize(canvas, 200)
+    ]);
     ctx.beginPath();
 
     ctx.moveTo(x, 0);
-    ctx.lineTo(x, y - this.size / 2);
+    ctx.lineTo(x, y - size / 2);
 
-    ctx.moveTo(x, y + this.size / 2);
+    ctx.moveTo(x, y + size / 2);
     ctx.lineTo(x, canvas.height);
 
     ctx.moveTo(0, y);
-    ctx.lineTo(x - this.size / 2, y);
+    ctx.lineTo(x - size / 2, y);
 
-    ctx.moveTo(x + this.size / 2, y);
+    ctx.moveTo(x + size / 2, y);
     ctx.lineTo(canvas.width, y);
 
     ctx.stroke();

@@ -1,3 +1,9 @@
+/**
+ * 
+ * @param {object} obj 
+ * @param {string} path (delimiter is .)
+ * @returns {[object, string]} ref to object that contains last path
+ */
 export function getByPath(obj, path){
   const paths = path.split('.');
 

@@ -36,69 +36,6 @@ export default class BasicMovingObject extends BasicStepObject {
     return (this._direction = -val + 180);
   }
 
-  draw(canvas, ctx, toCanvas, style) {
-    super.draw(canvas, ctx, toCanvas, style);
-
-    ctx.lineWidth = 20;
-
-    const x = toCanvas(this._x);
-    const y = toCanvas(this._y);
-
-    ctx.strokeStyle = style.getPropertyValue("--direction");
-    const direction = point(
-      Math.sin((this._direction / 180) * Math.PI),
-      Math.cos((this._direction / 180) * Math.PI)
-    );
-
-    ctx.setLineDash([50, 50]);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + direction.x * 500, y + direction.y * 500);
-    ctx.stroke();
-
-    if (this.velocity.length >= 1) {
-      ctx.setLineDash([
-        Math.abs((toCanvas(this.velocity.length) * this._step) / 16),
-        Math.abs(((toCanvas(this.velocity.length) * this._step) / 8)),
-      ]);
-      ctx.lineWidth = 7;
-      ctx.fillStyle = style.getPropertyValue("--direction");
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      
-      let curx = x + toCanvas(this.velocity.x) * this._step,
-          cury = y + toCanvas(this.velocity.y) * this._step;
-      
-      ctx.lineTo(curx, cury);
-      ctx.fillRect(curx - 10, cury - 10, 20, 20);
-
-      let step = 1;
-
-      while (curx > 0 && curx < canvas.width && cury > 0 && cury < canvas.height) {
-        step++;
-        
-        curx = x + toCanvas(this.velocity.x) * this._step * step;
-        cury = y + toCanvas(this.velocity.y) * this._step * step;
-
-        ctx.lineTo(curx, cury);
-        ctx.fillRect(curx - 10, cury - 10, 20, 20);
-      }
-      ctx.stroke();
-    }
-
-    ctx.setLineDash([]);
-    ctx.lineWidth = 20;
-    ctx.strokeStyle = style.getPropertyValue("--velocity");
-
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(
-      x + toCanvas(this.velocity.x) * this._step,
-      y + toCanvas(this.velocity.y) * this._step
-    );
-    ctx.stroke();
-  }
-
   next() {
     super.next();
 

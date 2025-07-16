@@ -10,12 +10,13 @@
   </head>
   <body>
     <div class="map">
-      <canvas id="grid" width="10000" height="10000"></canvas>
-      <canvas id="map" width="10000" height="10000"></canvas>
-      <canvas id="overlay" width="10000" height="10000"></canvas>
+      <canvas id="grid" width="2000" height="2000"></canvas>
+      <canvas id="map" width="8000" height="8000"></canvas>
+      <canvas id="overlay" width="2000" height="2000"></canvas>
     </div>
 
     <div class="tab-controls">
+      <button id="tab-settings">⚙️</button>
       <button id="tab-save">💾</button>
       <button id="tab-map_set">✎</button>
       <button id="tab-new_object">+</button>
@@ -26,16 +27,34 @@
       <button id="main_controls-step">STEP</button>
     </div>
 
-    <div class="relative" id="relative" data-active="false">
+    <div class="relative" id="relative" data-active="true">
       <div>
         <button>✖</button>
-        <pre>
+        <div id="relative-contains" class="contains">
 
-        </pre>
+        </div>
       </div>
     </div>
 
     <div class="modals">
+      <div class="modal map-settings" id="modal-settings" data-active="false">
+        <div style="
+          display: grid;
+          grid-template-columns: 1fr 60px 20px
+        ">
+          <label>Map Resolution: </label><input type="number" id="modal-settings-mapres" class="small" placeholder="8000" />px
+          <label>Grid Resolution: </label><input type="number" id="modal-settings-gridres" class="small" placeholder="2000" />px
+          <label>Overlay Resolution: </label><input type="number" id="modal-settings-overlayres" class="small" placeholder="2000" />px
+        </div>
+        <button id="modal-settings-updateres" class="fit">Update Resolutions</button>
+        <div style="margin-top: 20px;">
+          <label>Save state on exit?</label><input type="checkbox" id="modal-settings-savestate" />
+        </div>
+        <div style="margin-top: 20px;">
+          <label>Hud Size: </label><input class="small" type="number" id="modal-settings-hudsize" />
+        </div>
+      </div>
+
       <div class="modal map-load" id="modal-map_load" data-active="false">
         <select id="modal-map_load-type">
           <option value="load" selected>Load</option>
@@ -74,6 +93,8 @@
         </div>
 
         <button id="modal-map_set-complete">Set</button>
+
+        <button style="margin-top: 20px;" id="modal-map_set-reset">Reset Map</button>
       </div>
 
       <div class="modal new-object" id="modal-new_object" data-active="false">
@@ -91,6 +112,12 @@
           <label>Vel: </label><input type="number" class="fit" id="modal-new_object-vel" placeholder="0m/s" />
           <label>Dir: </label><input type="number" class="fit" id="modal-new_object-dir" placeholder="0deg" />
           <input type="checkbox" id="modal-new_object-is_dynamic" checked>
+        </div>
+        <div class="ui-multilayered-select" id="modal-new_object-ships">
+          <label>Test</label>
+          <div class="options">
+            
+          </div>
         </div><br>
 
         <div><label>Sprite</label></div>
@@ -118,7 +145,13 @@
 
         <select id="modal-maneuver-type">
           <option value="maneuver" selected>Maneuver</option> 
+          <option disabled>────────────────────</option>
           <option value="jump_calc">Jump Calculation</option>
+          <option value="contact">Contact</option>
+          <option disabled>────────────────────</option>
+          <option value="modules">Modules</option>
+          <option disabled>────────────────────</option>
+          <option value="tasks">Tasks</option>
           <option value="override">Override</option>
           <option value="delete">Delete</option>
         </select>
@@ -140,8 +173,47 @@
               <span>Y: </span><span id="modal-maneuver-types-jump_cal-y">0</span>
             </div>
           </div>
-          <div id="modal-maneuver-types-override" data-active="false">
+          <div id="modal-maneuver-types-contact" data-active="false">
+            <div id="modal-maneuver-types-contact-data" data-active="true">
+              
+            </div>
+            <div style="
+              display: grid;
+              grid-template-columns: 1fr 5fr 20px;
+            ">
+              <label>Target: </label><input id="modal-maneuver-types-contact-id" class="fit" placeholder="" />
+              <button class="inline aim" id="modal-maneuver-types-contact-aim">⊹</button>
+            </div>
+            <div id="modal-maneuver-types-contact-contains">
+
+            </div>
+          </div>
+          <div id="modal-maneuver-types-modules" data-active="false">
+            <div id="modal-maneuver-types-modules-container">
+              
+            </div>
+            <div class="ui-multilayered-select" id="modal-maneuver-types-modules-all">
+              <label>Test</label>
+              <div class="options"></div>
+            </div>
+            <select id="modal-maneuver-types-modules-pos">
+              <option value="int">Internal</option>
+              <option value="ext">External</option>
+              <option value="otr">Other</option>
+            </select
+            ><button id="modal-maneuver-types-modules-add" class="aim">+</button>
+          </div>
+          <div id="modal-maneuver-types-tasks" data-active="false">
             
+          </div>
+          <div id="modal-maneuver-types-override" data-active="false">
+            <div class="ui-multilayered-select" id="modal-maneuver-types-override-target">
+              <label>Test</label>
+              <div class="options"></div>
+            </div>
+            <div id="modal-maneuver-types-override-container">
+
+            </div>
           </div>
           <div id="modal-maneuver-types-delete" data-active="false">
             <p>Press the button to delete</p>
@@ -149,6 +221,35 @@
         </div>
 
         <button id="modal-maneuver-complete">Set</button>
+      </div>
+    </div>
+
+    <div id="modal-maneuver-types-modules-contextmenu" style="left: 200px; top: 200px;" data-active="false">
+      <div class="state">
+        <label id="offline">⭕</label>
+        <label id="online">🔘</label>
+        <label id="active">🟢</label>
+        <label id="overload">💢</label>
+      </div>
+      <button id="delete">Delete</button>
+    </div>
+
+    <div id="loading-modals" class="loading-modals" data-active="true">
+      <div id="loading-inital" data-active="true">
+        <p class="points">Loading modules</p>
+        <div class="progress-bar" id="loading-inital-bar-modules">
+          <div class="bar"></div>
+        </div>
+        <p class="points">Loading battleships</p>
+        <div class="progress-bar" id="loading-inital-bar-battleships">
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div id="loading-level" data-active="false">
+        <p class="points">Loading level</p>
+        <div class="progress-bar" id="loading-level-bar">
+          <div class="bar"></div>
+        </div>
       </div>
     </div>
 

@@ -1,7 +1,20 @@
+/**
+ * clamp
+ * @param {number} v 
+ * @param {number} min 
+ * @param {number} max 
+ * @returns clamped value
+ */
 export function clamp(v, min, max) {
   return Math.min(Math.max(v, min), max);
 };
 
+/**
+ * Clamp characteristics
+ * @param {object} characteristics 
+ * @param {object} clampRules 
+ * @returns {object} clamped data
+ */
 export function clampCharacteristics(characteristics, clampRules) {
   function applyClamp(root, current, rules) {
     Object.entries(rules).forEach(([key, rule]) => {

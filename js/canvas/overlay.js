@@ -1,10 +1,14 @@
 import { getMousePos } from "../../libs/canvas.js";
 import { EVENTS } from "../events.js";
+import { settings } from "../settings/settings.js";
+import { mapProps } from "./grid.js";
 
 let canvas;
 let ctx;
 let style;
 let objectsOnOverlay;
+
+let fromCanvas;
 
 export default function init() {
   canvas = document.getElementById("overlay");
@@ -13,9 +17,13 @@ export default function init() {
 
   objectsOnOverlay = {};
 
-  let raito = 1;
+  canvas.width = settings.overlayResolution;
+  canvas.height = settings.overlayResolution;
+
+  let raito = canvas.width / mapProps.size;
 
   const toCanvas = (pos) => pos * raito;
+  fromCanvas = (pos) => pos / settings.overlayResolution;
 
   const redrawOverlay = () => {
     requestAnimationFrame(() => {
@@ -38,6 +46,8 @@ export default function init() {
   document.addEventListener(EVENTS.MAP_SET_CHANGED, (e) => {
     const { size, grid } = e.detail;
 
+    canvas.width = settings.overlayResolution;
+    canvas.height = settings.overlayResolution;
     raito = canvas.width / size;
 
     redrawOverlay();
@@ -71,4 +81,4 @@ export default function init() {
   });
 }
 
-export { ctx, canvas, style, objectsOnOverlay }
+export { ctx, canvas, style, objectsOnOverlay, fromCanvas }

@@ -9,7 +9,7 @@
     "tags": ["microdistortiondrive", "signaturepenalty"]
   },
   "activation": "active",
-  "interference": -100,
+  "interference": -1,
 
   "modificators": {
     "offline": [],
@@ -38,7 +38,7 @@
       },
       {
         "target": "this",
-        "characteristic": "constant.signature",
+        "characteristic": "constant.body.signature",
         "modificationType": "percent",
         "modificator": 4,
         "isAffectedByInterference": false

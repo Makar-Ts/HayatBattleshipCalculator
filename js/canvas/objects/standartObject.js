@@ -16,6 +16,10 @@ export default class StandartObject {
     this._y = y || 0;
   }
 
+  get name() {
+    return this.id;
+  }
+
   draw(canvas, ctx, toCanvas, style) {
     for (let i of Object.keys(this.children)) {
       this.children[i].visible && this.children[i].draw(canvas, ctx, toCanvas, style);
@@ -33,7 +37,9 @@ export default class StandartObject {
   }
 
   callChildren(id, func) {
-    func(this.children[id], this);
+    if (!this.children[id]) return;
+
+    return func(this.children[id], this);
   }
 
   moveTo(x, y) {
@@ -52,7 +58,7 @@ export default class StandartObject {
         type: "number",
         current: () => Math.round(this._x * 100) / 100,
         func: (val) => {
-          this._x = val;
+          this._x = +val;
         },
       },
       {
@@ -60,7 +66,7 @@ export default class StandartObject {
         type: "number",
         current: () => Math.round(this._y * 100) / 100,
         func: (val) => {
-          this._y = val;
+          this._y = +val;
         },
       },
       {
@@ -72,6 +78,14 @@ export default class StandartObject {
         },
       },
     ];
+  }
+
+  getChildrenWithOverridableValues() {
+    return Object.keys(this.children).map(v => ({
+      id: v,
+      getValues: () => this.children[v].getOverridableValues(),
+      children: this.children[v].getChildrenWithOverridableValues()
+    }))
   }
 
 

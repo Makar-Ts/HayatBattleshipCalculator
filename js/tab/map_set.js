@@ -1,4 +1,5 @@
 import { EVENTS } from "../events.js";
+import { DEFAULT_SAVE_FILE, loadJSON } from "../save&load/load.js";
 
 export default function init() {
   $("#tab-map_set").click(() => {
@@ -17,4 +18,11 @@ export default function init() {
 
     document.dispatchEvent(new CustomEvent(EVENTS.MAP_SET_CHANGED, { detail: { size, grid } }));
   });
+
+
+  $("#modal-map_set-reset").on('click', () => {
+    if (confirm("Are you sure?")) {
+      loadJSON(DEFAULT_SAVE_FILE);
+    }
+  })
 }

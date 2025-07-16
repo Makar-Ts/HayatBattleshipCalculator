@@ -23,7 +23,7 @@
       },
       {
         "target": "this",
-        "characteristic": "constant.capacitor",
+        "characteristic": "constant.capacitor.charge",
         "modificationType": "percent",
         "modificator": 0.75,
         "isAffectedByInterference": true

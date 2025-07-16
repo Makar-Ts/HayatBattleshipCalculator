@@ -9,7 +9,7 @@
     "tags": ["psychoserocin"]
   },
   "activation": "passive",
-  "interference": -100,
+  "interference": -1,
 
   "modificators": {
     "offline": [],

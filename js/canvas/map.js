@@ -1,4 +1,7 @@
 import { EVENTS } from "../events.js";
+import { DEFAULT_SAVE_FILE, loadJSON } from "../save&load/load.js";
+import { settings } from "../settings/settings.js";
+import { mapProps } from "./grid.js";
 import check_id from "./map/check_id.js";
 
 import get_in_area from "./map/get_in_area.js";
@@ -7,6 +10,7 @@ let canvas;
 let ctx;
 let style;
 let objects;
+let toCanvas;
 
 export default function init() {
   canvas = document.getElementById("map");
@@ -15,9 +19,12 @@ export default function init() {
 
   objects = {};
 
-  let raito = 1;
+  canvas.width = settings.mapResolution;
+  canvas.height = settings.mapResolution;
 
-  const toCanvas = (pos) => pos * raito;
+  let raito = canvas.width / mapProps.size;
+
+  toCanvas = (pos) => pos * raito;
 
   const redrawMap = () => {
     requestAnimationFrame(() => {
@@ -29,13 +36,15 @@ export default function init() {
     })
   };
 
-  get_in_area(objects, toCanvas);
+  get_in_area();
   check_id(objects);
 
 
   document.addEventListener(EVENTS.MAP_SET_CHANGED, (e) => {
     const { size, grid } = e.detail;
 
+    canvas.width = settings.mapResolution;
+    canvas.height = settings.mapResolution;
     raito = canvas.width / size;
 
     redrawMap();
@@ -46,7 +55,6 @@ export default function init() {
 
     object.id = id;
     objects[id] = object;
-    console.log(objects);
     if (redraw) redrawMap();
   });
 
@@ -78,10 +86,38 @@ export default function init() {
       objects[i].next();
     }
 
-    redrawMap();
-
     document.dispatchEvent(new Event(EVENTS.CALCULATION_ENDED))
+
+    redrawMap();
   });
+
+
+  document.addEventListener(EVENTS.RESET, () => {
+    objects = {};
+    redrawMap();
+  })
+
+
+  if (settings.saveLastState && settings.lastState != "{}") {
+    try {
+      loadJSON(JSON.parse(settings.lastState));
+    } catch (e) {
+      console.log(e);
+      if (confirm("Error on loading last state, remove it?")) {
+        if (confirm("Save last state in file?")) {
+          var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(settings.lastState);
+          var dlAnchorElem = document.getElementById('modal-map_load-types-load-anchor');
+          dlAnchorElem.setAttribute("href", dataStr);
+          dlAnchorElem.setAttribute("download", `${uuidv4()}_${Date.now()}.json`);
+          dlAnchorElem.click();
+        }
+
+        settings.lastState = JSON.stringify(DEFAULT_SAVE_FILE);
+      }
+
+      objects = {};
+    }
+  }
 }
 
-export { ctx, canvas, style, objects }
+export { ctx, canvas, style, objects, toCanvas }

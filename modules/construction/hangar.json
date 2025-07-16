@@ -16,7 +16,7 @@
     "online": [
       {
         "target": "this",
-        "characteristic": "constant.hangar",
+        "characteristic": "constant.body.containers.hangar",
         "modificationType": "number",
         "modificator": 25,
         "isAffectedByInterference": true

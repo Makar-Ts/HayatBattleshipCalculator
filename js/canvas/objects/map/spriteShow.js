@@ -1,3 +1,4 @@
+import { toCurrentCanvasSize } from "../../../../libs/canvas.js";
 import { registerClass } from "../../../save&load/objectCollector.js";
 import StandartObject from "../standartObject.js";
 
@@ -56,8 +57,8 @@ export default class SpriteShower extends StandartObject {
     var x = toCanvas(this.parent._x);
     var y = toCanvas(this.parent._y);
     var ratio = this.image.width / this.image.height;
-    var width = this.size * ratio;
-    var height = this.size / ratio;
+    var width = toCanvas(this.size) * ratio;
+    var height = toCanvas(this.size) / ratio;
     var angleInRadians = (this.parent.direction || 0) * Math.PI / 180;
 
     ctx.translate(x, y);
@@ -65,6 +66,37 @@ export default class SpriteShower extends StandartObject {
     // Используем обработанное изображение
     ctx.drawImage(this.tintedImage, -width / 2, -height / 2, width, height);
     ctx.restore();
+  }
+
+
+  getOverridableValues() {
+    return [
+      ...super.getOverridableValues(),
+      {
+        name: "src",
+        type: "text",
+        current: () => this.image.src,
+        func: (val) => {
+          this.image.src = val;
+        },
+      },
+      {
+        name: "size",
+        type: "number",
+        current: () => this.size,
+        func: (val) => {
+          this.size = +val;
+        },
+      },
+      {
+        name: "color",
+        type: "text",
+        current: () => this.color,
+        func: (val) => {
+          this.color = val;
+        },
+      },
+    ];
   }
 
 

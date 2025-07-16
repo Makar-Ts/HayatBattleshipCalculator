@@ -3,8 +3,6 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
   gap: 10px;
 
   left: 40px;
@@ -64,7 +62,7 @@
       display: flex;
       flex-direction: column;
 
-      width: 258px;
+      width: calc( 100% - 42px );
 
       margin: 10px 0;
 
@@ -94,7 +92,7 @@
       width: calc( 100% - 10px );
     }
 
-    button.inline {
+    .inline {
       display: inline;
     }
 
@@ -110,6 +108,242 @@
         transform: scale(1.3);
         background-color: var(--accent);
       }
+    }
+
+
+    #modal-maneuver-types-modules-container {
+      padding-bottom: 10px;
+      max-height: 500px;
+      overflow-y: auto;
+      overflow-x: visible;
+
+
+      p {
+        margin: 20px 0 10px 0;
+        text-align: center;
+        font-size: 18px;
+
+        &:first-child {
+          margin: 0 0 10px 0;
+        }
+      }
+    }
+
+    .module {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      margin-bottom: 10px;
+      &:last-child {
+        margin-bottom: 0px;
+      }
+
+      .statbar {
+        display: flex;
+        flex-direction: row;
+
+        .state {
+          position: relative;
+
+          width: 33px;
+
+          display: flex;
+          justify-content: center;
+
+          font-size: 25px;
+
+          label {
+            position: absolute;
+            bottom: 0;
+
+            &::before {
+              position: absolute;
+              content: "▼";
+
+              left: 50%;
+              top: -5px;
+              transform: translate(-50%, 0);
+            }
+          }
+        }
+
+        .name {
+          display: flex;
+          flex-direction: column;
+
+          span {
+            font-size: 12px;
+            filter: brightness(0.7);
+          }
+        }
+      }
+
+      .modifiers-container {
+        display: grid;
+        grid-template-columns: 33px 4fr 1fr;
+
+        gap: 5px;
+
+        div {
+          font-size: 14px;
+        }
+
+        span {
+          font-size: 12px;
+          filter: brightness(0.7);
+        }
+      }
+    }
+
+    .task {
+      .name {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        label {
+          font-weight: 700;
+        }
+
+        span {
+          white-space: nowrap;
+        }
+      }
+
+      .data {
+        padding-left: 40px;
+
+        display: grid;
+        grid-template-columns: 1fr 4fr;
+
+        label {
+          text-align: right;
+        }
+      }
+
+      margin-bottom: 5px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .maneuver {
+    width: 500px;
+  }
+}
+
+#modal-maneuver-types-modules-contextmenu {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  position: fixed;
+  padding: 10px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+
+  &[data-active="false"] {
+    display: none;
+  }
+
+  .state {
+    font-size: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+
+    label {
+      transition: .15s;
+
+      &:hover:not([data-active="false"]) {
+        transform: scale(1.3);
+      }
+
+      &:active:not([data-active="false"]) {
+        transform: scale(0.9);
+      }
+
+      &[data-active="false"] {
+        filter: brightness(0.7);
+        pointer-events: none;
+      }
+
+      &[data-active="true"] {
+        border: 3px dashed var(--main);
+      }
+
+      &[data-active="changeto"] {
+        border: 3px dashed var(--accent);
+      }
+    }
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+#modal-maneuver-types-contact-contains {
+  margin-top: 20px;
+}
+
+#modal-maneuver-types-contact-data {
+  margin-bottom: 20px;
+
+  > div {
+    margin-bottom: 10px;
+  }
+
+  > div > div {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+
+    margin-bottom: 5px;
+  }
+
+  > div > button {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  button#modal-maneuver-types-contact-data-set[data-active="false"] {
+    display: none;
+  }
+
+  .progress {
+    height: 30px;
+    width: 100%;
+
+    position: relative;
+
+    --progress-content: "1 / 4";
+    --progress: 25%;
+
+    background-color: var(--bg-elem);
+    overflow-y: visible;
+
+    &::before {
+      content: var(--progress-content);
+      color: var(--main);
+      white-space: nowrap;
+      font-weight: 700;
+
+      position: absolute;
+
+      left: 5px;
+      top: 5px;
+
+      height: 20px;
+      width: calc( var(--progress) - 10px );
+
+      text-align: center;
+
+      background-color: var(--accent);
     }
   }
 }

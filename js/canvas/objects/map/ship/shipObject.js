@@ -22,6 +22,7 @@ export default class ShipObject extends BasicMovingObject {
 
   externalModules = [];
   internalModules = [];
+  otherModules = [];
 
   constructor(x, y, direction, velocity, battleshipChars = {}) {
     super(x, y, direction, velocity);
@@ -39,13 +40,23 @@ export default class ShipObject extends BasicMovingObject {
   }
 
   get allModules() {
-    return [...this.externalModules, ...this.internalModules];
+    return [...this.externalModules, ...this.internalModules, ...this.otherModules];
+  }
+
+  typeToModules(type) {
+    return {
+      'ext': this.externalModules,
+      'int': this.internalModules,
+      'otr': this.otherModules,
+      'all': this.allModules,
+    }[type]
   }
 
   //region step
 
   next() {
     super.next();
+    this.recalculateCharacteristics();
 
     const c = this.currentCharacteristics;
 
@@ -67,12 +78,93 @@ export default class ShipObject extends BasicMovingObject {
 
     c.dynamic.charge += c.constant.capacitor.generation;
 
+    for (let m of this.allModules) {
+      m.next();
+    }
+
     this.currentCharacteristics = clampCharacteristics(c, battleshipCharacteristicsClampRules);
   }
 
   //region characteristics
 
-  recalculateCharacteristics() {
+  getOverridableValues() {
+    return [
+      ...super.getOverridableValues(),
+      {
+        name: "barrier",
+        type: "number",
+        current: () => Math.round(this.currentCharacteristics.dynamic.hp.barrier * 1000) / 1000,
+        func: (val) => {
+          this.currentCharacteristics.dynamic.hp.barrier = +val;
+        },
+      },
+      {
+        name: "armor",
+        type: "number",
+        current: () => Math.round(this.currentCharacteristics.dynamic.hp.armor * 1000) / 1000,
+        func: (val) => {
+          this.currentCharacteristics.dynamic.hp.armor = +val;
+        },
+      },
+      {
+        name: "hull",
+        type: "number",
+        current: () => Math.round(this.currentCharacteristics.dynamic.hp.hull * 1000) / 1000,
+        func: (val) => {
+          this.currentCharacteristics.dynamic.hp.hull = +val;
+        },
+      },
+      {
+        name: "temperature",
+        type: "number",
+        current: () => Math.round(this.currentCharacteristics.dynamic.temperature * 1000) / 1000,
+        func: (val) => {
+          this.currentCharacteristics.dynamic.temperature = +val;
+        },
+      },
+      {
+        name: "charge",
+        type: "number",
+        current: () => Math.round(this.currentCharacteristics.dynamic.charge * 1000) / 1000,
+        func: (val) => {
+          this.currentCharacteristics.dynamic.charge = +val;
+        },
+      },
+    ]
+  }
+
+  getChildrenWithOverridableValues() {
+    return [
+      ...super.getChildrenWithOverridableValues(),
+      {
+        id: 'externalModules',
+        children: this.externalModules.map(v => ({
+          id: v.characteristics.main.name,
+          getValues: () => v.getOverridableValues(),
+          children: [],
+        })),
+      },
+      {
+        id: 'internalModules',
+        children: this.internalModules.map(v => ({
+          id: v.characteristics.main.name,
+          getValues: () => v.getOverridableValues(),
+          children: [],
+        })),
+      },
+      {
+        id: 'otherModules',
+        children: this.otherModules.map(v => ({
+          id: v.characteristics.main.name,
+          getValues: () => v.getOverridableValues(),
+          children: [],
+        })),
+      },
+    ]
+  }
+
+
+  calculateModifiers() {
     const activeModules = this.allModules.reduce((acc, v) => {
       if (v.fullType in acc) {
         acc[v.fullType] += 1;
@@ -102,6 +194,12 @@ export default class ShipObject extends BasicMovingObject {
       mods = mod.applyModifiers(mods, activeModules);
     }
 
+    return mods;
+  }
+
+  recalculateCharacteristics() {
+    const mods = this.calculateModifiers();
+
     this.currentCharacteristics = mergeDeep(copy(this.baseCharacteristics), {
       dynamic: this.currentCharacteristics.dynamic,
     });
@@ -120,65 +218,54 @@ export default class ShipObject extends BasicMovingObject {
       this.currentCharacteristics,
       battleshipCharacteristicsClampRules
     );
-
-    console.log(this.currentCharacteristics, mods, activeModules);
   }
 
   //region modules
 
-  addModule(module, isExternal = false) {
+  addModule(module, type='int') {
     module.uuid = uuidv4();
-
-    if (isExternal) {
-      this.externalModules.push(module);
-    } else {
-      this.internalModules.push(module);
-    }
+    this.typeToModules(type).push(module);
 
     this.recalculateCharacteristics();
 
     return module.uuid;
   }
 
-  removeModule(id, isExternal = false) {
+  removeModule(id, type='all') {
     if (typeof id === "number") {
-      if (isExternal) {
-        this.externalModules.splice(id, 1);
-      } else {
-        this.internalModules.splice(id, 1);
-      }
+      this.typeToModules(type).splice(id, 1);
     } else {
-      if (isExternal) {
-        const _id = this.externalModules.findIndex((v) => v.uuid == id);
+      if (type != 'all') {
+        const _id = this.typeToModules(type).findIndex((v) => v.uuid == id);
 
-        if (_id != -1) this.externalModules.splice(_id, 1);
+        if (_id != -1) this.typeToModules(type).splice(_id, 1);
+        else return false;
       } else {
-        const _id = this.internalModules.findIndex((v) => v.uuid == id);
-
-        if (_id != -1) this.internalModules.splice(_id, 1);
+        return this.removeModule(id, 'int') 
+                ? true 
+                : this.removeModule(id, 'ext') 
+                  ? true
+                  : this.removeModule(id, 'otr')
+                    ? true
+                    : false
       }
     }
 
     this.recalculateCharacteristics();
+    return true;
   }
 
-  callModule(id, func, isExternal = false, recalculate = true) {
+  getModule(id, type='all') {
+    return this.typeToModules(type).find((v) => v.uuid == id);
+  }
+
+  callModule(id, func, type='int', recalculate=true) {
     if (typeof id === "number") {
-      if (isExternal) {
-        func(this.externalModules[id], this);
-      } else {
-        func(this.internalModules[id], this);
-      }
+      func(this.typeToModules(type)[id], this);
     } else {
-      if (isExternal) {
-        const _id = this.externalModules.findIndex((v) => v.uuid == id);
+      const obj = this.getModule(id, type);
 
-        if (_id != -1) func(this.externalModules[_id], this);
-      } else {
-        const _id = this.internalModules.findIndex((v) => v.uuid == id);
-
-        if (_id != -1) func(this.internalModules[_id], this);
-      }
+      if (obj) func(obj, this);
     }
 
     recalculate && this.recalculateCharacteristics();
@@ -193,6 +280,7 @@ export default class ShipObject extends BasicMovingObject {
       dynamicCharacteristics: this.currentCharacteristics.dynamic,
       externalModules: this.externalModules.map((v) => v.save()),
       internalModules: this.internalModules.map((v) => v.save()),
+      otherModules:    this.otherModules.map((v) => v.save()),
     };
   }
 
@@ -205,6 +293,7 @@ export default class ShipObject extends BasicMovingObject {
 
     this.externalModules = data.externalModules.map((v) => load("", v, "module"));
     this.internalModules = data.internalModules.map((v) => load("", v, "module"));
+    this.otherModules    = data.otherModules.map((v) => load("", v, "module"));
 
     this.recalculateCharacteristics();
 

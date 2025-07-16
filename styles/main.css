@@ -1,3 +1,5 @@
+@import url(./../js/ui/ui.css);
+
 @import url(./map.css);
 @import url(./tab-controls.css);
 @import url(./main-controls.css);
@@ -11,6 +13,8 @@
 
   --main: white;
   --accent: lime;
+  --target: red;
+  --target-non-active: rgba(255, 255, 0, 0.233);
 
   --border: rgb(95, 95, 95);
 

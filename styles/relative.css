@@ -33,9 +33,29 @@
       right: -8px;
     }
 
-    > pre {
-      width: 100%;
-      height: 100%;
+    .contains {
+      padding-left: 10px;
+
+      .id-select-hyperlink {
+        cursor: pointer;
+        text-decoration: underline;
+
+        transition: .15s;
+
+        &:hover {
+          transform: scale(1.1);
+          text-decoration: none;
+        }
+      }
+
+      .values {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+
+        label {
+          font-weight: 700;
+        }
+      }
     }
   }
 }

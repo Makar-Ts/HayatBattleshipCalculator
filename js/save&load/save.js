@@ -9,7 +9,11 @@ export function saveFunction(func) {
   if (body.startsWith('{') && body.endsWith('}')) {
     body = body.slice(1, -1);
   } else {
-    body = body.replace('=>', 'return');
+    if (body.match(/=> *{/)) {
+      body = body.replace(/=> *{/, '').slice(undefined, -1);
+    } else {
+      body = body.replace('=>', 'return');
+    }
   }
 
   return { args, body }

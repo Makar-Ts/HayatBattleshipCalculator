@@ -9,7 +9,7 @@
     "tags": ["shieldextender", "signaturepenalty"]
   },
   "activation": "passive",
-  "interference": -9,
+  "interference": -0.09,
 
   "modificators": {
     "offline": [],

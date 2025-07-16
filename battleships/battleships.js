@@ -1,3 +1,5 @@
+import { updateLoading } from "../js/loading.js";
+
 let isReady = false;
 let battleships = {};
 let onReady = () => {};
@@ -7,10 +9,16 @@ let setReadyFunction = (func) => {
 
 export default function init() {
   const loadBattleships = async (list) => {
+    const len = Object.keys(list).length;
+    let amount = 0;
+    updateLoading('battleships', len, 0, 0);
     for (let [name, path] of Object.entries(list)) {
       const data = await (await fetch("./battleships/" + path)).json();
 
       battleships[name] = data;
+
+      amount++;
+      updateLoading('battleships', len, 0, amount);
     }
   };
 

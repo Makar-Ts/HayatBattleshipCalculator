@@ -2,6 +2,10 @@ import { getInArea } from "../canvas/map/get_in_area.js";
 import { EVENTS } from "../events.js";
 import { objects } from "../canvas/map.js";
 import env from "../enviroments/env.js";
+import format from "../../libs/format.js";
+import { accordeonHTMLTemplate, registerInnerAccordeons } from "../ui/accordeon/accordeon.js";
+import { enableModifyModal } from "../tab/modify/modify.js";
+import { mapProps } from "../canvas/grid.js";
 
 export default function init() {
   $("#relative > div > button").click(() => {
@@ -17,7 +21,7 @@ export default function init() {
 
     if (Object.keys(objects).length <= 1) return;
 
-    const clicked = getInArea(x, y);
+    const clicked = getInArea(x * mapProps.size, y * mapProps.size);
 
     if (clicked.length == 0) return;
 
@@ -77,21 +81,36 @@ export default function init() {
 
     let text = "";
     for (let [id, objects] of Object.entries(data)) {
-      text += `${id}`
+      let inner = "";
       for (let [rid, { relSpeed, angularVelocity, distance, adir, rdir }] of Object.entries(objects)) {
-        text += `
-└ ${rid}
-  ├ rspeed: ${Math.round(relSpeed * 100) / 100}m/s
-  ├ rspeed (step): ${Math.round(relSpeed * env.STEP * 100) / 100}m/step
-  ├ angvel: ${Math.round(angularVelocity * 10000) / 10000}deg/s
-  ├ angvel (step): ${Math.round(angularVelocity  * env.STEP * 10000) / 10000}deg/step
-  ├ adir: ${adir}deg
-  ├ rdir: ${rdir}deg
-  └ dist: ${Math.round(distance * 10) / 10}m`
+        const values = [
+          ["rspeed",        `${Math.round(relSpeed * 100) / 100}m/s`],
+          ["rspeed (step)", `${Math.round(relSpeed * env.STEP * 100) / 100}m/step`],
+          ["angvel",        `${Math.round(angularVelocity * 10000) / 10000}deg/s`],
+          ["angvel (step)", `${Math.round(angularVelocity  * env.STEP * 10000) / 10000}deg/step`],
+          ["adir",          `${adir}deg`],
+          ["rdir",          `${rdir}deg`],
+          ["dist",          `${Math.round(distance * 10) / 10}m`],
+        ]
+
+        inner += format(
+          accordeonHTMLTemplate, 
+          `<a class="id-select-hyperlink">${rid}</a><label style="padding-left: 5px;">(${Math.round(distance * 10) / 10}m)</label>`, 
+          `<div class="values">${values.map(([n, v]) => `<label>${n}</label><span>${v}</span>`).join('\n')}</div>`
+        )
       }
-      text += "\n"
+      text += format(accordeonHTMLTemplate, id, inner)
     }
 
-    $("#relative > div > pre").html(text)
+    $("#relative-contains").html(text)
+    registerInnerAccordeons("#relative-contains")
+
+    $('.id-select-hyperlink')
+      .off('click')
+      .on('click', (e) => {
+        e.stopPropagation();
+
+        enableModifyModal(e.target.innerText);
+      })
   }
 }

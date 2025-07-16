@@ -16,7 +16,7 @@
     "online": [
       {
         "target": "this",
-        "characteristic": "constant.storage",
+        "characteristic": "constant.body.containers.storage",
         "modificationType": "number",
         "modificator": 150,
         "isAffectedByInterference": true

@@ -1,17 +1,18 @@
 import { clamp } from "../clamp.js";
 
-const tonnage = [
-  "Шаттл",
-  "Корвет",
-  "Фрегат",
-  "Эсминец",
-  "Крейсер",
-  "Линейный крейсер",
-  "Линкор",
-  "Дредноут",
-  "Корабль автономного развёртывания",
-  "Титан",
-];
+const tonnage = {
+  null: "Индустриальный",
+  0: "Шаттл",
+  1: "Корвет",
+  2: "Фрегат",
+  3: "Эсминец",
+  4: "Крейсер",
+  5: "Линейный крейсер",
+  6: "Линкор",
+  7: "Дредноут",
+  8: "Корабль автономного развёртывания",
+  9: "Титан",
+};
 
 const tonnageToCaptureRange = [
   5000, 10000, 25000, 35000, 50000, 60000, 100000, 300000, 500000, 500000,
@@ -323,8 +324,28 @@ const battleshipCharacteristicsClampRules = {
 export { baseBattleshipCharacteristics, battleshipCharacteristicsClampRules };
 
 
+/**
+ * 
+ * @param {number} maxHull maximum hull capacity value
+ * @param {number} curTemp current temperature
+ * @param {number} maxTemp maximum temperature
+ * @returns {number} temprature damage
+ */
 const overheatDamage = (maxHull, curTemp, maxTemp) => maxHull * ( curTemp - maxTemp ) / 400;
 
+/**
+ * 
+ * @param {{ 
+ *  passive_regeneration: number; 
+ *  resonance: { 
+ *    frequency: number; 
+ *    tendency: number; 
+ *    range: number; 
+ * }}} barrierStats 
+ * @param {number} curBarrier current barrier value
+ * @param {number} maxBarrier maximum barrier value
+ * @returns {number} barrier regeneration
+ */
 const passiveBarrierRegeneration = (barrierStats, curBarrier, maxBarrier) => {
   const curPer = curBarrier / maxBarrier;
 

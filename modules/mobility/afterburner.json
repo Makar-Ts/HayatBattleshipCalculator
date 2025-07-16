@@ -9,7 +9,7 @@
     "tags": ["afterburner", "maneuverbuff"]
   },
   "activation": "active",
-  "interference": -100,
+  "interference": -1,
 
   "modificators": {
     "offline": [],
@@ -24,7 +24,7 @@
       },
       {
         "target": "this",
-        "characteristic": "constant.body.acceleration",
+        "characteristic": "constant.acceleration",
         "modificationType": "percent",
         "modificator": 1.8,
         "isAffectedByInterference": true

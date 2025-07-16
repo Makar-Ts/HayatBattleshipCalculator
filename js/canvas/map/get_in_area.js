@@ -1,8 +1,10 @@
 import { point, calc } from "../../../libs/vector/vector.js";
+import { mapProps } from "../grid.js";
+import { objects, toCanvas } from "../map.js";
 
 export let getInArea = (x, y) => [];
 
-export default function (objects, toCanvas) {  
+export default function () {  
   const CLICK_AREA = 200;
 
   getInArea = (x, y) => {

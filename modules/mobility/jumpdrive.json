@@ -9,7 +9,7 @@
     "tags": ["jumpdrive"]
   },
   "activation": "active",
-  "interference": -100,
+  "interference": -1,
 
   "modificators": {
     "offline": [],
