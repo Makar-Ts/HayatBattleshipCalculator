@@ -182,7 +182,18 @@ export default class StandartObject {
   }
 
 
+  onParentDestroy() {
+    for (let i of Object.keys(this.children)) {
+      this.children[i].onParentDestroy?.();
+    }
+  }
+
+
   destroy() {
+    for (let i of Object.keys(this.children)) {
+      this.children[i].onParentDestroy?.();
+    }
+
     document.dispatchEvent(
       new CustomEvent(EVENTS.MAP.DELETE, {
         detail: {

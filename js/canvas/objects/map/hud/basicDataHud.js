@@ -128,4 +128,4 @@ export default class BasicDataHud extends StandartObject {
 }
 
 registerClass(BasicDataHud)
-registerLayers(BasicDataHud, ['hud', 'basic-hud'], 2);
+registerLayers(BasicDataHud, ['hud', 'basic-hud'], 3);

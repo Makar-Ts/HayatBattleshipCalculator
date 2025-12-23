@@ -251,4 +251,4 @@ export default class ShipStatsHUD extends StandartObject {
 }
 
 registerClass(ShipStatsHUD);
-registerLayers(ShipStatsHUD, ['hud', 'signature'], 3);
+registerLayers(ShipStatsHUD, ['hud', 'ship-stats'], 3);

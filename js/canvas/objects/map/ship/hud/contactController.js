@@ -29,6 +29,8 @@ export class ContactController extends BasicStepObject {
 
   constructor() {
     super();
+
+    this._calculateModifiersHandler = this.calculateModifiers.bind(this);
   }
 
   listenForModifiers() {
@@ -36,31 +38,39 @@ export class ContactController extends BasicStepObject {
 
     this.isListenerSetUp = true;
 
-    document.addEventListener('calculateModifiers', (event) => {
-      if (this.target && event.detail.ship.id == this.target.id) {
-        if (!this.parent || !('calculateModifiers' in this.parent)) return;
+    document.addEventListener('calculateModifiers', this._calculateModifiersHandler);
+  }
 
-        const mods = this.parent.calculateModifiers(false).target;
+  onParentDestroy() {
+    document.removeEventListener('calculateModifiers', this._calculateModifiersHandler);
 
-        for (let [m, v] of Object.entries(mods.number)) {
-          if (m in event.detail.mods.number) {
-            event.detail.mods.number[m] += v;
-          } else {
-            event.detail.mods.number[m] = v;
-          }
+    super.onParentDestroy();
+  }
+
+  calculateModifiers(event) {
+    if (this.target && event.detail.ship.id == this.target.id) {
+      if (!this.parent || !('calculateModifiers' in this.parent)) return;
+
+      const mods = this.parent.calculateModifiers(false).target;
+
+      for (let [m, v] of Object.entries(mods.number)) {
+        if (m in event.detail.mods.number) {
+          event.detail.mods.number[m] += v;
+        } else {
+          event.detail.mods.number[m] = v;
         }
-
-        for (let [m, v] of Object.entries(mods.percent)) {
-          if (m in event.detail.mods.percent) {
-            event.detail.mods.percent[m] += v;
-          } else {
-            event.detail.mods.percent[m] = v;
-          }
-        }
-
-        console.log(this.path, event.detail.ship.path, event);
       }
-    })
+
+      for (let [m, v] of Object.entries(mods.percent)) {
+        if (m in event.detail.mods.percent) {
+          event.detail.mods.percent[m] += v;
+        } else {
+          event.detail.mods.percent[m] = v;
+        }
+      }
+
+      console.log(this.path, event.detail.ship.path, event);
+    }
   }
 
 
