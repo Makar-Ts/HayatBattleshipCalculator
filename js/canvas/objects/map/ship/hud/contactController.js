@@ -9,6 +9,7 @@ import MAP_OBJECTS_IDS from "../../mapObjectsIds.constant.js";
 import TASKS from "../../tasks/tasks.constant.js";
 import { registerSteps } from "../../step/stepInfoCollector.js";
 import { log } from "../../../../../controls/step-logs/log.js";
+import { registerLayers } from "../../../../layers/layersInfoCollector.js";
 
 export class ContactController extends BasicStepObject {
   static LOAD_FALLBACK = {
@@ -343,3 +344,4 @@ export class ContactController extends BasicStepObject {
 
 registerClass(ContactController);
 registerSteps(ContactController, 0, []);
+registerLayers(ContactController, ['hud', 'contact'], 1);

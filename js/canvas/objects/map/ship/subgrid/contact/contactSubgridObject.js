@@ -1,5 +1,6 @@
 import { log } from "../../../../../../controls/step-logs/log.js";
 import { registerClass } from "../../../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../../../layers/layersInfoCollector.js";
 import { registerSteps } from "../../../step/stepInfoCollector.js";
 import SubgridObject from "../subgridObject.js";
 
@@ -95,3 +96,4 @@ export default class ContactSubgridObject extends SubgridObject {
 
 registerClass(ContactSubgridObject);
 registerSteps(ContactSubgridObject, 0, []);
+registerLayers(ContactSubgridObject, ['subgrid', 'subgrid-contact', 'dynamic'], 0);

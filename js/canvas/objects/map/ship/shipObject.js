@@ -19,6 +19,7 @@ import { calc, point } from "../../../../../libs/vector/point.js";
 import { log } from "../../../../controls/step-logs/log.js";
 import { load } from "../../../../save&load/load.js";
 import { registerClass } from "../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../layers/layersInfoCollector.js";
 import { objects } from "../../../map.js";
 import BasicMovingObject from "../step/basicMovingObject.js";
 import { registerSteps } from "../step/stepInfoCollector.js";
@@ -569,3 +570,4 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
 
 registerClass(ShipObject);
 registerSteps(ShipObject, 3, []);
+registerLayers(ShipObject, ['battleship', 'dynamic'], 0);

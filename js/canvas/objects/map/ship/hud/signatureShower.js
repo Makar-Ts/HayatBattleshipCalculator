@@ -1,6 +1,7 @@
 import { toCurrentCanvasSize } from "../../../../../../libs/canvas.js";
 import { clamp } from "../../../../../../libs/clamp.js";
 import { registerClass } from "../../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../../layers/layersInfoCollector.js";
 import StandartObject from "../../../standartObject.js";
 
 export default class SignatureShower extends StandartObject {
@@ -102,3 +103,4 @@ export default class SignatureShower extends StandartObject {
 }
 
 registerClass(SignatureShower);
+registerLayers(SignatureShower, ['hud', 'signature'], 2);

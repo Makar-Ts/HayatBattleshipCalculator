@@ -3,6 +3,7 @@ import { calc, point } from "../../../../../../../../libs/vector/point.js";
 import { log } from "../../../../../../../controls/step-logs/log.js";
 import { EVENTS } from "../../../../../../../events.js";
 import { registerClass } from "../../../../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../../../../layers/layersInfoCollector.js";
 import { objects } from "../../../../../../map.js";
 import MAP_OBJECTS_IDS from "../../../../mapObjectsIds.constant.js";
 import { registerSteps } from "../../../../step/stepInfoCollector.js";
@@ -276,3 +277,4 @@ export default class SelfguidedSubgridObject extends ExplosiveSubgridObject {
 
 registerClass(SelfguidedSubgridObject);
 registerSteps(SelfguidedSubgridObject, 0, []);
+registerLayers(SelfguidedSubgridObject, ['subgrid', 'subgrid-contact', 'subgrid-explosive', 'missile', 'dynamic'], 0);

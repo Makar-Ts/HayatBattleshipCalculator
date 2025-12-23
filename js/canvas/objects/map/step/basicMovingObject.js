@@ -7,6 +7,7 @@ import { log } from "../../../../controls/step-logs/log.js";
 import { objects } from "../../../map.js";
 import { collisionPoint } from "../../../../../libs/math.js";
 import SIMULATION_STATES, { generateSimulationState, parceSimulationState } from "./simulationStates.constant.js";
+import { registerLayers } from "../../../layers/layersInfoCollector.js";
 
 export default class BasicMovingObject extends BasicStepObject {
   static LOAD_FALLBACK = {
@@ -232,3 +233,4 @@ export default class BasicMovingObject extends BasicStepObject {
 
 registerClass(BasicMovingObject);
 registerSteps(BasicMovingObject, 3, []);
+registerLayers(BasicMovingObject, ['dynamic'], 0);

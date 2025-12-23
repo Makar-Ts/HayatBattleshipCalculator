@@ -3,6 +3,7 @@ import { saveFunction } from "../../../../save&load/save.js";
 import { loadFunction } from "../../../../save&load/load.js";
 import { registerClass } from "../../../../save&load/objectCollector.js";
 import { toCurrentCanvasSize } from "../../../../../libs/canvas.js";
+import { registerLayers } from "../../../layers/layersInfoCollector.js";
 
 export default class BasicDataHud extends StandartObject {
   data = [];
@@ -127,3 +128,4 @@ export default class BasicDataHud extends StandartObject {
 }
 
 registerClass(BasicDataHud)
+registerLayers(BasicDataHud, ['hud', 'basic-hud'], 2);

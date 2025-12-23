@@ -2,6 +2,7 @@ import { limitVector } from "../../../../../../../libs/limitVector.js";
 import { calc, point } from "../../../../../../../libs/vector/point.js";
 import { log } from "../../../../../../controls/step-logs/log.js";
 import { registerClass } from "../../../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../../../layers/layersInfoCollector.js";
 import { objects } from "../../../../../map.js";
 import MAP_OBJECTS_IDS from "../../../mapObjectsIds.constant.js";
 import SIMULATION_STATES, { parceSimulationState } from "../../../step/simulationStates.constant.js";
@@ -201,3 +202,4 @@ export default class DroneObject extends SubgridObject {
 
 registerClass(DroneObject);
 registerSteps(DroneObject, 1, []);
+registerLayers(DroneObject, ['subgrid', 'drone', 'dynamic'], 0);

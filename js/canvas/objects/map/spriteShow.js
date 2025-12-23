@@ -1,5 +1,6 @@
 import { toCurrentCanvasSize } from "../../../../libs/canvas.js";
 import { registerClass } from "../../../save&load/objectCollector.js";
+import { registerLayers } from "../../layers/layersInfoCollector.js";
 import StandartObject from "../standartObject.js";
 
 export default class SpriteShower extends StandartObject {
@@ -130,3 +131,4 @@ export default class SpriteShower extends StandartObject {
 }
 
 registerClass(SpriteShower)
+registerLayers(SpriteShower, ['hud', 'sprite'], 0);

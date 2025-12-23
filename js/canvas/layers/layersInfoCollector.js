@@ -33,7 +33,9 @@ export function checkObjectRenderVisibility(object, enabledLayers, zIndex) {
   let current = object;
   let obj = classToLayers[current.constructor.name];
   while (!obj) {
-    current = Object.getPrototypeOf(Object.getPrototypeOf(current))
+    current = Object.getPrototypeOf(current)
+    if (!current) return false;
+    
     obj = classToLayers[current.constructor.name];
   }
 
@@ -41,6 +43,30 @@ export function checkObjectRenderVisibility(object, enabledLayers, zIndex) {
 
   return  enabledLayers.has(current.constructor.name) || 
           Array.from(obj.layers.values()).some(v => enabledLayers.has(v));
+}
+
+
+export function getZIndexIfCorrectLayer(object, enabledLayers) {
+  if (enabledLayers === null) enabledLayers = allLayers;
+  else enabledLayers = new Set(enabledLayers);
+
+  let current = object;
+  let obj = classToLayers[current.constructor.name];
+  while (!obj) {
+    current = Object.getPrototypeOf(current)
+    if (!current) return null;
+    
+    obj = classToLayers[current.constructor.name];
+  }
+
+  if (
+    enabledLayers.has(current.constructor.name) || 
+    Array.from(obj.layers.values()).some(v => enabledLayers.has(v))
+  ) {
+    return obj.zIndex;
+  }
+
+  return null;
 }
 
 /**

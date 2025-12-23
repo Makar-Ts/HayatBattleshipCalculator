@@ -1,5 +1,6 @@
 import { log } from "../../../../controls/step-logs/log.js";
 import { registerClass } from "../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../layers/layersInfoCollector.js";
 import { objects } from "../../../map.js";
 import BasicStepObject from "./basicStepObject.js";
 import { registerSteps } from "./stepInfoCollector.js";
@@ -143,3 +144,4 @@ export default class BasicStaticObject extends BasicStepObject {
 
 registerClass(BasicStaticObject)
 registerSteps(BasicStaticObject, 0, [])
+registerLayers(BasicStaticObject, ['static'], 0);

@@ -3,6 +3,7 @@ import { objectFromPath } from "../../../../../../libs/pathResolver.js";
 import { log } from "../../../../../controls/step-logs/log.js";
 import { EVENTS } from "../../../../../events.js";
 import { registerClass } from "../../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../../layers/layersInfoCollector.js";
 import { objects } from "../../../../map.js";
 import SIMULATION_STATES, { generateSimulationState, parceSimulationState } from "../../step/simulationStates.constant.js";
 import { registerSteps } from "../../step/stepInfoCollector.js";
@@ -136,3 +137,4 @@ export default class SubgridObject extends ShipObject {
 
 registerClass(SubgridObject);
 registerSteps(SubgridObject, 1, []);
+registerLayers(SubgridObject, ['subgrid', 'dynamic'], 0);

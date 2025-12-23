@@ -1,6 +1,7 @@
 import { toCurrentCanvasSize } from "../../../../../libs/canvas.js";
 import { point } from "../../../../../libs/vector/point.js";
 import { registerClass } from "../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../layers/layersInfoCollector.js";
 import StandartObject from "../../standartObject.js";
 
 export default class VectorHud extends StandartObject {
@@ -163,3 +164,4 @@ export default class VectorHud extends StandartObject {
 }
 
 registerClass(VectorHud);
+registerLayers(VectorHud, ['hud', 'vector'], 0);

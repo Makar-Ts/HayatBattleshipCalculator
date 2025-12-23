@@ -1,6 +1,7 @@
 import { limitVector } from "../../../../../../../../libs/limitVector.js";
 import { calc } from "../../../../../../../../libs/vector/point.js";
 import { registerClass } from "../../../../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../../../../layers/layersInfoCollector.js";
 import { registerSteps } from "../../../../step/stepInfoCollector.js";
 import ExplosiveSubgridObject from "../explosiveSubgridObject.js";
 
@@ -30,3 +31,4 @@ export default class MineSubgridObject extends ExplosiveSubgridObject {
 
 registerClass(MineSubgridObject);
 registerSteps(MineSubgridObject, 0, []);
+registerLayers(MineSubgridObject, ['subgrid', 'subgrid-contact', 'subgrid-explosive', 'mine', 'dynamic'], 0);

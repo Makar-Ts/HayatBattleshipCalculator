@@ -1,6 +1,7 @@
 import { settingsObjectToCanvasSize, toCurrentCanvasSize } from "../../../../../../libs/canvas.js";
 import { clamp } from "../../../../../../libs/clamp.js";
 import { registerClass } from "../../../../../save&load/objectCollector.js";
+import { registerLayers } from "../../../../layers/layersInfoCollector.js";
 import StandartObject from "../../../standartObject.js";
 
 export default class ShipStatsHUD extends StandartObject {
@@ -250,3 +251,4 @@ export default class ShipStatsHUD extends StandartObject {
 }
 
 registerClass(ShipStatsHUD);
+registerLayers(ShipStatsHUD, ['hud', 'signature'], 3);

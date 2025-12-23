@@ -4,6 +4,7 @@ import SIMULATION_STATES, { parceSimulationState } from "../../../step/simulatio
 import { registerSteps } from "../../../step/stepInfoCollector.js";
 import ContactSubgridObject from "./contactSubgridObject.js";
 import { log } from "../../../../../../controls/step-logs/log.js";
+import { registerLayers } from "../../../../../layers/layersInfoCollector.js";
 
 export default class ExplosiveSubgridObject extends ContactSubgridObject {
   exploded = false;
@@ -139,3 +140,4 @@ ${Object.entries(l).map(([k, v]) =>
 
 registerClass(ExplosiveSubgridObject);
 registerSteps(ExplosiveSubgridObject, 0, []);
+registerLayers(ExplosiveSubgridObject, ['subgrid', 'subgrid-contact', 'subgrid-explosive', 'dynamic'], 0);
