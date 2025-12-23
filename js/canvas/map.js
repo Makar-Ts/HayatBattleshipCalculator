@@ -16,13 +16,30 @@ import layers from './layers/main.js';
 
 import get_in_area from "./map/get_in_area.js";
 import { MAX_INTER_STEPS } from "./objects/map/step/stepInfoCollector.js";
-import { checkObjectRenderVisibility, getZIndexes } from "./layers/layersInfoCollector.js";
+import { checkObjectRenderVisibility, getZIndexes, getZIndexIfCorrectLayer } from "./layers/layersInfoCollector.js";
+import { addRecordStringAny } from "../../libs/addRecordStringAny.js";
 
 let canvas;
 let ctx;
 let style;
 let objects;
 let toCanvas;
+
+
+function collectRenderObjects(obj, layers, renderRowAcc) {
+  if (obj.visible) {
+    const z = getZIndexIfCorrectLayer(obj, layers);
+    if (z !== null) {
+      if (!renderRowAcc[z]) renderRowAcc[z] = [];
+      renderRowAcc[z].push(
+        (canvas, ctx, toCanvas, style) => obj.draw(canvas, ctx, toCanvas, style)
+      );
+    }
+  }
+  
+  obj.getChildrenRenderRow(layers, renderRowAcc)
+}
+
 
 export default function init() {
   canvas = document.getElementById("map");
@@ -71,13 +88,17 @@ export default function init() {
     requestAnimationFrame(() => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      for (let z of getZIndexes()) {
-        for (let i of Object.keys(objects)) {
-          const obj = objects[i];
+      const layers = null;
+      const renderRow = {};
 
-          obj.visible && 
-          checkObjectRenderVisibility(obj, null, z) && 
-            obj.draw(canvas, ctx, toCanvas, style);
+      for (let i in objects) {
+        collectRenderObjects(objects[i], layers, renderRow);
+      }
+
+      const sortedKeys = Object.keys(renderRow).map(Number).sort((a, b) => a - b);
+      for (let i of sortedKeys) {
+        for (let render of renderRow[i]) {
+          render(canvas, ctx, toCanvas, style);
         }
       }
     })
