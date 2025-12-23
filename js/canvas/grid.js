@@ -89,38 +89,40 @@ export default function init() {
 
 
   const drawGrid = (size, grid, offset) => { 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = toCurrentCanvasSize(canvas, 10);
-    ctx.strokeStyle = style.getPropertyValue('--border')
+    requestAnimationFrame(() => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.lineWidth = toCurrentCanvasSize(canvas, 10);
+      ctx.strokeStyle = style.getPropertyValue('--border')
 
-    ctx.font = toCurrentCanvasSize(canvas, 100) + "px Consolas";
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'hanging';
-    ctx.fillStyle = style.getPropertyValue('--border');
+      ctx.font = toCurrentCanvasSize(canvas, 100) + "px Consolas";
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'hanging';
+      ctx.fillStyle = style.getPropertyValue('--border');
 
-    const padding = toCurrentCanvasSize(canvas, 50);
+      const padding = toCurrentCanvasSize(canvas, 50);
 
-    for (let index = Math.floor(-offset.x / grid); index < Math.floor((-offset.x + size) / grid); index++) {
-      let pos = toCanvas({ x: index * grid })
-      ctx.beginPath()
+      for (let index = Math.floor(-offset.x / grid); index < Math.floor((-offset.x + size) / grid); index++) {
+        let pos = toCanvas({ x: index * grid })
+        ctx.beginPath()
 
-      ctx.moveTo(pos, 0);
-      ctx.lineTo(pos, canvas.height);
+        ctx.moveTo(pos, 0);
+        ctx.lineTo(pos, canvas.height);
 
-      ctx.stroke();
-      ctx.fillText(`${index * grid}m`, pos + padding, padding);
-    }
+        ctx.stroke();
+        ctx.fillText(`${index * grid}m`, pos + padding, padding);
+      }
 
-    for (let index = Math.floor(-offset.y / grid); index < Math.floor((-offset.y + size) / grid); index++) {
-      let pos = toCanvas({ y: index * grid })
-      ctx.beginPath()
+      for (let index = Math.floor(-offset.y / grid); index < Math.floor((-offset.y + size) / grid); index++) {
+        let pos = toCanvas({ y: index * grid })
+        ctx.beginPath()
 
-      ctx.moveTo(0, pos);
-      ctx.lineTo(canvas.width, pos);
+        ctx.moveTo(0, pos);
+        ctx.lineTo(canvas.width, pos);
 
-      ctx.stroke();
-      ctx.fillText(`${index * grid}m`, padding, pos + padding);
-    }
+        ctx.stroke();
+        ctx.fillText(`${index * grid}m`, padding, pos + padding);
+      }
+    })
   }
 
 

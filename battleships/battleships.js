@@ -29,6 +29,7 @@ export default function init() {
         .then(() => {
           isReady = true;
 
+          console.log(' ------ loaded battleships ------');
           console.log(battleships);
 
           onReady();

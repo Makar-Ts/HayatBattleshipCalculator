@@ -12,9 +12,11 @@ import { DEFAULT_SAVE_FILE, loadJSON } from "../save&load/load.js";
 import { settings } from "../settings/settings.js";
 import { mapProps } from "./grid.js";
 import check_id from "./map/check_id.js";
+import layers from './layers/main.js';
 
 import get_in_area from "./map/get_in_area.js";
 import { MAX_INTER_STEPS } from "./objects/map/step/stepInfoCollector.js";
+import { checkObjectRenderVisibility, getZIndexes } from "./layers/layersInfoCollector.js";
 
 let canvas;
 let ctx;
@@ -69,14 +71,21 @@ export default function init() {
     requestAnimationFrame(() => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      for (let i of Object.keys(objects)) {
-        objects[i].visible && objects[i].draw(canvas, ctx, toCanvas, style);
+      for (let z of getZIndexes()) {
+        for (let i of Object.keys(objects)) {
+          const obj = objects[i];
+
+          obj.visible && 
+          checkObjectRenderVisibility(obj, null, z) && 
+            obj.draw(canvas, ctx, toCanvas, style);
+        }
       }
     })
   };
 
   get_in_area();
   check_id(objects);
+  layers();
 
 
   document.addEventListener(EVENTS.MAP_SET_CHANGED, (e) => {

@@ -47,6 +47,7 @@ export default function init() {
         .then(() => {
           isReady = true;
 
+          console.log(' ------ loaded modules ------');
           console.log(modules);
 
           onReady();

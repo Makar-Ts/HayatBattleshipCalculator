@@ -1,6 +1,7 @@
 import { EVENTS } from "../../events.js";
 import { load } from "../../save&load/load.js";
 import { registerClass } from "../../save&load/objectCollector.js";
+import { registerLayers } from "../layers/layersInfoCollector.js";
 
 export default class StandartObject {
   static LOAD_FALLBACK = {
@@ -171,3 +172,4 @@ export default class StandartObject {
 }
 
 registerClass(StandartObject);
+registerLayers(StandartObject, [], 0);
