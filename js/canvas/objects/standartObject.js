@@ -56,11 +56,11 @@ export default class StandartObject {
           accumulator[z].push((canvas, ctx, toCanvas, style) => 
             obj.draw(canvas, ctx, toCanvas, style)
           );
+
+          if (obj.children) {
+            obj.getChildrenRenderRow(layers, accumulator);
+          }
         }
-      }
-      
-      if (obj.children) {
-        obj.getChildrenRenderRow(layers, accumulator);
       }
     }
     

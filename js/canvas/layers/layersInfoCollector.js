@@ -60,8 +60,7 @@ export function getZIndexIfCorrectLayer(object, enabledLayers) {
   }
 
   if (
-    enabledLayers.has(current.constructor.name) || 
-    Array.from(obj.layers.values()).some(v => enabledLayers.has(v))
+    Array.from(obj.layers.values()).every(v => enabledLayers.has(v))
   ) {
     return obj.zIndex;
   }

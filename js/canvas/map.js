@@ -18,6 +18,7 @@ import get_in_area from "./map/get_in_area.js";
 import { MAX_INTER_STEPS } from "./objects/map/step/stepInfoCollector.js";
 import { checkObjectRenderVisibility, getZIndexes, getZIndexIfCorrectLayer } from "./layers/layersInfoCollector.js";
 import { addRecordStringAny } from "../../libs/addRecordStringAny.js";
+import { activeLayers } from "../tab/render.js";
 
 let canvas;
 let ctx;
@@ -34,10 +35,10 @@ function collectRenderObjects(obj, layers, renderRowAcc) {
       renderRowAcc[z].push(
         (canvas, ctx, toCanvas, style) => obj.draw(canvas, ctx, toCanvas, style)
       );
+
+      obj.getChildrenRenderRow(layers, renderRowAcc)
     }
   }
-  
-  obj.getChildrenRenderRow(layers, renderRowAcc)
 }
 
 
@@ -88,7 +89,7 @@ export default function init() {
     requestAnimationFrame(() => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const layers = null;
+      const layers = activeLayers;
       const renderRow = {};
 
       for (let i in objects) {

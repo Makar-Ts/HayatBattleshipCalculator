@@ -242,6 +242,27 @@
     flex-direction: row; 
     justify-content:space-between;
   }
+
+  .render {
+    overflow-y: auto;
+    max-height: 80vh;
+
+    #modal-render-layers {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 5px;
+    }
+
+    > div {
+      flex-direction: column;
+
+      .contains {
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        gap: 5px;
+      }
+    }
+  }
 }
 
 #modal-maneuver-types-modules-contextmenu {
