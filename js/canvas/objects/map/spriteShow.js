@@ -67,8 +67,8 @@ export default class SpriteShower extends StandartObject {
     ctx.save();
     var { x, y } = toCanvas({ x: this.parent._x, y: this.parent._y });
     var ratio = this.image.width / this.image.height;
-    var width = toCanvas(this.size) * ratio;
-    var height = toCanvas(this.size) / ratio;
+    var width = toCanvas(this.size);
+    var height = width / ratio;
     var angleInRadians = (this.parent.direction || 0) * Math.PI / 180;
 
     ctx.translate(x, y);

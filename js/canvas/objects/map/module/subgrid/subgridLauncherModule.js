@@ -44,9 +44,9 @@ export default class SubgridLauncherModule extends BaseModule {
           ]))
           object.setChildren(MAP_OBJECTS_IDS.SPRITE, 
             new SpriteShower(
-              './img/frigate.png', 
+              './img/Projectail.svg', 
               '#ff0000',
-              (object.size ?? 30) * 10,
+              (object.size ?? 30) * 20,
             )
           )
 

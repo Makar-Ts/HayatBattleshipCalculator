@@ -63,7 +63,7 @@ export class DroneLauncherModule extends BaseModule {
       if (!object.children[MAP_OBJECTS_IDS.SPRITE])
         object.setChildren(MAP_OBJECTS_IDS.SPRITE, 
           new SpriteShower(
-            './img/frigate.png', 
+            './img/Apparatus.svg', 
             '#ff0000',
             (object.size ?? 30) * 10,
           )

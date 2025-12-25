@@ -106,8 +106,6 @@
       > .contains {
         position: absolute;
 
-        transition: .15s;
-
         display: none;
         flex-direction: column;
         gap: 5px;
@@ -121,6 +119,11 @@
         right: 0;
         top: -5px;
         transform: translate(100%, 0);
+
+        &[data-reversed="true"] {
+          transform: translate(100%, -50%);
+          top: 20px;
+        }
       }
 
       &:hover:not(:disabled) {

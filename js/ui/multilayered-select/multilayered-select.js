@@ -17,6 +17,7 @@ export default function() {
     const container = select.find(' > .options');
     const label = select.find(" > label");
     const options = select.find(" .option");
+    const groups =  select.find(" .group");
 
     select
       .off('click')
@@ -27,6 +28,40 @@ export default function() {
         } else {
           container.attr('data-reversed', 'false');
         }
+      })
+    
+    groups
+      .off('mouseenter')
+      .on('mouseenter', (e) => {
+        let elem;
+        if (e.target.tagName === 'LABEL') {
+          elem = $(e.target.parentElement).find(' > .contains')[0];
+        } else {
+          elem = $(e.target).find(' > .contains')[0];
+        }
+
+        if (!elem) return;
+
+        if (isElementInViewport(elem)) {
+          elem.dataset.reversed = 'false';
+        } else {
+          elem.dataset.reversed = 'true';
+        }
+      })
+    
+    groups
+      .off('mouseleave')
+      .on('mouseleave', (e) => {
+        let elem;
+        if (e.target.tagName === 'LABEL') {
+          elem = $(e.target.parentElement).find(' > .contains')[0];
+        } else {
+          elem = $(e.target).find(' > .contains')[0];
+        }
+
+        if (!elem) return;
+
+        elem.dataset.reversed = 'false';
       })
 
     options

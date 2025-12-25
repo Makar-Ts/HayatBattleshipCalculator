@@ -33,6 +33,22 @@ import { compareVersions } from "../../libs/utils.js";
 import ENV from "../enviroments/env.js";
 import { point } from "../../libs/vector/point.js";
 
+const BATTLESHIP_ICONS = [
+  "Projectail.svg",
+  "Apparatus.svg",
+  "Corvett.svg",
+  "Fregate.svg",
+  "Destroyer.svg",
+  "Сruiser.svg",
+  "Battle Сruiser.svg",
+  "Battleship.svg",
+  "Dreadnought.svg",
+  "KBT.svg",
+  "Titan.svg",
+  "ind. KMT.svg",
+  "ind. KST.svg"
+]
+
 const SPRITES = [
   "ADS.png",
   "Asteroid_Station_Icon.png",
@@ -66,7 +82,23 @@ export default function init() {
   let curJSONdata = null;
 
 
-  $('#modal-new_object-img').html(SPRITES.map(v => `<option value='${v}'>${v.split('.').slice(undefined, -1).join('.')}</option>`))
+  $('#modal-new_object-img > .options').html(
+    format(
+      groupHTMLTemplate, 
+      "Battleships", 
+      BATTLESHIP_ICONS.map(v => 
+        format(optionHTMLTemplate, v, v.split('.').slice(undefined, -1).join('.'))
+      ).join('\n')
+    ) + format(
+      groupHTMLTemplate, 
+      "Icons", 
+      SPRITES.map(v => 
+        format(optionHTMLTemplate, v, v.split('.').slice(undefined, -1).join('.'))
+      ).join('\n')
+    )
+  )
+  registerSelect('#modal-new_object-img');
+
   $('#modal-new_object-ships > .options').html(
     Object.keys(battleships)
       .reduce((acc, v) => {
@@ -235,9 +267,9 @@ export default function init() {
       obj.setChildren(
         MAP_OBJECTS_IDS.SPRITE, 
         new SpriteShower(
-          './img/'+$('#modal-new_object-img').val(), 
+          './img/'+$('#modal-new_object-img').attr('value'), 
           '#'+($('#modal-new_object-img-color').val() || 'ffffff'),
-          $('#modal-new_object-img-size').val() || 200,
+          $('#modal-new_object-img-size').val() || (obj.size ?? 30),
         )
       )
     }
