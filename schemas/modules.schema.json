@@ -57,6 +57,7 @@
               "type": "object",
               "properties": {
                 "fuel": { "type": "number" },
+                "temperature": { "type": "number" },
                 "hp": {
                   "type": "object",
                   "properties": {

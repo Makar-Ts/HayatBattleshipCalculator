@@ -179,6 +179,11 @@ export default class BaseModule {
     this.state = state;
   }
 
+
+  getAdditionalInfo() {
+    return null;
+  }
+
   getOverridableValues() {
     return [
       {

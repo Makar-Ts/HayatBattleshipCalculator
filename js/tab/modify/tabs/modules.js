@@ -20,8 +20,9 @@ const htmlTemplate = `<div class="module" id="{0}">
       <span>{5}</span>
     </div>
   </div>
+  {6}
   <div class="modifiers-container">
-    {6}
+    {7}
   </div>
 </div>`
 
@@ -227,6 +228,7 @@ export default class {
     const generate = (ofobj) => {
       for (let r of ofobj) {
         const changeTask = objects[id].tasks.find(v => v.id == "changeModuleState-"+r.uuid && v.data.uuid == r.uuid)
+        const info = r.getAdditionalInfo();
 
         text.push(format(
           htmlTemplate, 
@@ -236,6 +238,7 @@ export default class {
           r.characteristics.main.name,
           r.fullType,
           r.uuid,
+          info ?? '',
           r.characteristics.modificators[r.state].map(
             v => `<span>${
                 v.characteristic.startsWith('constant.') ? 'const' : 'dnmc'

@@ -22,6 +22,7 @@
     "backupDistance": 100,
     "recovery": {
       "fuel": 12,
+      "temperature": -0.01,
       "hp": {
         "armor": 4,
         "hull": 10

@@ -1,6 +1,8 @@
+import { clamp, clampCharacteristics } from "../../../../../../libs/clamp.js";
 import { ObjectConnection } from "../../../../../../libs/connection.js";
 import copy from "../../../../../../libs/copy.js";
 import { mergeDeep } from "../../../../../../libs/deepMerge.js";
+import { baseBattleshipCharacteristics, battleshipCharacteristicsClampRules } from "../../../../../../libs/hayat/battleships.js";
 import { uuidv4 } from "../../../../../../libs/uuid.js";
 import { point } from "../../../../../../libs/vector/point.js";
 import { EVENTS } from "../../../../../events.js";
@@ -16,6 +18,12 @@ import DroneObject from "../../ship/subgrid/drone/droneObject.js";
 import SpriteShower from "../../spriteShow.js";
 import { registerSteps } from "../../step/stepInfoCollector.js";
 import BaseModule from "../baseModule.js";
+
+
+function capitalizeFirstLetter(val) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
 
 export class DroneLauncherModule extends BaseModule {
   launched = new ObjectConnection(() => objects);
@@ -35,7 +43,7 @@ export class DroneLauncherModule extends BaseModule {
     if (!this.launched.Connection && ["online", "active", "overload"].includes(this.state) && this.parent) {
       const id = `${uuidv4()}`;
       const template = mergeDeep(copy(this.characteristics.external.battleship_template), {
-        dynamic: this.storedDrone,
+        dynamicCharacteristics: this.storedDrone
       });
 
       const object = load(id, template, "module");
@@ -96,16 +104,24 @@ export class DroneLauncherModule extends BaseModule {
 
 
   step(index, objectsData) {
-    if (!this.launched.Connection && this.characteristics.launcher.recovery) {
+    if (index == 1 && !this.launched.Connection && this.characteristics.launcher.recovery) {
       const r = this.characteristics.launcher.recovery;
+      console.log(this.storedDrone)
 
       this.storedDrone.fuel += r.fuel ?? 0;
+      this.storedDrone.temperature += r.temperature ?? 0
 
       if (r.hp) {
-        this.storedDrone.hp.hull += r.hp.hull;
-        this.storedDrone.hp.armor += r.hp.armor;
-        this.storedDrone.hp.barrier += r.hp.barrier;
+        this.storedDrone.hp.hull += r.hp.hull ?? 0;
+        this.storedDrone.hp.armor += r.hp.armor ?? 0;
+        this.storedDrone.hp.barrier += r.hp.barrier ?? 0;
       }
+
+      
+      this.storedDrone = clampCharacteristics({
+        dynamic: this.storedDrone,
+        constant: this.characteristics.external.battleship_template.baseCharacteristics.constant,
+      }, battleshipCharacteristicsClampRules).dynamic
     }
     
     return super.step(index, objectsData);
@@ -143,14 +159,16 @@ export class DroneLauncherModule extends BaseModule {
 
   droneDestroyed() {
     this.launched.Connection = null;
-    this.storedDrone = this.characteristics.external.battleship_template.dynamicCharacteristics;
+    this.storedDrone = structuredClone(baseBattleshipCharacteristics.dynamic);
     this.setState("offline");
   }
 
   backup() {
-    if (!this.launched.Connection) return;
-
     this.setState("offline");
+
+    if (!this.launched.Connection) {
+      return this.droneDestroyed();
+    }
 
     /** @type {DroneObject} */
     const drone = this.launched.Connection;
@@ -159,6 +177,37 @@ export class DroneLauncherModule extends BaseModule {
     this.launched.Connection = null;
   }
 
+
+  getAdditionalInfo() {
+    if (this.state !== "offline") return null;
+
+    const generateProgressbar = (cur, min, max) => {
+      const val01 = clamp((cur - min) / (max - min), 0, 1);
+
+      const maxSquares = 25;
+      const amount = Math.floor(val01 * maxSquares);
+
+      return `|${'█'.repeat(amount)}${'&nbsp;'.repeat(maxSquares - amount)}|`
+    }
+
+    const maxFuel = this.characteristics.external.battleship_template.baseCharacteristics.constant.body.subgrid.fuel;
+    const maxTemp = this.characteristics.external.battleship_template.baseCharacteristics.constant.temperature;
+    const maxHP = this.characteristics.external.battleship_template.baseCharacteristics.constant.hp;
+
+    return `
+<div class="drone-launcher-additional-info">
+    <span class="drone-launcher-additional-info-label">Fuel:</span>
+    <span class="drone-launcher-additional-info-fuel"><span>${generateProgressbar(this.storedDrone.fuel, 0, maxFuel)}</span> ${this.storedDrone.fuel}/${maxFuel}</span>
+    <span class="drone-launcher-additional-info-label">Temp.:</span>
+    <span class="drone-launcher-additional-info-temperature"><span>${generateProgressbar(this.storedDrone.temperature, 0, maxTemp)}</span> ${this.storedDrone.temperature * 100}/${maxTemp * 100}</span>
+    ${Object.keys(this.storedDrone.hp)
+      .map(v => `<span class="drone-launcher-additional-info-label">${capitalizeFirstLetter(v)}:</span>
+<span class="drone-launcher-additional-info-hp-${v}"><span>${generateProgressbar(this.storedDrone.hp[v], 0, maxHP[v])}</span> ${this.storedDrone.hp[v]}/${maxHP[v]}</span>`)
+      .join('')
+    }
+</div>
+    `
+  }
 
   getOverridableValues() {
   return [
@@ -180,6 +229,17 @@ export class DroneLauncherModule extends BaseModule {
             this.characteristics.launcher.recovery = {};
           }
           this.characteristics.launcher.recovery.fuel = +val;
+        },
+      },
+      {
+        name: "recovery-temperature",
+        type: "number",
+        current: () => this.characteristics.launcher.recovery?.temperature ?? 0,
+        func: (val) => {
+          if (!this.characteristics.launcher.recovery) {
+            this.characteristics.launcher.recovery = {};
+          }
+          this.characteristics.launcher.recovery.temperature = +val;
         },
       },
       {
@@ -240,7 +300,7 @@ export class DroneLauncherModule extends BaseModule {
     super.load(data);
     
     this.launched.storeConnection(data.launched ?? null);
-    this.storedDrone = data.storedDrone || this.storedDrone;
+    this.storedDrone = data.storedDrone || structuredClone(baseBattleshipCharacteristics.dynamic);
   }
 
   afterLoad() {

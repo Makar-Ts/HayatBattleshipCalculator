@@ -113,7 +113,7 @@
 
     #modal-maneuver-types-modules-container {
       padding-bottom: 10px;
-      max-height: 500px;
+      max-height: 70vh;
       overflow-y: auto;
       overflow-x: visible;
 
@@ -196,6 +196,33 @@
 
           font-size: 12px;
           filter: brightness(0.7);
+        }
+      }
+
+
+      .drone-launcher-additional-info {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        column-gap: 20px;
+
+        .drone-launcher-additional-info-fuel span {
+          color: #ffee00;
+        }
+
+        .drone-launcher-additional-info-temperature span {
+          color: var(--hud-temperature);
+        }
+
+        .drone-launcher-additional-info-hp-barrier span {
+          color: var(--hud-barrier);
+        }
+
+        .drone-launcher-additional-info-hp-armor span {
+          color: var(--hud-armor);
+        }
+
+        .drone-launcher-additional-info-hp-hull span {
+          color: var(--hud-hull);
         }
       }
     }

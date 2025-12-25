@@ -77,11 +77,11 @@ const baseBattleshipCharacteristics = {
     },
     hp: {
       /** текущее значение корпуса */
-      hull: 100,
+      hull: 0,
       /** текущее значение брони */
-      armor: 100,
+      armor: 0,
       /** текущее значение барьера */
-      barrier: 100,
+      barrier: 0,
     },
     /** текущее значение нагрева */
     temperature: 0,
@@ -138,11 +138,11 @@ const baseBattleshipCharacteristics = {
     },
     hp: {
       /** максимальное значение корпуса */
-      hull: 100,
+      hull: 0,
       /** максимальное значение брони */
-      armor: 100,
+      armor: 0,
       /** максимальное значение барьера */
-      barrier: 100,
+      barrier: 0,
     },
     collision_energy_distribution: {
       damage: 0.69,
@@ -377,16 +377,16 @@ const battleshipCharacteristicsClampRules = {
       armor: (c, v) => clamp(v, 0, c.constant.hp.armor),
       barrier: (c, v) => clamp(v, 0, c.constant.hp.barrier),
     },
-    temperature: (c, v) => v < 0 ? 0 : v,
+    temperature: (c, v) => Math.max(v, 0),
     charge: (c, v) => clamp(v, 0, c.constant.capacitor.charge),
-    fuel: (c, v) => clamp(v, 0, (c.constant.body.subgrid.fuel === -1 ? 1 : c.constant.body.subgrid.fuel))
+    fuel: (c, v) => clamp(v, 0, (c.constant.body.subgrid?.fuel ? c.constant.body.subgrid.fuel === -1 ? 1 : c.constant.body.subgrid.fuel : 0))
   },
   constant: {
     body: {
-      signature: (c, v) => v < 0 ? 0 : v,
+      signature: (c, v) => Math.max(v, 0),
     },
     capacitor: {
-      charge: (c, v) => v < 0 ? 0 : v,
+      charge: (c, v) => Math.max(v, 0),
     },
     resistance: {
       kinetic: {
