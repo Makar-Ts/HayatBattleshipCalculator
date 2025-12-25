@@ -100,10 +100,11 @@ export default class SpriteShower extends StandartObject {
       },
       {
         name: "color",
-        type: "text",
+        type: "color",
         current: () => this.color,
         func: (val) => {
           this.color = val;
+          this.lastImage = undefined;
         },
       },
     ];

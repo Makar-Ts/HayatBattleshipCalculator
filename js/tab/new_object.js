@@ -268,7 +268,7 @@ export default function init() {
         MAP_OBJECTS_IDS.SPRITE, 
         new SpriteShower(
           './img/'+$('#modal-new_object-img').attr('value'), 
-          '#'+($('#modal-new_object-img-color').val() || 'ffffff'),
+          ($('#modal-new_object-img-color').val() || '#ffffff'),
           $('#modal-new_object-img-size').val() || (obj.size ?? 30),
         )
       )

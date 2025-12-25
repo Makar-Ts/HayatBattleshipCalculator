@@ -129,7 +129,11 @@ export default class {
 
       const input = document.createElement('input');
       input.type = data.type;
-      input.placeholder = data.current();
+      if (data.type === "color") {
+        input.value = data.current();
+      } else {
+        input.placeholder = data.current();
+      }
       input.classList = 'fit';
 
       if (data.type == 'checkbox') {
