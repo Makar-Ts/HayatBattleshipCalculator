@@ -94,33 +94,46 @@ export default class SubgridLauncherModule extends BaseModule {
   getOverridableValues() {
     return [
       ...super.getOverridableValues(),
-      ...this.characteristics.launcher.instances.flatMap((v, i) => [
+      ...Object.entries(this.characteristics.launcher.instances).flatMap(([key, instance], index) => [
         {
-          name: i+"-launchX",
+          name: `instance-${index}-launchX`,
           type: "number",
-          current: () => v.vector[0],
+          current: () => instance.vector?.[0] ?? 0,
           func: (val) => {
-            this.characteristics.launcher.instances[i].vector = [+val, this.characteristics.launcher.instances[i].vector[1]];
+            if (!this.characteristics.launcher.instances[key].vector) {
+              this.characteristics.launcher.instances[key].vector = [0, 0];
+            }
+            this.characteristics.launcher.instances[key].vector[0] = +val;
           },
         },
         {
-          name: i+"-launchY",
+          name: `instance-${index}-launchY`,
           type: "number",
-          current: () => v.vector[1],
+          current: () => instance.vector?.[1] ?? 0,
           func: (val) => {
-            this.characteristics.launcher.instances[i].vector = [this.characteristics.launcher.instances[i].vector[0], +val];
+            if (!this.characteristics.launcher.instances[key].vector) {
+              this.characteristics.launcher.instances[key].vector = [0, 0];
+            }
+            this.characteristics.launcher.instances[key].vector[1] = +val;
           },
         },
         {
-          name: i+"-headingOffset",
+          name: `instance-${index}-headingOffset`,
           type: "number",
-          current: () => v.headingOffset,
+          current: () => instance.headingOffset ?? 0,
           func: (val) => {
-            this.characteristics.launcher.instances[i].headingOffset = +val;
+            this.characteristics.launcher.instances[key].headingOffset = +val;
           },
         },
-      ])
-      
+        {
+          name: `instance-${index}-distanceOffset`,
+          type: "number",
+          current: () => instance.distanceOffset ?? 0,
+          func: (val) => {
+            this.characteristics.launcher.instances[key].distanceOffset = +val;
+          },
+        },
+      ]),
     ];
   }
 }

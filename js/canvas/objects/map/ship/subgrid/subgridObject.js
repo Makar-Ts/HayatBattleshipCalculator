@@ -109,6 +109,21 @@ export default class SubgridObject extends ShipObject {
   }
 
 
+  getOverridableValues() {
+    return [
+      ...super.getOverridableValues(),
+      {
+        name: "active",
+        type: "checkbox",
+        current: () => this.active,
+        func: (val) => {
+          this.active = val;
+        },
+      }
+    ];
+  }
+
+
   save(realParent = null) {
     return {
       ...super.save(realParent),

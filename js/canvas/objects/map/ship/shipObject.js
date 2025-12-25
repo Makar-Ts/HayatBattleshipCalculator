@@ -304,7 +304,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
       {
         id: "externalModules",
         children: this.externalModules.map((v) => ({
-          id: v.characteristics.main.name,
+          id: v.name,
           getValues: () => v.getOverridableValues(),
           children: [],
         })),
@@ -312,7 +312,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
       {
         id: "internalModules",
         children: this.internalModules.map((v) => ({
-          id: v.characteristics.main.name,
+          id: v.name,
           getValues: () => v.getOverridableValues(),
           children: [],
         })),
@@ -320,7 +320,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
       {
         id: "otherModules",
         children: this.otherModules.map((v) => ({
-          id: v.characteristics.main.name,
+          id: v.name,
           getValues: () => v.getOverridableValues(),
           children: [],
         })),

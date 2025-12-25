@@ -160,6 +160,74 @@ export class DroneLauncherModule extends BaseModule {
   }
 
 
+  getOverridableValues() {
+  return [
+    ...super.getOverridableValues(),
+      {
+        name: "backupDistance",
+        type: "number",
+        current: () => this.characteristics.launcher.backupDistance,
+        func: (val) => {
+          this.characteristics.launcher.backupDistance = +val;
+        },
+      },
+      {
+        name: "recovery-fuel",
+        type: "number",
+        current: () => this.characteristics.launcher.recovery?.fuel ?? 0,
+        func: (val) => {
+          if (!this.characteristics.launcher.recovery) {
+            this.characteristics.launcher.recovery = {};
+          }
+          this.characteristics.launcher.recovery.fuel = +val;
+        },
+      },
+      {
+        name: "recovery-hp-hull",
+        type: "number",
+        current: () => this.characteristics.launcher.recovery?.hp?.hull ?? 0,
+        func: (val) => {
+          if (!this.characteristics.launcher.recovery) {
+            this.characteristics.launcher.recovery = {};
+          }
+          if (!this.characteristics.launcher.recovery.hp) {
+            this.characteristics.launcher.recovery.hp = { hull: 0, armor: 0, barrier: 0 };
+          }
+          this.characteristics.launcher.recovery.hp.hull = +val;
+        },
+      },
+      {
+        name: "recovery-hp-armor",
+        type: "number",
+        current: () => this.characteristics.launcher.recovery?.hp?.armor ?? 0,
+        func: (val) => {
+          if (!this.characteristics.launcher.recovery) {
+            this.characteristics.launcher.recovery = {};
+          }
+          if (!this.characteristics.launcher.recovery.hp) {
+            this.characteristics.launcher.recovery.hp = { hull: 0, armor: 0, barrier: 0 };
+          }
+          this.characteristics.launcher.recovery.hp.armor = +val;
+        },
+      },
+      {
+        name: "recovery-hp-barrier",
+        type: "number",
+        current: () => this.characteristics.launcher.recovery?.hp?.barrier ?? 0,
+        func: (val) => {
+          if (!this.characteristics.launcher.recovery) {
+            this.characteristics.launcher.recovery = {};
+          }
+          if (!this.characteristics.launcher.recovery.hp) {
+            this.characteristics.launcher.recovery.hp = { hull: 0, armor: 0, barrier: 0 };
+          }
+          this.characteristics.launcher.recovery.hp.barrier = +val;
+        },
+      },
+    ];
+  }
+
+
   save(realParent = null) {
     return {
       ...super.save(realParent),
