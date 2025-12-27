@@ -21,8 +21,10 @@ import { load } from "../../../../save&load/load.js";
 import { registerClass } from "../../../../save&load/objectCollector.js";
 import { registerLayers } from "../../../layers/layersInfoCollector.js";
 import { objects } from "../../../map.js";
+import BaseModule from "../module/baseModule.js";
 import BasicMovingObject from "../step/basicMovingObject.js";
 import { registerSteps } from "../step/stepInfoCollector.js";
+import { ModuleModifiers } from "./moduleModifiers.js";
 
 export default class ShipObject extends BasicMovingObject {
   static LOAD_FALLBACK = {
@@ -50,8 +52,11 @@ export default class ShipObject extends BasicMovingObject {
     maneuvering: 0,
   };
 
+  /** @type {BaseModule[]} */
   externalModules = [];
+  /** @type {BaseModule[]} */
   internalModules = [];
+  /** @type {BaseModule[]} */
   otherModules = [];
 
   constructor(x, y, direction, velocity, battleshipChars = {}) {
@@ -67,7 +72,20 @@ export default class ShipObject extends BasicMovingObject {
       tonnageToAcceleration[this.baseCharacteristics.constant.body.tonnage] : this.baseCharacteristics.constant.acceleration;
 
     this.currentCharacteristics = copy(this.baseCharacteristics);
+    this.reloadModuleModifiers();
   }
+
+
+  reloadModuleModifiers() {
+    let base = {};
+
+    if (this.baseCharacteristics.constant.module_modifiers) {
+      base = structuredClone(this.baseCharacteristics.constant.module_modifiers);
+    }
+
+    this.currentCharacteristics.constant.module_modifiers = ModuleModifiers.createModifiersProxy(base);
+  }
+
 
   get allModules() {
     return [...this.externalModules, ...this.internalModules, ...this.otherModules];
@@ -396,6 +414,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     this.currentCharacteristics = mergeDeep(copy(this.baseCharacteristics), {
       dynamic: this.currentCharacteristics.dynamic,
     });
+    this.reloadModuleModifiers();
 
     for (let [path, number] of Object.entries(mods.this.number)) {
       if (!applyDynamic && path.startsWith("dynamic")) continue;
@@ -540,6 +559,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     this.currentCharacteristics = mergeDeep(copy(this.baseCharacteristics), {
       dynamic: data.dynamicCharacteristics,
     });
+    this.reloadModuleModifiers();
 
     this.dices = data.dices;
 

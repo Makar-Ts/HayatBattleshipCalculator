@@ -194,179 +194,179 @@ const baseBattleshipCharacteristics = {
       },
     },
 
-    modulemodifier: {
-      /** Модификаторы для вооружения */
-      offence: {
-        /** Модификаторы для баллистики */
-        ballistic: {
-          effective_distance_modifier: 1,
-          damage_modifier: 1,
-          tracking_modifier: 1,
-          capacitor_consumption_modifier: 1,
-          heating_modifier: 1,
-          target_heating_modifier: 1
-        },
-        /** Модификаторы для лазеров */
-        laser: {
-          effective_distance_modifier: 1,
-          damage_modifier: 1,
-          tracking_modifier: 1,
-          capacitor_consumption_modifier: 1,
-          heating_modifier: 1,
-          target_heating_modifier: 1
-        },
-        /** Модификаторы для ПУ */
-        launcher: {
-          on_hit_damage_modifier: 1,
-          fuel_modifier: 1,
-          acceleration_modifier: 1,
-          explosion_signature_modifier: 1,
-          capacitor_consumption_modifier: 1,
-          heating_modifier: 1,
-          on_hitheating_modifier: 1
-        },
-        /** Модификаторы для АОЕ атак */
-        bomb: {
-          effective_distance_modifier: 1,
-          damage_modifier: 1,
-          capacitor_consumption_modifier: 1,
-          heating_modifier: 1,
-        },
-        /** Модификаторы для дезинтеграторов */
-        desintegrator: {
-          effective_distance_modifier: 1,
-          damage_modifier: 1,
-          tracking_modifier: 1,
-          capacitor_consumption_modifier: 1,
-          heating_modifier: 1,
-          target_heating_modifier: 1,
-          /** Бонус урону от каждой атаки */
-          per_shot_bonus_modifier: 1,
-          /** Потолок бонуса */
-          max_stack_modifier: 1,
-        },
-        /** Модификаторы силы НАШИХ средств Радиоэлектронной Борьбы */
-        EW: {
-          effective_distance_modifier: 1,
-          capacitor_consumption_modifier: 1,
-          heating_modifier: 1,
-          target_heating_modifier: 1,
-          /** Основной бонус, накладывающийся на все последующие сверху */
-          EW_strenght_modifier: 1,
-          /** Чисто для профильных особенностей и каких-то мега узкоспециализированных штуковин */
-          tracking_disruption_modifier: 1,
-          stasis_modifier: 1,
-          maneuverability_disruption_modifier: 1,
-          contact_quality_disruption_modifier: 1,
-          signature_painting_modifier: 1,
-          capacitor_disruption_modifier: 1
-        },
-        /** Модификаторы субтел этого тела */
-        vehicle: {
-          vehicle_damage_modifier: 1,
-          vehicle_acceleration_modifier: 1,
-          vehicle_target_heating_modifier: 1,
-          vehicle_effective_distance_modifier: 1,
-          vehicle_signature_modifier: 1,
-          vehicle_maneuverability_modifier: 1,
-          vehicle_hp_modifier: 1
-        }
-      },
-      /** Модификаторы работы инженерных модулей */
-      engineering: {
-        /** Бонус ремонта */
-        /** Барьера */
-        barrier: {
-          passive_recharge_modifier: 1,
-          active_recharge_modifier: 1,
-          active_recharge_consumption: 1,
-          active_recharge_heating: 1,
-          resonance: {
-          /** резонансная частота */
-          frequency: 0.3,
-          /** тенденция к резонансу */
-          tendency: 0.01,
-          /** резонансный диапазон */
-          range: 0.4,
-        }
-      },
-        /** Брони */
-        armor: {
-          active_repair_modifier: 1,
-          active_repair_consumption: 1,
-          active_repair_heating: 1
-        },
-        hardener: {
-          active: {
-            barrier: {
-              effectiveness_modifier: 1,
-              capacitor_consumption_modifier: 1,
-              heating_modifier: 1
-            },
-            armor: {
-              effectiveness_modifier: 1,
-              capacitor_consumption_modifier: 1,
-              heating_modifier: 1
-            }
-          },
-          passive: {
-            barrier: {
-              effectiveness_modifier: 1
-            },
-            armor: {
-              effectiveness_modifier: 1
-            }
-          }
-        },
-        mobility: {
-          micro_distortion_drive: {
-            effectiveness_modifier: 1,
-            capacitor_consumption_modifier: 1,
-            heating_modifier: 1,
-            signature_penalty_modifier: 1
-          },
-          afterburner: {
-            effectiveness_modifier: 1,
-            capacitor_consumption_modifier: 1,
-            heating_modifier: 1
-          }
-        },
-        thermodynamic: {
-          radiation_modifier: 1,
-          consumption_modifier: 1,
-          signature_penalty_modifier: 1
-        }
+    // modulemodifier: {
+    //   /** Модификаторы для вооружения */
+    //   offence: {
+    //     /** Модификаторы для баллистики */
+    //     ballistic: {
+    //       effective_distance_modifier: 1,
+    //       damage_modifier: 1,
+    //       tracking_modifier: 1,
+    //       capacitor_consumption_modifier: 1,
+    //       heating_modifier: 1,
+    //       target_heating_modifier: 1
+    //     },
+    //     /** Модификаторы для лазеров */
+    //     laser: {
+    //       effective_distance_modifier: 1,
+    //       damage_modifier: 1,
+    //       tracking_modifier: 1,
+    //       capacitor_consumption_modifier: 1,
+    //       heating_modifier: 1,
+    //       target_heating_modifier: 1
+    //     },
+    //     /** Модификаторы для ПУ */
+    //     launcher: {
+    //       on_hit_damage_modifier: 1,
+    //       fuel_modifier: 1,
+    //       acceleration_modifier: 1,
+    //       explosion_signature_modifier: 1,
+    //       capacitor_consumption_modifier: 1,
+    //       heating_modifier: 1,
+    //       on_hitheating_modifier: 1
+    //     },
+    //     /** Модификаторы для АОЕ атак */
+    //     bomb: {
+    //       effective_distance_modifier: 1,
+    //       damage_modifier: 1,
+    //       capacitor_consumption_modifier: 1,
+    //       heating_modifier: 1,
+    //     },
+    //     /** Модификаторы для дезинтеграторов */
+    //     desintegrator: {
+    //       effective_distance_modifier: 1,
+    //       damage_modifier: 1,
+    //       tracking_modifier: 1,
+    //       capacitor_consumption_modifier: 1,
+    //       heating_modifier: 1,
+    //       target_heating_modifier: 1,
+    //       /** Бонус урону от каждой атаки */
+    //       per_shot_bonus_modifier: 1,
+    //       /** Потолок бонуса */
+    //       max_stack_modifier: 1,
+    //     },
+    //     /** Модификаторы силы НАШИХ средств Радиоэлектронной Борьбы */
+    //     EW: {
+    //       effective_distance_modifier: 1,
+    //       capacitor_consumption_modifier: 1,
+    //       heating_modifier: 1,
+    //       target_heating_modifier: 1,
+    //       /** Основной бонус, накладывающийся на все последующие сверху */
+    //       EW_strenght_modifier: 1,
+    //       /** Чисто для профильных особенностей и каких-то мега узкоспециализированных штуковин */
+    //       tracking_disruption_modifier: 1,
+    //       stasis_modifier: 1,
+    //       maneuverability_disruption_modifier: 1,
+    //       contact_quality_disruption_modifier: 1,
+    //       signature_painting_modifier: 1,
+    //       capacitor_disruption_modifier: 1
+    //     },
+    //     /** Модификаторы субтел этого тела */
+    //     vehicle: {
+    //       vehicle_damage_modifier: 1,
+    //       vehicle_acceleration_modifier: 1,
+    //       vehicle_target_heating_modifier: 1,
+    //       vehicle_effective_distance_modifier: 1,
+    //       vehicle_signature_modifier: 1,
+    //       vehicle_maneuverability_modifier: 1,
+    //       vehicle_hp_modifier: 1
+    //     }
+    //   },
+    //   /** Модификаторы работы инженерных модулей */
+    //   engineering: {
+    //     /** Бонус ремонта */
+    //     /** Барьера */
+    //     barrier: {
+    //       passive_recharge_modifier: 1,
+    //       active_recharge_modifier: 1,
+    //       active_recharge_consumption: 1,
+    //       active_recharge_heating: 1,
+    //       resonance: {
+    //       /** резонансная частота */
+    //       frequency: 0.3,
+    //       /** тенденция к резонансу */
+    //       tendency: 0.01,
+    //       /** резонансный диапазон */
+    //       range: 0.4,
+    //     }
+    //   },
+    //     /** Брони */
+    //     armor: {
+    //       active_repair_modifier: 1,
+    //       active_repair_consumption: 1,
+    //       active_repair_heating: 1
+    //     },
+    //     hardener: {
+    //       active: {
+    //         barrier: {
+    //           effectiveness_modifier: 1,
+    //           capacitor_consumption_modifier: 1,
+    //           heating_modifier: 1
+    //         },
+    //         armor: {
+    //           effectiveness_modifier: 1,
+    //           capacitor_consumption_modifier: 1,
+    //           heating_modifier: 1
+    //         }
+    //       },
+    //       passive: {
+    //         barrier: {
+    //           effectiveness_modifier: 1
+    //         },
+    //         armor: {
+    //           effectiveness_modifier: 1
+    //         }
+    //       }
+    //     },
+    //     mobility: {
+    //       micro_distortion_drive: {
+    //         effectiveness_modifier: 1,
+    //         capacitor_consumption_modifier: 1,
+    //         heating_modifier: 1,
+    //         signature_penalty_modifier: 1
+    //       },
+    //       afterburner: {
+    //         effectiveness_modifier: 1,
+    //         capacitor_consumption_modifier: 1,
+    //         heating_modifier: 1
+    //       }
+    //     },
+    //     thermodynamic: {
+    //       radiation_modifier: 1,
+    //       consumption_modifier: 1,
+    //       signature_penalty_modifier: 1
+    //     }
 
-      },
-      /** Модификаторы работы модулей поддержки флота и дистанционного снабжения. */
-      /** Отсюда же берут баффы и аппараты снабжения и поддержки. */
-      support: {
-        effective_distance_modifier: 1,
-        capacitor_consumption_modifier: 1,
-        heating_modifier: 1,
-        /** Основной бонус, накладывающийся на все последующие сверху */
-        support_strenght_modifier: 1,
-        /** Чисто для профильных особенностей и каких-то мега узкоспециализированных штуковин */
-        tracking_support_modifier: 1,
-        acceleration_support_modifier: 1,
-        maneuverability_support_modifier: 1,
-        contact_quality_support_modifier: 1,
-        signature_suppression_modifier: 1,
-        capacitor_injection_modifier: 1,
-        shield_injection_modifier: 1,
-        armor_repair_modifier: 1,
-      },
-      precursor: {
-        desintegrator: {
-          bonus_cap_modifier: 1,
-          per_step_bonus_modifier: 1
-        },
-        membrane: {
-          bonus_cap_modifier: 1,
-          per_step_bonus_modifier: 1
-        },
-      }
-    }
+    //   },
+    //   /** Модификаторы работы модулей поддержки флота и дистанционного снабжения. */
+    //   /** Отсюда же берут баффы и аппараты снабжения и поддержки. */
+    //   support: {
+    //     effective_distance_modifier: 1,
+    //     capacitor_consumption_modifier: 1,
+    //     heating_modifier: 1,
+    //     /** Основной бонус, накладывающийся на все последующие сверху */
+    //     support_strenght_modifier: 1,
+    //     /** Чисто для профильных особенностей и каких-то мега узкоспециализированных штуковин */
+    //     tracking_support_modifier: 1,
+    //     acceleration_support_modifier: 1,
+    //     maneuverability_support_modifier: 1,
+    //     contact_quality_support_modifier: 1,
+    //     signature_suppression_modifier: 1,
+    //     capacitor_injection_modifier: 1,
+    //     shield_injection_modifier: 1,
+    //     armor_repair_modifier: 1,
+    //   },
+    //   precursor: {
+    //     desintegrator: {
+    //       bonus_cap_modifier: 1,
+    //       per_step_bonus_modifier: 1
+    //     },
+    //     membrane: {
+    //       bonus_cap_modifier: 1,
+    //       per_step_bonus_modifier: 1
+    //     },
+    //   }
+    // }
   },
 };
 

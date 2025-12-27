@@ -16,7 +16,7 @@
     "online": [
         {
         "target": "this",
-        "characteristic": "constant.modulemodifier.offence.ballistic.damage_modifier",
+        "characteristic": "constant.module_modifiers.offence>ballistic>damage_modifier",
         "modificationType": "number",
         "modificator": 0.2,
         "isAffectedByInterference": false

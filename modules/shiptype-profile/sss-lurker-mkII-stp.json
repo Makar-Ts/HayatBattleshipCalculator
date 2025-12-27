@@ -23,7 +23,7 @@
       },
       {
         "target": "this",
-        "characteristic": "constant.modulemodifier.engineering.thermodynamic.signature_penalty_modifier",
+        "characteristic": "constant.module_modifiers.engineering>thermodynamic>signature_penalty_modifier",
         "modificationType": "number",
         "modificator": -0.5,
         "isAffectedByInterference": true

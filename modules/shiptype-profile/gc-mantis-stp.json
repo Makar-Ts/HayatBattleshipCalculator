@@ -16,7 +16,7 @@
     "online": [
         {
         "target": "this",
-        "characteristic": "constant.modulemodifier.engineering.armor.active_repair_consumption",
+        "characteristic": "constant.module_modifiers.engineering>armor>active_repair_consumption",
         "modificationType": "percent",
         "modificator": 0.5,
         "isAffectedByInterference": false
