@@ -1,0 +1,37 @@
+{
+  "main": {
+    "name": "Улучшенная взрывчатка",
+    "type": "Модификатор субгридов",
+    "category": "Мод. взрывчатки",
+
+    "size": 1,
+    "position": "internal",
+    "tags": []
+  },
+  "activation": "passive",
+  "interference": 0,
+
+  "modificators": {
+    "offline": [],
+    "online": [
+      {
+        "target": "subgrid",
+        "affectedLayers": ["missile"],
+        "characteristic": "constant.body.subgrid.explosion.radius",
+        "modificationType": "percent",
+        "modificator": 1.2,
+        "isAffectedByInterference": false
+      },
+      {
+        "target": "subgrid",
+        "affectedLayers": ["missile"],
+        "characteristic": "constant.body.subgrid.explosion.effect.damage.high_explosive",
+        "modificationType": "percent",
+        "modificator": 1.4,
+        "isAffectedByInterference": false
+      }
+    ],
+    "active": [],
+    "overload": []
+  }
+}

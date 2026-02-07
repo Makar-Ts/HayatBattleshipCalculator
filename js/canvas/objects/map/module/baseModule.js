@@ -58,7 +58,7 @@ export default class BaseModule {
     return (this.parent?.path || '') + " > " + "module " + this.uuid + " " + this.characteristics.main.name
   }
 
-  applyModifiers(mods, activeModules) {
+  applyModifiers(mods, activeModules, layers = ["all"]) {
     const interference = this.characteristics.interference * (activeModules[this.fullType] - 1);
 
     if (this.characteristics.initFunctions && this.characteristics.initFunctions !== "") {
@@ -78,6 +78,10 @@ export default class BaseModule {
     }
 
     for (let mod of this.characteristics.modificators[this.state]) {
+      if (mod.affectedLayers?.length && layers[0] != "all") {
+        if (!layers.some(v => mod.affectedLayers.some(r => r == v))) continue;
+      }
+
       let modif;
       if (typeof mod.modificator == "number") {
         modif = mod.modificator;

@@ -1,0 +1,29 @@
+{
+  "main": {
+    "name": "Мод. нав. системы дронов",
+    "type": "Модификатор субгридов",
+    "category": "Мод. навигации",
+
+    "size": 1,
+    "position": "internal",
+    "tags": []
+  },
+  "activation": "passive",
+  "interference": 0,
+
+  "modificators": {
+    "offline": [],
+    "online": [
+      {
+        "target": "subgrid",
+        "affectedLayers": ["drone"],
+        "characteristic": "constant.body.subgrid.drone.safe_distance",
+        "modificationType": "number",
+        "modificator": 2500,
+        "isAffectedByInterference": false
+      }
+    ],
+    "active": [],
+    "overload": []
+  }
+}

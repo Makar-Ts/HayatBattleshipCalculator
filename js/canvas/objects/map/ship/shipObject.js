@@ -346,7 +346,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     ];
   }
 
-  calculateModifiers(externalEffectCalculation = true) {
+  calculateModifiers(externalEffectCalculation = true, layers = ["all"]) {
     const activeModules = this.allModules.reduce((acc, v) => {
       if (v.fullType in acc) {
         acc[v.fullType] += 1;
@@ -366,6 +366,10 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
         number: {},
         percent: {},
       },
+      subgrid: {
+        number: {},
+        percent: {},
+      },
       area: {
         number: {},
         percent: {},
@@ -373,7 +377,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     };
 
     for (let mod of this.allModules) {
-      mods = mod.applyModifiers(mods, activeModules);
+      mods = mod.applyModifiers(mods, activeModules, layers);
     }
 
     if (externalEffectCalculation) {
@@ -420,6 +424,8 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
       if (!applyDynamic && path.startsWith("dynamic")) continue;
 
       const [a, l] = getByPath(this.currentCharacteristics, path);
+
+      if (!a) continue;
       a[l] += number;
     }
 
@@ -427,6 +433,8 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
       if (!applyDynamic && path.startsWith("dynamic")) continue;
 
       const [a, l] = getByPath(this.currentCharacteristics, path);
+
+      if (!a) continue;
       a[l] *= percent;
     }
 

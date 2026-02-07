@@ -5,6 +5,8 @@
   "Рельсотрон (10m снаряд)": "launchers/test/railgun-test.json",
   "Ракетный комплекс «Рой»": "launchers/test/rapid-fire-launcher.json",
   "Ангар дрона «Миллер»": "hangars/test/hangar-test.json",
+  "Мод. нав. системы дронов": "subgrid-support/test/mod-drone-nav-system.json",
+  "Улучшенная взрывчатка": "subgrid-support/test/better-explosives.json",
 
 
 
