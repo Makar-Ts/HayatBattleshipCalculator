@@ -48,29 +48,34 @@ export class ContactController extends BasicStepObject {
   }
 
   calculateModifiers(event) {
+    if (!this.parent || !('calculateModifiers' in this.parent)) return;
+
+    let mods;
     if (this.target && event.detail.ship.id == this.target.id) {
-      if (!this.parent || !('calculateModifiers' in this.parent)) return;
-
-      const mods = this.parent.calculateModifiers(false).target;
-
-      for (let [m, v] of Object.entries(mods.number)) {
-        if (m in event.detail.mods.number) {
-          event.detail.mods.number[m] += v;
-        } else {
-          event.detail.mods.number[m] = v;
-        }
-      }
-
-      for (let [m, v] of Object.entries(mods.percent)) {
-        if (m in event.detail.mods.percent) {
-          event.detail.mods.percent[m] += v;
-        } else {
-          event.detail.mods.percent[m] = v;
-        }
-      }
-
-      console.log(this.path, event.detail.ship.path, event);
+      mods = this.parent.calculateModifiers(false, event.detail.ship.currentCharacteristics.constant.body.layers).target;
+    } else if (event.detail.ship.controlledBy?.Connection && event.detail.ship.controlledBy.Connection.parent.id == this.parent.id) {
+      mods = this.parent.calculateModifiers(false, event.detail.ship.currentCharacteristics.constant.body.layers).subgrid;
+    } else {
+      return;
     }
+    
+    for (let [m, v] of Object.entries(mods.number)) {
+      if (m in event.detail.mods.number) {
+        event.detail.mods.number[m] += v;
+      } else {
+        event.detail.mods.number[m] = v;
+      }
+    }
+
+    for (let [m, v] of Object.entries(mods.percent)) {
+      if (m in event.detail.mods.percent) {
+        event.detail.mods.percent[m] += v;
+      } else {
+        event.detail.mods.percent[m] = v;
+      }
+    }
+
+    console.log(this.path, event.detail.ship.path, event);
   }
 
 

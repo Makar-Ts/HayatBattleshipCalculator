@@ -16,35 +16,35 @@
     "online": [
       {
         "target": "this",
-        "characteristic": "modulemodifier.offence.ballistic.damage_modifier",
+        "characteristic": "constant.module_modifiers.offence>ballistic>damage_modifier",
         "modificationType": "percent",
         "modificator": 2.5,
         "isAffectedByInterference": false
       },
       {
         "target": "this",
-        "characteristic": "modulemodifier.engineering.hardener.active.barrier.heating_modifier",
+        "characteristic": "constant.module_modifiers.engineering>hardener>active>barrier>heating_modifier",
         "modificationType": "percent",
         "modificator": 0,
         "isAffectedByInterference": false
       },
       {
         "target": "this",
-        "characteristic": "modulemodifier.engineering.hardener.active.armor.heating_modifier",
+        "characteristic": "constant.module_modifiers.engineering>hardener>active>armor>heating_modifier",
         "modificationType": "percent",
         "modificator": 0,
         "isAffectedByInterference": false
       },
       {
         "target": "this",
-        "characteristic": "modulemodifier.engineering.hardener.active.barrier.capacitor_consumption_modifier",
+        "characteristic": "constant.module_modifiers.engineering>hardener>active>barrier>capacitor_consumption_modifier",
         "modificationType": "percent",
         "modificator": 2,
         "isAffectedByInterference": false
       },
       {
         "target": "this",
-        "characteristic": "modulemodifier.engineering.hardener.active.armor.capacitor_consumption_modifier",
+        "characteristic": "constant.module_modifiers.engineering>hardener>active>armor>capacitor_consumption_modifier",
         "modificationType": "percent",
         "modificator": 2,
         "isAffectedByInterference": false

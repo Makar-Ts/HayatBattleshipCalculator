@@ -21,8 +21,10 @@ import { load } from "../../../../save&load/load.js";
 import { registerClass } from "../../../../save&load/objectCollector.js";
 import { registerLayers } from "../../../layers/layersInfoCollector.js";
 import { objects } from "../../../map.js";
+import BaseModule from "../module/baseModule.js";
 import BasicMovingObject from "../step/basicMovingObject.js";
 import { registerSteps } from "../step/stepInfoCollector.js";
+import { ModuleModifiers } from "./moduleModifiers.js";
 
 export default class ShipObject extends BasicMovingObject {
   static LOAD_FALLBACK = {
@@ -50,8 +52,11 @@ export default class ShipObject extends BasicMovingObject {
     maneuvering: 0,
   };
 
+  /** @type {BaseModule[]} */
   externalModules = [];
+  /** @type {BaseModule[]} */
   internalModules = [];
+  /** @type {BaseModule[]} */
   otherModules = [];
 
   constructor(x, y, direction, velocity, battleshipChars = {}) {
@@ -67,7 +72,20 @@ export default class ShipObject extends BasicMovingObject {
       tonnageToAcceleration[this.baseCharacteristics.constant.body.tonnage] : this.baseCharacteristics.constant.acceleration;
 
     this.currentCharacteristics = copy(this.baseCharacteristics);
+    this.reloadModuleModifiers();
   }
+
+
+  reloadModuleModifiers() {
+    let base = {};
+
+    if (this.baseCharacteristics.constant.module_modifiers) {
+      base = structuredClone(this.baseCharacteristics.constant.module_modifiers);
+    }
+
+    this.currentCharacteristics.constant.module_modifiers = ModuleModifiers.createModifiersProxy(base);
+  }
+
 
   get allModules() {
     return [...this.externalModules, ...this.internalModules, ...this.otherModules];
@@ -328,7 +346,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     ];
   }
 
-  calculateModifiers(externalEffectCalculation = true) {
+  calculateModifiers(externalEffectCalculation = true, layers = ["all"]) {
     const activeModules = this.allModules.reduce((acc, v) => {
       if (v.fullType in acc) {
         acc[v.fullType] += 1;
@@ -348,6 +366,10 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
         number: {},
         percent: {},
       },
+      subgrid: {
+        number: {},
+        percent: {},
+      },
       area: {
         number: {},
         percent: {},
@@ -355,7 +377,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     };
 
     for (let mod of this.allModules) {
-      mods = mod.applyModifiers(mods, activeModules);
+      mods = mod.applyModifiers(mods, activeModules, layers);
     }
 
     if (externalEffectCalculation) {
@@ -396,11 +418,14 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     this.currentCharacteristics = mergeDeep(copy(this.baseCharacteristics), {
       dynamic: this.currentCharacteristics.dynamic,
     });
+    this.reloadModuleModifiers();
 
     for (let [path, number] of Object.entries(mods.this.number)) {
       if (!applyDynamic && path.startsWith("dynamic")) continue;
 
       const [a, l] = getByPath(this.currentCharacteristics, path);
+
+      if (!a) continue;
       a[l] += number;
     }
 
@@ -408,6 +433,8 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
       if (!applyDynamic && path.startsWith("dynamic")) continue;
 
       const [a, l] = getByPath(this.currentCharacteristics, path);
+
+      if (!a) continue;
       a[l] *= percent;
     }
 
@@ -540,6 +567,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     this.currentCharacteristics = mergeDeep(copy(this.baseCharacteristics), {
       dynamic: data.dynamicCharacteristics,
     });
+    this.reloadModuleModifiers();
 
     this.dices = data.dices;
 

@@ -89,9 +89,9 @@ const MODULES_CALCULATION_FUNCTIONS = {
     const range = point(() => point(target._x, target._y) - point(parent._x, parent._y)).length;
     const EWRes = 1 - target.currentCharacteristics.constant.resistance.EW;
     const EWDist =
-      target.currentCharacteristics.constant.modulemodifier.offence.EW.effective_distance_modifier;
+      target.currentCharacteristics.constant.module_modifiers['offence>EW>effective_distance_modifier'];
     const EWMod =
-      target.currentCharacteristics.constant.modulemodifier.offence.EW.EW_strenght_modifier;
+      target.currentCharacteristics.constant.module_modifiers['offence>EW>EW_strenght_modifier'];
 
     const num =
       module.characteristics.additionalInfo.baseDraining *
@@ -198,7 +198,7 @@ const MODULES_CALCULATION_FUNCTIONS = {
 
     if (random <= chance) {
       
-      module.functionsSharedData.perStep.damage  = module.characteristics.additionalInfo.baseDamage * parent.currentCharacteristics.constant.modulemodifier.offence.ballistic.damage_modifier ;
+      module.functionsSharedData.perStep.damage  = module.characteristics.additionalInfo.baseDamage * parent.currentCharacteristics.constant.module_modifiers['offence>ballistic>damage_modifier'];
       module.functionsSharedData.perStep.heating = module.characteristics.additionalInfo.targetHeating;
       module.functionsSharedData.perStep.hit = true;
       log(

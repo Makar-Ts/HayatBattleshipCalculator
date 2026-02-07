@@ -169,7 +169,14 @@
       "properties": {
         "target": {
           "type": "string",
-          "enum": ["this", "target", "area"]
+          "enum": ["this", "target", "area", "subgrid"]
+        },
+        "affectedLayers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["battleship", "missile", "drone", "shell", "mine"]
+          }
         },
         "characteristic": { "type": "string" },
 

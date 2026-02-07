@@ -16,7 +16,7 @@
     "online": [
       {
         "target": "this",
-        "characteristic": "constant.modulemodifier.engineering.thermodynamic.radiation_modifier",
+        "characteristic": "constant.module_modifiers.engineering>thermodynamic>radiation_modifier",
         "modificationType": "number",
         "modificator": 0.075,
         "isAffectedByInterference": true

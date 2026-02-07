@@ -255,8 +255,13 @@
           }
         },
 
-        "modulemodifier": {
-          "type": "object"
+        "module_modifier": {
+          "type": "object",
+          "patternProperties": {
+            "^[^\\.]$": { 
+              "type": "number"
+            }
+          }
         }
       }
     }

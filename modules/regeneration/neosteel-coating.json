@@ -28,21 +28,21 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseConsumption * parent.currentCharacteristics.constant.modulemodifier.engineering.armor.active_repair_consumption",
+        "modificator": "module.characteristics.additionalInfo.baseConsumption * parent.currentCharacteristics.constant.module_modifiers['engineering>armor>active_repair_consumption']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseHeating * parent.currentCharacteristics.constant.modulemodifier.engineering.armor.active_repair_heating",
+        "modificator": "module.characteristics.additionalInfo.baseHeating * parent.currentCharacteristics.constant.module_modifiers['engineering>armor>active_repair_heating']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "dynamic.hp.armor",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseRepair * parent.currentCharacteristics.constant.modulemodifier.engineering.armor.active_repair_modifier",
+        "modificator": "module.characteristics.additionalInfo.baseRepair * parent.currentCharacteristics.constant.module_modifiers['engineering>armor>active_repair_modifier']",
         "isAffectedByInterference": false
       }
     ],

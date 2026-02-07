@@ -28,21 +28,21 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseConsumption * parent.currentCharacteristics.constant.modulemodifier.engineering.barrier.active_recharge_consumption",
+        "modificator": "module.characteristics.additionalInfo.baseConsumption * parent.currentCharacteristics.constant.module_modifiers['engineering>barrier>active_recharge_consumption']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseHeating * parent.currentCharacteristics.constant.modulemodifier.engineering.barrier.active_recharge_heating",
+        "modificator": "module.characteristics.additionalInfo.baseHeating * parent.currentCharacteristics.constant.module_modifiers['engineering>barrier>active_recharge_heating']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "dynamic.hp.barrier",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseRecharge * parent.currentCharacteristics.constant.modulemodifier.engineering.barrier.active_recharge_modifier",
+        "modificator": "module.characteristics.additionalInfo.baseRecharge * parent.currentCharacteristics.constant.module_modifiers['engineering>barrier>active_recharge_modifier']",
         "isAffectedByInterference": false
       }
     ],

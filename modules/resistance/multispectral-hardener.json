@@ -28,42 +28,42 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseConsumption * parent.currentCharacteristics.constant.modulemodifier.engineering.hardener.active.barrier.capacitor_consumption_modifier",
+        "modificator": "module.characteristics.additionalInfo.baseConsumption * parent.currentCharacteristics.constant.module_modifiers['engineering>hardener>active>barrier>capacitor_consumption_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.baseHeating * parent.currentCharacteristics.constant.modulemodifier.engineering.hardener.active.barrier.heating_modifier",
+        "modificator": "module.characteristics.additionalInfo.baseHeating * parent.currentCharacteristics.constant.module_modifiers['engineering>hardener>active>barrier>heating_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.resistance.kinetic.barrier",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.modulemodifier.engineering.hardener.active.barrier.effectiveness_modifier",
+        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.module_modifiers['engineering>hardener>active>barrier>effectiveness_modifier']",
         "isAffectedByInterference": true
       },
       {
         "target": "this",
         "characteristic": "constant.resistance.high_explosive.barrier",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.modulemodifier.engineering.hardener.active.barrier.effectiveness_modifier",
+        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.module_modifiers['engineering>hardener>active>barrier>effectiveness_modifier']",
         "isAffectedByInterference": true
       },
       {
         "target": "this",
         "characteristic": "constant.resistance.electro_magnetic.barrier",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.modulemodifier.engineering.hardener.active.barrier.effectiveness_modifier",
+        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.module_modifiers['engineering>hardener>active>barrier>effectiveness_modifier']",
         "isAffectedByInterference": true
       },
       {
         "target": "this",
         "characteristic": "constant.resistance.thermal.barrier",
         "modificationType": "number",
-        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.modulemodifier.engineering.hardener.active.barrier.effectiveness_modifier",
+        "modificator": "module.characteristics.additionalInfo.effectiveness * parent.currentCharacteristics.constant.module_modifiers['engineering>hardener>active>barrier>effectiveness_modifier']",
         "isAffectedByInterference": true
       }
     ],
