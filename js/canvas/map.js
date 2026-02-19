@@ -41,6 +41,22 @@ function collectRenderObjects(obj, layers, renderRowAcc) {
   }
 }
 
+export function drawObjects(canvas, ctx, toCanvas, style, activeLayers) {
+  const layers = activeLayers;
+  const renderRow = {};
+
+  for (let i in objects) {
+    collectRenderObjects(objects[i], layers, renderRow);
+  }
+
+  const sortedKeys = Object.keys(renderRow).map(Number).sort((a, b) => a - b);
+  for (let i of sortedKeys) {
+    for (let render of renderRow[i]) {
+      render(canvas, ctx, toCanvas, style);
+    }
+  }
+}
+
 
 export default function init() {
   canvas = document.getElementById("map");
@@ -89,19 +105,7 @@ export default function init() {
     requestAnimationFrame(() => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const layers = activeLayers;
-      const renderRow = {};
-
-      for (let i in objects) {
-        collectRenderObjects(objects[i], layers, renderRow);
-      }
-
-      const sortedKeys = Object.keys(renderRow).map(Number).sort((a, b) => a - b);
-      for (let i of sortedKeys) {
-        for (let render of renderRow[i]) {
-          render(canvas, ctx, toCanvas, style);
-        }
-      }
+      drawObjects(canvas, ctx, toCanvas, style, activeLayers);
     })
   };
 

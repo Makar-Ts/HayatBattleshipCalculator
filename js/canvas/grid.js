@@ -16,6 +16,42 @@ let mapProps = {
 let toCanvas = (pos) => 0;
 let fromCanvas = (pos) => 0;
 
+
+export function drawGrid(canvas, ctx, toCanvas, size, grid, offset) {
+  ctx.lineWidth = toCurrentCanvasSize(canvas, 10);
+  ctx.strokeStyle = style.getPropertyValue('--border')
+
+  ctx.font = toCurrentCanvasSize(canvas, 100) + "px Consolas";
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'hanging';
+  ctx.fillStyle = style.getPropertyValue('--border');
+
+  const padding = toCurrentCanvasSize(canvas, 50);
+
+  for (let index = Math.floor(-offset.x / grid); index < Math.floor((-offset.x + size) / grid); index++) {
+    let pos = toCanvas({ x: index * grid })
+    ctx.beginPath()
+
+    ctx.moveTo(pos, 0);
+    ctx.lineTo(pos, canvas.height);
+
+    ctx.stroke();
+    ctx.fillText(`${index * grid}m`, pos + padding, padding);
+  }
+
+  for (let index = Math.floor(-offset.y / grid); index < Math.floor((-offset.y + size) / grid); index++) {
+    let pos = toCanvas({ y: index * grid })
+    ctx.beginPath()
+
+    ctx.moveTo(0, pos);
+    ctx.lineTo(canvas.width, pos);
+
+    ctx.stroke();
+    ctx.fillText(`${index * grid}m`, padding, pos + padding);
+  }
+}
+
+
 export default function init() {
   canvas = document.getElementById('grid');
   ctx = canvas.getContext("2d");
@@ -88,45 +124,16 @@ export default function init() {
   }
 
 
-  const drawGrid = (size, grid, offset) => { 
+  const gridDraw = (size, grid, offset) => { 
     requestAnimationFrame(() => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.lineWidth = toCurrentCanvasSize(canvas, 10);
-      ctx.strokeStyle = style.getPropertyValue('--border')
-
-      ctx.font = toCurrentCanvasSize(canvas, 100) + "px Consolas";
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'hanging';
-      ctx.fillStyle = style.getPropertyValue('--border');
-
-      const padding = toCurrentCanvasSize(canvas, 50);
-
-      for (let index = Math.floor(-offset.x / grid); index < Math.floor((-offset.x + size) / grid); index++) {
-        let pos = toCanvas({ x: index * grid })
-        ctx.beginPath()
-
-        ctx.moveTo(pos, 0);
-        ctx.lineTo(pos, canvas.height);
-
-        ctx.stroke();
-        ctx.fillText(`${index * grid}m`, pos + padding, padding);
-      }
-
-      for (let index = Math.floor(-offset.y / grid); index < Math.floor((-offset.y + size) / grid); index++) {
-        let pos = toCanvas({ y: index * grid })
-        ctx.beginPath()
-
-        ctx.moveTo(0, pos);
-        ctx.lineTo(canvas.width, pos);
-
-        ctx.stroke();
-        ctx.fillText(`${index * grid}m`, padding, pos + padding);
-      }
+      
+      drawGrid(canvas, ctx, toCanvas, size, grid, offset);
     })
   }
 
 
-  drawGrid(mapProps.size, mapProps.grid, mapProps.offset);
+  gridDraw(mapProps.size, mapProps.grid, mapProps.offset);
 
   document.addEventListener(EVENTS.MAP_SET_CHANGED, (e) => {
     const { size, grid, offset } = e.detail;
@@ -136,7 +143,7 @@ export default function init() {
     raito = canvas.width / size;
 
     mapProps = {...mapProps, ...e.detail};
-    drawGrid(size, grid, mapProps.offset);
+    gridDraw(size, grid, mapProps.offset);
   })
 }
 

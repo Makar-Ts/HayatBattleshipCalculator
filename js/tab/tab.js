@@ -4,6 +4,7 @@ import render from './render.js'
 import modify from './modify/modify.js'
 import save from './save.js'
 import settings from './settings.js'
+import webhook from './webhook.js'
 
 export default function init() {
   settings();
@@ -11,5 +12,6 @@ export default function init() {
   render();
   new_object();
   modify();
+  webhook();
   save();
 }

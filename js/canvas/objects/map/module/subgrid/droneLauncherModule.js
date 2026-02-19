@@ -2,6 +2,7 @@ import { clamp, clampCharacteristics } from "../../../../../../libs/clamp.js";
 import { ObjectConnection } from "../../../../../../libs/connection.js";
 import copy from "../../../../../../libs/copy.js";
 import { mergeDeep } from "../../../../../../libs/deepMerge.js";
+import { generateProgressbar } from "../../../../../../libs/generateProgressbar.js";
 import { baseBattleshipCharacteristics, battleshipCharacteristicsClampRules } from "../../../../../../libs/hayat/battleships.js";
 import { uuidv4 } from "../../../../../../libs/uuid.js";
 import { point } from "../../../../../../libs/vector/point.js";
@@ -180,15 +181,6 @@ export class DroneLauncherModule extends BaseModule {
 
   getAdditionalInfo() {
     if (this.state !== "offline") return null;
-
-    const generateProgressbar = (cur, min, max) => {
-      const val01 = clamp((cur - min) / (max - min), 0, 1);
-
-      const maxSquares = 25;
-      const amount = Math.floor(val01 * maxSquares);
-
-      return `|${'█'.repeat(amount)}${'&nbsp;'.repeat(maxSquares - amount)}|`
-    }
 
     const maxFuel = this.characteristics.external.battleship_template.baseCharacteristics.constant.body.subgrid.fuel;
     const maxTemp = this.characteristics.external.battleship_template.baseCharacteristics.constant.temperature;
