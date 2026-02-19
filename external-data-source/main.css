@@ -1,0 +1,42 @@
+body {
+  background-color: var(--bg);
+
+  padding-left: 20px;
+}
+
+.title {
+  display: flex;
+
+  gap: 20px;
+
+  flex-direction: row;
+  align-items: center;
+
+  button {
+    width: 21px;
+    height: 21px;
+  }
+}
+
+#container {
+  width: 50%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.data-source {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+
+  column-gap: 5px;
+
+  .url {
+    grid-column: 1 / 3;
+  }
+}
+
+#save {
+  margin-top: 20px;
+}

@@ -16,7 +16,27 @@ let setReadyFunction = (func) => {
 
 export default function init() {
   const loadModules = async (list) => {
-    const len = Object.keys(list).length;
+    const externalSources = JSON.parse(localStorage.getItem('dataSources') ?? '[]');
+    let externalParce = {};
+    let functionsParce = [];
+    for (let source of externalSources) {
+      if (source.set.modules) {
+        const l = await (await fetch(source.url + '/modules/modules.json')).json();
+        for (let [name, path] of Object.entries(l)) {
+          externalParce[name] = source.url + "/modules/" + path;
+        }
+
+        console.log(`External Data Source ${source.url} with ${Object.keys(l).length} modules`)
+      } 
+
+      if (source.set.modulesFunctions) {
+        functionsParce.push(source.url + "/modules/modules.js");
+
+        console.log(`External Data Source ${source.url} with functions`)
+      }
+    }
+
+    const len = Object.keys(list).length + Object.keys(externalParce).length + functionsParce.length;
     let amount = 0;
     updateLoading("modules", len, 0, 0);
     for (let [name, path] of Object.entries(list)) {
@@ -34,6 +54,40 @@ export default function init() {
       }
 
       modules[name] = data;
+
+      amount++;
+      updateLoading("modules", len, 0, amount);
+    }
+
+    for (let [name, path] of Object.entries(externalParce)) {
+      const data = await (await fetch(path)).json();
+
+      if (data?.external) {
+        const out = {};
+        const parent = path.replace(/[^\/]+.json/, "");
+
+        for (let [k, v] of Object.entries(data.external)) {
+          out[k] = await (await fetch(parent + v)).json();
+        }
+
+        data.external = out;
+      }
+
+      modules[name] = data;
+
+      amount++;
+      updateLoading("modules", len, 0, amount);
+    }
+
+    for (let toLoad of functionsParce) {
+      const loaded = (await import(toLoad)).default;
+
+      if (typeof loaded == "object") {
+        MODULES_CALCULATION_FUNCTIONS = {
+          ...MODULES_CALCULATION_FUNCTIONS,
+          ...loaded
+        }
+      }
 
       amount++;
       updateLoading("modules", len, 0, amount);
@@ -82,7 +136,7 @@ export { isReady, modules, setReadyFunction };
  *    target: ShipObject
  *  ) => number }
  */
-const MODULES_CALCULATION_FUNCTIONS = {
+let MODULES_CALCULATION_FUNCTIONS = {
   RENContactor: (modificator, module, parent, target) => {
     if (!target || !parent) return 0;
 
@@ -344,9 +398,8 @@ EntropicDisintegrator: (modificator, module, parent, target) => {
     module.functionsSharedData.perStep.processed = true;
     return 0;
   },
-};
 
-const AdaptiveMembrane = (modificator, module, parent, target) => {
+  AdaptiveMembrane: (modificator, module, parent, target) => {
     if (module.functionsSharedData.perStep.processed) return 0;
 
     // Инициализация данных модуля при первом запуске
@@ -434,6 +487,7 @@ const AdaptiveMembrane = (modificator, module, parent, target) => {
 
     module.functionsSharedData.perStep.processed = true;
     return 0;
+  },
 };
 
 export { MODULES_CALCULATION_FUNCTIONS };
