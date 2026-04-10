@@ -1,6 +1,6 @@
 import { toCurrentCanvasSize } from "../../../../../../libs/canvas.js";
 import { getExternalTangentPoints, lerp } from "../../../../../../libs/math.js";
-import { point } from "../../../../../../libs/vector/point.js";
+import { calc, point } from "../../../../../../libs/vector/point.js";
 import { EVENTS } from "../../../../../events.js";
 import { registerClass } from "../../../../../save&load/objectCollector.js";
 import { objects } from "../../../../map.js";

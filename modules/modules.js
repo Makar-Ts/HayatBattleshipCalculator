@@ -4,7 +4,7 @@ import { calculateRelativeData } from "../js/controls/show_rdata.js";
 import { log } from "../js/controls/step-logs/log.js";
 import { updateLoading } from "../js/loading.js";
 import { clamp } from "../libs/clamp.js";
-import { getFullManeuverability } from "../libs/hayat/battleships.js";
+import { getFullManeuverability, tonnageToResolution } from "../libs/hayat/battleships.js";
 import { point } from "../libs/vector/point.js";
 
 let isReady = false;
@@ -121,6 +121,56 @@ export default function init() {
 
 export { isReady, modules, setReadyFunction };
 
+// ==========================================
+// --- HAYAT TARGETING CORE FUNCTION ---
+// ==========================================
+function calculateHitChance(parent, target, module, currentContactBonus) {
+  // 1. ВСТРЕЧНЫЙ БРОСОК: Контакт vs Уклонение
+  const targetManeuverability = getFullManeuverability(target.currentCharacteristics, target.dices.maneuvering);
+  const delta = currentContactBonus - targetManeuverability;
+  const baseContactChance = 1 / (1 + Math.exp(-delta / 5));
+
+  // 2. РАЗРЕШЕНИЕ СЕНСОРОВ
+  const moduleAddInfo = module.characteristics.additionalInfo;
+  const isAutonomous = moduleAddInfo.resolution !== undefined;
+  
+  // ИСПРАВЛЕНИЕ 1: Правильный путь к тоннажу стреляющего корабля
+  const shipTonnage = parent.currentCharacteristics?.constant?.body?.tonnage ?? 4;
+  const shipResolution = tonnageToResolution[shipTonnage] || 100;
+  
+  const baseResolution = isAutonomous ? moduleAddInfo.resolution : shipResolution;
+  
+  const auxMultiplier = parent.currentCharacteristics?.constant?.module_modifiers?.['sensors>resolution_multiplier'] || 1.0;
+  const effectiveResolution = baseResolution * auxMultiplier;
+  
+  const targetSignature = target.currentCharacteristics?.constant?.body?.signature || 1;
+  const signatureRatio = effectiveResolution / targetSignature;
+
+  // 3. ДИНАМИЧЕСКАЯ ОШИБКА
+  const { angularVelocity } = calculateRelativeData(parent, target);
+  const tracking = moduleAddInfo.tracking || 1; 
+  
+  const angularVelocityDeg = Math.abs(angularVelocity); 
+  
+  let trackingError = 0;
+  if (angularVelocityDeg > 0.1) {
+    const speedFactor = angularVelocityDeg / tracking;
+    trackingError = Math.pow(speedFactor * signatureRatio, 2);
+  }
+
+  // 4. СТАТИЧЕСКАЯ ОШИБКА
+  let precisionError = 0;
+  if (signatureRatio > 1.0) {
+    const forgivenessFactor = 2.0; 
+    precisionError = Math.pow((signatureRatio - 1) / forgivenessFactor, 2);
+  }
+
+  // 5. ИТОГ
+  const chance = baseContactChance * Math.pow(0.5, trackingError + precisionError);
+
+  return chance;
+}
+
 /**
  * @type { Record<string, 
  * (
@@ -163,7 +213,7 @@ let MODULES_CALCULATION_FUNCTIONS = {
     return num > 0 ? -num : 0;
   },
 
-  LaserAttack: (modificator, module, parent, target) => {
+  ыLaserAttack: (modificator, module, parent, target) => {
     if (parent.state != "step 0" || module.functionsSharedData.perStep.processed) return 0;
 
     module.functionsSharedData.perStep.hit          = false;
@@ -173,16 +223,13 @@ let MODULES_CALCULATION_FUNCTIONS = {
 
     if (!target || !parent) return 0;
 
-    const contactQuality = parent.dices.contactQuality;
-    const resultAccuracy =
-      contactQuality -
-      getFullManeuverability(target.currentCharacteristics, target.dices.maneuvering);
+    // Считаем бонус контакта (Дайс + Модификаторы)
+    const baseContact = parent.dices.contactQuality || 10;
+    const dynamicContactMod = parent.currentCharacteristics.constant.module_modifiers['sensors>contact>bonus'] || 0;
+    const currentContactBonus = baseContact + dynamicContactMod;
 
-    const { angularVelocity } = calculateRelativeData(parent, target);
-    const angularPenalty =
-      clamp(Math.abs(angularVelocity) / module.characteristics.additionalInfo.tracking - 0.75, 0, 0.3) / 0.3;
-
-    const chance = clamp(0.5 + resultAccuracy * 0.15, 0, 1) * (1 - angularPenalty);
+    // Вызываем новое ядро наведения
+    const chance = calculateHitChance(parent, target, module, currentContactBonus);
     const random = Math.random();
 
     if (random <= chance) {
@@ -206,21 +253,22 @@ let MODULES_CALCULATION_FUNCTIONS = {
 
       log(
         module.path,
-        `function | (data applied only in step calculation)<br>
--------- | ${random} <= ${chance}, hit calculated<br>
--------- | ${module.functionsSharedData.perStep.damage}dmg ${module.functionsSharedData.perStep.heating}heat`
+        `Laser Attack | Chance: ${(chance * 100).toFixed(1)}%<br>
+-------- | ${random.toFixed(3)} <= ${chance.toFixed(3)}, hit calculated<br>
+-------- | ${module.functionsSharedData.perStep.damage.toFixed(1)}dmg ${module.functionsSharedData.perStep.heating.toFixed(1)}heat`
       );
     } else {
       log(
         module.path,
-        `function | (data applied only in step calculation)<br>
--------- | ${random} > ${chance}, missed`
+        `Laser Attack | Chance: ${(chance * 100).toFixed(1)}%<br>
+-------- | ${random.toFixed(3)} > ${chance.toFixed(3)}, missed`
       );
     }
 
     module.functionsSharedData.perStep.processed = true;
     return 0;
   },
+
   BallisticAttack: (modificator, module, parent, target) => {
     if (parent.state != "step 0" || module.functionsSharedData.perStep.processed) return 0;
 
@@ -230,259 +278,45 @@ let MODULES_CALCULATION_FUNCTIONS = {
 
     if (!target || !parent) return 0;
 
-    const contactQuality = parent.dices.contactQuality;
-
     const range = point(() => point(target._x, target._y) - point(parent._x, parent._y)).length;
+    
+    // Штраф баллистики за предел эффективной дальности (сохранена твоя логика)
     const penalty =
       ((range - module.characteristics.additionalInfo.effectiveRange) /
         module.characteristics.additionalInfo.penaltyStep) *
       module.characteristics.additionalInfo.penalty;
+    const actualPenalty = penalty > 0 ? penalty : 0;
 
-    const resultAccuracy =
-      contactQuality -
-      getFullManeuverability(target.currentCharacteristics, target.dices.maneuvering) -
-      (penalty > 0 ? penalty : 0);
+    // Считаем бонус контакта (Дайс + Модификаторы - Штраф дальности)
+    const baseContact = parent.dices.contactQuality || 10;
+    const dynamicContactMod = parent.currentCharacteristics.constant.module_modifiers?.['sensors>contact>bonus'] || 0;
+    const currentContactBonus = baseContact + dynamicContactMod - actualPenalty;
 
-    const { angularVelocity } = calculateRelativeData(parent, target);
-    const angularPenalty =
-      clamp(Math.abs(angularVelocity) / module.characteristics.additionalInfo.tracking - 0.75, 0, 0.3) / 0.3;
-
-    const chance = clamp(0.5 + resultAccuracy * 0.15, 0, 1) * (1 - angularPenalty);
+    // Вызываем новое ядро наведения
+    const chance = calculateHitChance(parent, target, module, currentContactBonus);
     const random = Math.random();
 
     if (random <= chance) {
+      // Сохранен оригинальный модификатор урона
+      let damageMod = parent.currentCharacteristics.constant.module_modifiers?.['offence>ballistic>damage_modifier'] || 1;
       
-      module.functionsSharedData.perStep.damage  = module.characteristics.additionalInfo.baseDamage * parent.currentCharacteristics.constant.module_modifiers['offence>ballistic>damage_modifier'];
+      module.functionsSharedData.perStep.damage  = module.characteristics.additionalInfo.baseDamage * damageMod;
       module.functionsSharedData.perStep.heating = module.characteristics.additionalInfo.targetHeating;
       module.functionsSharedData.perStep.hit = true;
-      log(
-        module.path,
-        `function | (data applied only in step calculation)<br>
--------- | ${random} <= ${chance}, hit calculated<br>
--------- | ${module.functionsSharedData.perStep.damage}dmg ${module.functionsSharedData.perStep.heating}heat`
-      );
-
-    } else {
-      log(
-        module.path,
-        `function | (data applied only in step calculation)<br>
--------- | ${random} > ${chance}, missed`
-      );
-    }
-
-    module.functionsSharedData.perStep.processed = true;
-    return 0;
-  },
-
-
-//  _    _ _____ ______  _______ _______  _____  ______  _______
-//   \  /    |   |_____] |______ |       |     | |     \ |______
-//    \/   __|__ |_____] |______ |_____  |_____| |_____/ |______
-//                                                              
-//                  ⠄⠄⠄⠄⠄⠄⠄⣀⣠⣤⣤⣤⣤⣀⡀
-//                  ⠄⠄⠄⣠⣤⢶⣻⣿⣻⣿⣿⣿⣿⣿⣿⣦⣤⣀
-//                  ⠄⠄⣼⣺⢷⣻⣽⣾⣿⢿⣿⣷⣿⣿⢿⣿⣿⣿⣇
-//                  ⠠⡍⢾⣺⢽⡳⣻⡺⣽⢝⢗⢯⣻⢽⣻⣿⣿⣿⣿⢿⡄
-//                  ⡨⣖⢹⠜⢅⢫⢊⢎⠜⢌⠣⢑⠡⣹⡸⣜⣯⣿⢿⣻⣷
-//                  ⢜⢔⡹⡭⣪⢼⠽⠷⠧⣳⢘⢔⡝⠾⠽⢿⣷⣿⣟⢷⣟
-//                  ⢸⢘⢼⠿⠟⠁⠄⠄⡀⠄⠃⠑⡌⠄⠄⠈⠙⠿⣷⢽⣻
-//                  ⢌⠂⠅⠄⠄⠄⠄⠄⠄⡀⣲⣢⢂⠄⠄⠄⠄⠄⠈⣯⠏
-//                  ⠐⠨⡂⠄⠄⠄⠄⠄⡀⡔⠋⢻⣤⡀⠄⠄⢀⠄⢸⣯⠇
-//                  ⠈⣕⠝⠒⠄⠄⠒⢉⠪⠄⠄⠄⢿⠜⠑⠢⠠⡒⡺⣿⠖
-//                  ⠄⠐⠅⠁⡀⠄⠐⢔⠁⠄⠄⠄⢀⢇⢌⠄⠄⠄⠸⠕
-//                  ⠄⠄⠂⠄⠄⠨⣔⡝⠼⡄⠂⣦⡆⣿⣲⠐⠑⠁⠄⠃
-//                  ⠄⠄⠄⠄⠄⠄⠃⢫⢛⣙⡊⣜⣏⡝⣝⠆
-//                  ⠄⠄⠄⠄⠄⠄⠈⠈⠁⠁⠁⠈⠈⠊
-//                     Мне стыдно перед богом...
-
-EntropicDisintegrator: (modificator, module, parent, target) => {
-    if (module.functionsSharedData.perStep.processed) return 0;
-
-    // Инициализация данных модуля при первом запуске
-    if (!module.functionsSharedData.persistent) {
-      module.functionsSharedData.persistent = {
-        continuousSteps: 0,
-        bonusMultiplier: 1,
-        wasActiveLastStep: false
-      };
-    }
-
-    // Сброс данных текущего шага
-    module.functionsSharedData.perStep.hit = false;
-    module.functionsSharedData.perStep.effectivness = 0;
-    module.functionsSharedData.perStep.damage = 0;
-    module.functionsSharedData.perStep.heating = 0;
-
-    // Проверяем состояние модуля - активен ли он сейчас
-    const isActive = (parent.state === "step 0" && module.state === "active");
-    
-    // Получаем модификаторы из характеристик корабля
-    const bonusCapModifier = parent.currentCharacteristics.constant.precursor?.desintegrator?.bonus_cap_modifier || 1;
-    const perStepBonusModifier = parent.currentCharacteristics.constant.precursor?.desintegrator?.per_step_bonus_modifier || 1;
-    
-    if (isActive && module.functionsSharedData.persistent.wasActiveLastStep) {
-      // Увеличиваем накопленный множитель
-      module.functionsSharedData.persistent.continuousSteps++;
-      const effectivePerStepBonus = module.characteristics.additionalInfo.perStepBonus * perStepBonusModifier;
-      const effectiveBonusCap = module.characteristics.additionalInfo.bonusCap * bonusCapModifier;
       
-      module.functionsSharedData.persistent.bonusMultiplier = Math.min(
-        1 + (module.functionsSharedData.persistent.continuousSteps * effectivePerStepBonus),
-        effectiveBonusCap
-      );
-    } else if (isActive && !module.functionsSharedData.persistent.wasActiveLastStep) {
-      // Первый шаг активности после перерыва
-      module.functionsSharedData.persistent.continuousSteps = 1;
-      const effectivePerStepBonus = module.characteristics.additionalInfo.perStepBonus * perStepBonusModifier;
-      module.functionsSharedData.persistent.bonusMultiplier = 1 + effectivePerStepBonus;
-    } else {
-      // Модуль неактивен - сбрасываем бонус
-      module.functionsSharedData.persistent.continuousSteps = 0;
-      module.functionsSharedData.persistent.bonusMultiplier = 1;
-    }
-
-    module.functionsSharedData.persistent.wasActiveLastStep = isActive;
-
-    if (!isActive || parent.state != "step 0") {
-      module.functionsSharedData.perStep.processed = true;
-      return 0;
-    }
-
-    if (!target || !parent) {
-      module.functionsSharedData.perStep.processed = true;
-      return 0;
-    }
-
-    // Используем логику лазеров для попадания
-    const contactQuality = parent.dices.contactQuality;
-    const resultAccuracy = contactQuality - getFullManeuverability(target.currentCharacteristics, target.dices.maneuvering);
-
-    const { angularVelocity } = calculateRelativeData(parent, target);
-    const angularPenalty = clamp(Math.abs(angularVelocity) / module.characteristics.additionalInfo.tracking - 0.75, 0, 0.3) / 0.3;
-
-    const chance = clamp(0.5 + resultAccuracy * 0.15, 0, 1) * (1 - angularPenalty);
-    const random = Math.random();
-
-    if (random <= chance) {
-      const range = point(() => point(target._x, target._y) - point(parent._x, parent._y)).length;
-      const effectivness = 1 - clamp(
-        (range - module.characteristics.additionalInfo.effectiveRange) /
-        (module.characteristics.additionalInfo.maxRange - module.characteristics.additionalInfo.effectiveRange),
-        0, 1
-      );
-
-      // Базовый урон * накопленный множитель
-      const totalDamage = module.characteristics.additionalInfo.baseDamage * module.functionsSharedData.persistent.bonusMultiplier * effectivness;
-
-      module.functionsSharedData.perStep.hit = true;
-      module.functionsSharedData.perStep.effectivness = effectivness;
-      module.functionsSharedData.perStep.damage = totalDamage;
-      module.functionsSharedData.perStep.heating = module.characteristics.additionalInfo.targetHeating * effectivness;
-
       log(
         module.path,
-        `entropic disintegrator | (data applied only in step calculation)<br>
--------- | ${random} <= ${chance}, hit calculated<br>
--------- | continuous steps: ${module.functionsSharedData.persistent.continuousSteps}<br>
--------- | damage multiplier: ${module.functionsSharedData.persistent.bonusMultiplier.toFixed(2)}x (${((module.functionsSharedData.persistent.bonusMultiplier - 1) * 100).toFixed(1)}%)<br>
--------- | total: ${totalDamage.toFixed(1)}dmg ${module.functionsSharedData.perStep.heating.toFixed(3)}heat`
+        `Ballistic Attack | Chance: ${(chance * 100).toFixed(1)}%<br>
+-------- | ${random.toFixed(3)} <= ${chance.toFixed(3)}, hit calculated<br>
+-------- | ${module.functionsSharedData.perStep.damage.toFixed(1)}dmg ${module.functionsSharedData.perStep.heating.toFixed(1)}heat`
       );
+
     } else {
       log(
         module.path,
-        `entropic disintegrator | ${random} > ${chance}, missed<br>
--------- | damage multiplier: ${module.functionsSharedData.persistent.bonusMultiplier.toFixed(2)}x (${((module.functionsSharedData.persistent.bonusMultiplier - 1) * 100).toFixed(1)}%)`
+        `Ballistic Attack | Chance: ${(chance * 100).toFixed(1)}%<br>
+-------- | ${random.toFixed(3)} > ${chance.toFixed(3)}, missed`
       );
-    }
-
-    module.functionsSharedData.perStep.processed = true;
-    return 0;
-  },
-
-  AdaptiveMembrane: (modificator, module, parent, target) => {
-    if (module.functionsSharedData.perStep.processed) return 0;
-
-    // Инициализация данных модуля при первом запуске
-    if (!module.functionsSharedData.persistent) {
-        module.functionsSharedData.persistent = {
-            currentResistances: {
-                thermal: 0,
-                kinetic: 0,
-                explosive: 0,
-                electromagnetic: 0,
-            },
-            steps: 0,
-            wasActiveLastStep: false,
-        };
-    }
-
-    // Сброс данных текущего шага
-    module.functionsSharedData.perStep.hit = false;
-    module.functionsSharedData.perStep.effectiveness = 0;
-    module.functionsSharedData.perStep.damage = 0;
-
-    // Проверяем состояние модуля - активен ли он сейчас
-    const isActive = (parent.state === "step 0" && module.state === "active");
-
-    if (isActive && module.functionsSharedData.persistent.wasActiveLastStep) {
-        // Увеличиваем количество шагов
-        module.functionsSharedData.persistent.steps++;
-    } else if (isActive && !module.functionsSharedData.persistent.wasActiveLastStep) {
-        // Первый шаг активности после перерыва
-        module.functionsSharedData.persistent.steps = 1;
-    } else {
-        // Модуль неактивен - сбрасываем шаги
-        module.functionsSharedData.persistent.steps = 0;
-    }
-
-    module.functionsSharedData.persistent.wasActiveLastStep = isActive;
-
-    if (!isActive || parent.state !== "step 0") {
-        module.functionsSharedData.perStep.processed = true;
-        return 0;
-    }
-
-    if (!target || !parent) {
-        module.functionsSharedData.perStep.processed = true;
-        return 0;
-    }
-
-    // Получаем модификаторы из характеристик корабля
-    const bonusCap = module.characteristics.additionalInfo.bonusCap;
-    const perStepBonus = module.characteristics.additionalInfo.perStepBonus;
-
-    // Распределяем сопротивления
-    const resistances = {
-        thermal: target.currentCharacteristics.constant.resistance.thermal.armor,
-        kinetic: target.currentCharacteristics.constant.resistance.kinetic.armor,
-        explosive: target.currentCharacteristics.constant.resistance.high_explosive.armor,
-        electromagnetic: target.currentCharacteristics.constant.resistance.electro_magnetic.armor,
-    };
-
-    // Суммируем сопротивления
-    const totalResistance = Object.values(resistances).reduce((acc, val) => acc + val, 0);
-
-    // Проверяем, не превышает ли сумма сопротивлений максимальное значение
-    if (totalResistance > bonusCap) {
-        module.functionsSharedData.perStep.hit = true;
-        module.functionsSharedData.perStep.effectiveness = 0; // Сопротивление слишком высоко
-        log(module.path, `Adaptive Membrane | Resistance exceeded: ${totalResistance} > ${bonusCap}`);
-    } else {
-        // Распределяем сопротивления
-        const effectiveResistance = Object.entries(resistances).reduce((acc, [key, value]) => {
-            const distribution = Math.min(value, perStepBonus);
-            acc[key] = distribution;
-            return acc;
-        }, {});
-
-        // Обновляем текущие сопротивления
-        module.functionsSharedData.currentResistances = effectiveResistance;
-
-        module.functionsSharedData.perStep.hit = true;
-        module.functionsSharedData.perStep.effectiveness = 1 - (totalResistance / bonusCap); // Эффективность
-        module.functionsSharedData.perStep.damage = effectiveResistance; // Урон
-
-        log(module.path, `Adaptive Membrane | Effective Resistance: ${effectiveResistance}, Total Resistance: ${totalResistance}`);
     }
 
     module.functionsSharedData.perStep.processed = true;

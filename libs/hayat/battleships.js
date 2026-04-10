@@ -60,6 +60,21 @@ const tonnageToAcceleration = {
   9: 12
 };
 
+export const tonnageToResolution = {
+  [-1]: 0,
+  null: 0,
+  0: 15,
+  1: 20,
+  2: 30,
+  3: 50,
+  4: 100,
+  5: 140,
+  6: 400,
+  7: 600,
+  8: 700,
+  9: 800
+};
+
 const energyToKineticDamage = 0.0000017;
 const energyToHeating = 0.000000001;
 
