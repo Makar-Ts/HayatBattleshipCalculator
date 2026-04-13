@@ -100,11 +100,18 @@ export default class BaseModule {
         
         modif = eval(m);
       }
+
+      if (mod.modificationType == "percent")
+        modif -= 1 // 0.7 это -30% так что надо превратить это в -0.3 и т.д. (так же в таком случае правильно интерференция считается)
+
       modif *= mod.isAffectedByInterference ? clamp(1 - interference, 0, 1) : 1;
 
       if (mod.characteristic in mods[mod.target][mod.modificationType]) {
         mods[mod.target][mod.modificationType][mod.characteristic] += modif;
       } else {
+        if (mod.modificationType == "percent")
+          modif += 1 // надо так как изначально все моды это 100% (т.е. 1)
+
         mods[mod.target][mod.modificationType][mod.characteristic] = modif;
       }
     }
