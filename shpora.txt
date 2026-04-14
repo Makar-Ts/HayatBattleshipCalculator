@@ -1,0 +1,346 @@
+//ИХ НИЩИЙ ДЕБАФФ:
+target.currentCharacteristics.constant.module_modifiers['']
+
+//НАШ ВЕЛИКИЙ МОДИФИКАТОР:
+parent.currentCharacteristics.constant.module_modifiers['']
+
+// Модификаторы для вооружения
+offence
+
+// Модификаторы для баллистики
+offence>ballistic
+offence>ballistic>effective_distance_modifier
+offence>ballistic>damage_modifier
+offence>ballistic>tracking_modifier
+offence>ballistic>capacitor_consumption_modifier
+offence>ballistic>heating_modifier
+offence>ballistic>target_heating_modifier
+
+// Модификаторы для лазеров
+offence>laser
+offence>laser>effective_distance_modifier
+offence>laser>damage_modifier
+offence>laser>tracking_modifier
+offence>laser>capacitor_consumption_modifier
+offence>laser>heating_modifier
+offence>laser>target_heating_modifier
+
+// Модификаторы для ПУ (Пусковых установок)
+offence>launcher
+offence>launcher>on_hit_damage_modifier
+offence>launcher>fuel_modifier
+offence>launcher>acceleration_modifier
+offence>launcher>explosion_signature_modifier
+offence>launcher>capacitor_consumption_modifier
+offence>launcher>heating_modifier
+offence>launcher>on_hitheating_modifier
+
+// Модификаторы для АОЕ атак (Бомбы)
+offence>bomb
+offence>bomb>effective_distance_modifier
+offence>bomb>damage_modifier
+offence>bomb>capacitor_consumption_modifier
+offence>bomb>heating_modifier
+
+// Модификаторы для дезинтеграторов
+offence>desintegrator
+offence>desintegrator>effective_distance_modifier
+offence>desintegrator>damage_modifier
+offence>desintegrator>tracking_modifier
+offence>desintegrator>capacitor_consumption_modifier
+offence>desintegrator>heating_modifier
+offence>desintegrator>target_heating_modifier
+// Бонус урону от каждой атаки
+offence>desintegrator>per_shot_bonus_modifier
+// Потолок бонуса
+offence>desintegrator>max_stack_modifier
+
+// Модификаторы силы НАШИХ средств Радиоэлектронной Борьбы (EW)
+offence>EW
+offence>EW>effective_distance_modifier
+offence>EW>capacitor_consumption_modifier
+offence>EW>heating_modifier
+offence>EW>target_heating_modifier
+// Основной бонус, накладывающийся на все последующие сверху
+offence>EW>EW_strenght_modifier
+// Чисто для профильных особенностей и каких-то мега узкоспециализированных штуковин
+offence>EW>tracking_disruption_modifier
+offence>EW>stasis_modifier
+offence>EW>maneuverability_disruption_modifier
+offence>EW>contact_quality_disruption_modifier
+offence>EW>signature_painting_modifier
+offence>EW>capacitor_disruption_modifier
+
+// Модификаторы субтел этого тела
+offence>vehicle
+offence>vehicle>vehicle_damage_modifier
+offence>vehicle>vehicle_acceleration_modifier
+offence>vehicle>vehicle_target_heating_modifier
+offence>vehicle>vehicle_effective_distance_modifier
+offence>vehicle>vehicle_signature_modifier
+offence>vehicle>vehicle_maneuverability_modifier
+offence>vehicle>vehicle_hp_modifier
+
+// Модификаторы работы инженерных модулей
+engineering
+
+// Бонус ремонта (Барьера)
+engineering>barrier
+engineering>barrier>passive_recharge_modifier
+engineering>barrier>active_recharge_modifier
+engineering>barrier>active_recharge_consumption
+engineering>barrier>active_recharge_heating
+
+// Резонанс барьера
+engineering>barrier>resonance
+// резонансная частота
+engineering>barrier>resonance>frequency
+// тенденция к резонансу
+engineering>barrier>resonance>tendency
+// резонансный диапазон
+engineering>barrier>resonance>range
+
+// Бонус ремонта (Брони)
+engineering>armor
+engineering>armor>active_repair_modifier
+engineering>armor>active_repair_consumption
+engineering>armor>active_repair_heating
+
+// Харденеры (Укрепители)
+engineering>hardener
+
+// Активные харденеры
+engineering>hardener>active
+engineering>hardener>active>barrier
+engineering>hardener>active>barrier>effectiveness_modifier
+engineering>hardener>active>barrier>capacitor_consumption_modifier
+engineering>hardener>active>barrier>heating_modifier
+
+engineering>hardener>active>armor
+engineering>hardener>active>armor>effectiveness_modifier
+engineering>hardener>active>armor>capacitor_consumption_modifier
+engineering>hardener>active>armor>heating_modifier
+
+// Пассивные харденеры
+engineering>hardener>passive
+engineering>hardener>passive>barrier
+engineering>hardener>passive>barrier>effectiveness_modifier
+
+engineering>hardener>passive>armor
+engineering>hardener>passive>armor>effectiveness_modifier
+
+// Мобильность
+engineering>mobility
+
+// Микроджамп / искажающий двигатель
+engineering>mobility>micro_distortion_drive
+engineering>mobility>micro_distortion_drive>effectiveness_modifier
+engineering>mobility>micro_distortion_drive>capacitor_consumption_modifier
+engineering>mobility>micro_distortion_drive>heating_modifier
+engineering>mobility>micro_distortion_drive>signature_penalty_modifier
+
+// Форсажная камера (Афтербернер)
+engineering>mobility>afterburner
+engineering>mobility>afterburner>effectiveness_modifier
+engineering>mobility>afterburner>capacitor_consumption_modifier
+engineering>mobility>afterburner>heating_modifier
+// Термодинамика
+engineering>thermodynamic
+engineering>thermodynamic>radiation_modifier
+engineering>thermodynamic>consumption_modifier
+engineering>thermodynamic>signature_penalty_modifier
+
+
+// Модификаторы работы модулей поддержки флота и дистанционного снабжения.
+// Отсюда же берут баффы и аппараты снабжения и поддержки.
+support
+support>effective_distance_modifier
+support>capacitor_consumption_modifier
+support>heating_modifier
+// Основной бонус, накладывающийся на все последующие сверху
+support>support_strenght_modifier
+// Чисто для профильных особенностей и каких-то мега узкоспециализированных штуковин
+support>tracking_support_modifier
+support>acceleration_support_modifier
+support>maneuverability_support_modifier
+support>contact_quality_support_modifier
+support>signature_suppression_modifier
+support>capacitor_injection_modifier
+support>shield_injection_modifier
+support>armor_repair_modifier
+
+
+// Модификаторы предтеч (Precursor)
+precursor
+
+// Дезинтеграторы предтеч
+precursor>desintegrator
+precursor>desintegrator>bonus_cap_modifier
+precursor>desintegrator>per_step_bonus_modifier
+
+// Мембраны предтеч
+precursor>membrane
+precursor>membrane>bonus_cap_modifier
+precursor>membrane>per_step_bonus_modifier
+
+// --------------------------------------------------------------------------------
+// ЕБАТЬ АХУЕВШИЕ ХАРАКТЕРИСТИКИ ВЁДЕР НАХУЙ (высмысле настоящие а не вымышленные):
+// --------------------------------------------------------------------------------
+
+// ИХ НИЩИЙ ДЕБАФФ:
+target.currentCharacteristics.
+
+//НАШ ВЕЛИКИЙ МОДИФИКАТОР:
+this.currentCharacteristics.
+
+// ДИНАМИЧЕСКИЕ ХАРАКТЕРИСТИКИ
+dynamic
+
+// характеристика для получения урона (корректный перенос урона между значениями)
+dynamic.recived_damage
+dynamic.recived_damage.kinetic
+dynamic.recived_damage.high_explosive
+dynamic.recived_damage.electro_magnetic
+dynamic.recived_damage.thermal
+
+// текущее значение очков прочности (HP)
+dynamic.hp
+// текущее значение корпуса
+dynamic.hp.hull
+// текущее значение брони
+dynamic.hp.armor
+// текущее значение барьера
+dynamic.hp.barrier
+
+// текущее значение нагрева
+dynamic.temperature
+
+// заряд конденсатора
+dynamic.charge
+
+// остаток топлива (только для субгридов)
+dynamic.fuel
+
+
+// ПОСТОЯННЫЕ ХАРАКТЕРИСТИКИ (КОНСТАНТЫ)
+constant
+
+// Характеристики корпуса/тела
+constant.body
+// тоннаж
+constant.body.tonnage
+// поколение ядра
+constant.body.core
+// масса
+constant.body.mass
+constant.body.layers
+
+// Контейнеры
+constant.body.containers
+// трюм
+constant.body.containers.storage
+// ангар
+constant.body.containers.hangar
+
+// радиус сигнатуры
+constant.body.signature
+
+// параметры если это субтело
+constant.body.subgrid
+constant.body.subgrid.size
+constant.body.subgrid.category
+constant.body.subgrid.fuel
+
+// максимальное ускорение
+constant.acceleration
+
+// дальность прыжка
+constant.jumpdistance // JUMP CALCULATION!!!!
+
+// маневренность
+constant.maneuverability
+
+// сила сенсоров
+constant.sensors_power
+
+// дальность захвата
+constant.capture_range
+
+// Конденсатор
+constant.capacitor
+// максимальный заряд
+constant.capacitor.charge
+// перезарядка за ход
+constant.capacitor.generation
+
+// Слоты ОМ (очков монтажа)
+constant.slots
+// внешные слоты ОМ
+constant.slots.external
+// инженерные слоты ОМ
+constant.slots.internal
+
+// Максимальные значения очков прочности (HP)
+constant.hp
+// максимальное значение корпуса
+constant.hp.hull
+// максимальное значение брони
+constant.hp.armor
+// максимальное значение барьера
+constant.hp.barrier
+
+// Распределение энергии столкновения
+constant.collision_energy_distribution
+constant.collision_energy_distribution.damage
+constant.collision_energy_distribution.velocity
+constant.collision_energy_distribution.heat
+
+// максимальное значение нагрева
+constant.temperature
+
+// нагрев за ход
+constant.heating
+
+// Сопротивляемости (Резисты)
+constant.resistance
+
+// кинетическая сопротивляемость
+constant.resistance.kinetic
+constant.resistance.kinetic.hull
+constant.resistance.kinetic.armor
+constant.resistance.kinetic.barrier
+
+// фугасная сопротивляемость
+constant.resistance.high_explosive
+constant.resistance.high_explosive.hull
+constant.resistance.high_explosive.armor
+constant.resistance.high_explosive.barrier
+
+// ЭМ сопротивляемость
+constant.resistance.electro_magnetic
+constant.resistance.electro_magnetic.hull
+constant.resistance.electro_magnetic.armor
+constant.resistance.electro_magnetic.barrier
+
+// тепловая сопротивляемость
+constant.resistance.thermal
+constant.resistance.thermal.hull
+constant.resistance.thermal.armor
+constant.resistance.thermal.barrier
+
+// Сопротивляемость к РЭБ
+constant.resistance.EW
+
+// Барьер
+constant.barrier
+// стабильная пассивная регенерация
+constant.barrier.passive_regeneration
+
+// Резонанс барьера
+constant.barrier.resonance
+// резонансная частота
+constant.barrier.resonance.frequency
+// тенденция к резонансу
+constant.barrier.resonance.tendency
+// резонансный диапазон
+constant.barrier.resonance.range

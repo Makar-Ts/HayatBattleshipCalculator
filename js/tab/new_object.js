@@ -34,9 +34,6 @@ import ENV from "../enviroments/env.js";
 import { point } from "../../libs/vector/point.js";
 
 const BATTLESHIP_ICONS = [
-  "Projectail.svg",
-  "Apparatus.svg",
-  "Corvett.svg",
   "Fregate.svg",
   "Destroyer.svg",
   "Сruiser.svg",
@@ -46,35 +43,38 @@ const BATTLESHIP_ICONS = [
   "KBT.svg",
   "Titan.svg",
   "ind. KMT.svg",
-  "ind. KST.svg"
+  "ind. KST.svg",
+  "Apparatus.svg",
+  "Projectail.svg",
+  "Corvett.svg"
 ]
 
 const SPRITES = [
-  "ADS.png",
-  "Asteroid_Station_Icon.png",
+  "shuttle.png",
+  "corvete.png",
+  "frigate.png",
+  "destroer.png" ,
+  "Cruiser.png",
   "Battlecruiser.png",
   "Battleship.png",
-  "Covert_border.png",
-  "Cruiser.png",
   "Dreadnought.png",
+  "ADS.png",
+  "Titan.png",
+  "ind-frigate.png",
+  "barge.png",
+  "ind-flagman.png",
+  "ind-ADS.png",
   "Fortifying.png",
+  "cfvoVs3.png",
   "Orbis.png",
   "Outpost.png",
-  "Titan.png",
   "assassin.png",
-  "barge.png",
-  "cfvoVs3.png",
-  "corvete.png",
-  "destroer.png",
-  "frigate.png",
-  "ind-ADS.png",
-  "ind-flagman.png",
-  "ind-frigate.png",
+  "Asteroid_Station_Icon.png",
+  "Covert_border.png",
   "mining.png",
   "pirate-timed.png",
   "planetary-data-unknown-mission.png",
   "rescue-mission.png",
-  "shuttle.png",
   "unknown-mission.png"
 ];
 
