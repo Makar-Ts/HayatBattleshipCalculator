@@ -35,7 +35,7 @@ body {
   margin: 0;
 
   color: var(--main);
-  font-family: Consolas;
+  font-family: Consolas, 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 button, input, select {

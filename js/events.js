@@ -6,6 +6,7 @@ export const EVENTS = {
   ON_MAP_CLICK_DIFF: 'onMapClickDiff',
   RESET: 'reset',
   STEP_LOG: 'stepLog',
+  STEP_LOGBOOK: 'stepLogbook',
   MAP: {
     /** object, id, redraw */
     NEW: 'mapNewObject',
@@ -14,6 +15,7 @@ export const EVENTS = {
     /** id, func, attr, redraw */
     FUNCTION: 'mapFunctionObject',
     REDRAW: 'mapRedraw',
+    REDRAW_COMPLETED: 'mapRedrawCompleted',
     STEP: 'mapStep',
     SHOW_RELATIVE_DATA: 'mapShowRelativeData'
   },

@@ -106,6 +106,7 @@ export default function init() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       drawObjects(canvas, ctx, toCanvas, style, activeLayers);
+      document.dispatchEvent(new Event(EVENTS.MAP.REDRAW_COMPLETED));
     })
   };
 
