@@ -28,7 +28,7 @@ export function drawGrid(canvas, ctx, toCanvas, size, grid, offset) {
 
   const padding = toCurrentCanvasSize(canvas, 50);
 
-  for (let index = Math.floor(-offset.x / grid); index < Math.floor((-offset.x + size) / grid); index++) {
+  for (let index = Math.floor(-offset.x / grid); index <= Math.floor((-offset.x + size) / grid); index++) {
     let pos = toCanvas({ x: index * grid })
     ctx.beginPath()
 
@@ -39,7 +39,7 @@ export function drawGrid(canvas, ctx, toCanvas, size, grid, offset) {
     ctx.fillText(`${index * grid}m`, pos + padding, padding);
   }
 
-  for (let index = Math.floor(-offset.y / grid); index < Math.floor((-offset.y + size) / grid); index++) {
+  for (let index = Math.floor(-offset.y / grid); index <= Math.floor((-offset.y + size) / grid); index++) {
     let pos = toCanvas({ y: index * grid })
     ctx.beginPath()
 
@@ -135,14 +135,75 @@ export default function init() {
 
   gridDraw(mapProps.size, mapProps.grid, mapProps.offset);
 
+
+
+  function generateNiceSteps(max) {
+    const steps = [];
+    const multipliers = [1, 2, 5];
+    let order = 1;
+    while (order <= max) {
+      for (const m of multipliers) {
+        const step = m * order;
+        if (step > max) return steps;
+        steps.push(step);
+      }
+      order *= 10;
+    }
+    return steps;
+  }
+
+
+  const TARGET_CELLS = 10;
+
+  function findBracket(ideal, steps) {
+    if (ideal <= steps[0]) return { low: steps[0], high: null };
+    for (let i = 1; i < steps.length; i++) {
+      if (ideal < steps[i]) {
+        return { low: steps[i - 1], high: steps[i] };
+      }
+    }
+    return { low: steps[steps.length - 1], high: null };
+  }
+
+
+  const HYSTERESIS = 0.15;
+
+  function chooseGrid(currentGrid, ideal, steps) {
+    const bracket = findBracket(ideal, steps);
+    if (bracket.high === null) {
+      return Math.max(bracket.low, currentGrid);
+    }
+
+    const { low, high } = bracket;
+    const midpoint = (low + high) / 2;
+
+    if (currentGrid === low) {
+      if (ideal > midpoint * (1 + HYSTERESIS)) return high;
+      return low;
+    } else if (currentGrid === high) {
+      if (ideal < midpoint * (1 - HYSTERESIS)) return low;
+      return high;
+    } else {
+      return ideal <= midpoint ? low : high;
+    }
+  }
+
+
+  const niceSteps = generateNiceSteps(1_000_000);
+
   document.addEventListener(EVENTS.MAP_SET_CHANGED, (e) => {
-    const { size, grid, offset } = e.detail;
+    let { size, grid, offset } = e.detail;
 
     canvas.width = settings.gridResolution;
     canvas.height = settings.gridResolution;
     raito = canvas.width / size;
 
-    mapProps = {...mapProps, ...e.detail};
+    if (settings.autoResizeGrid) {
+      const idealStep = size / TARGET_CELLS;
+      grid = chooseGrid(mapProps.grid, idealStep, niceSteps);
+    }
+
+    mapProps = {...mapProps, ...e.detail, grid};
     gridDraw(size, grid, mapProps.offset);
   })
 }

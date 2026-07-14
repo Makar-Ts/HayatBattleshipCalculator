@@ -3,7 +3,7 @@ import { generateProgressbar } from "../../libs/generateProgressbar.js";
 import { overheatDamage, passiveBarrierRegeneration, tonnage } from "../../libs/hayat/battleships.js";
 import { point } from "../../libs/vector/point.js";
 import { drawGrid, mapProps } from "../canvas/grid.js";
-import { canvas, drawObjects, objects, style } from "../canvas/map.js";
+import { canvas, drawObjects, objects, style, currentlySimulatedFrame } from "../canvas/map.js";
 import { check_id } from "../canvas/map/check_id.js";
 import { getInArea } from "../canvas/map/get_in_area.js";
 import MAP_OBJECTS_IDS from "../canvas/objects/map/mapObjectsIds.constant.js";
@@ -88,13 +88,25 @@ export default function () {
     recordingCtx.drawImage(mapCanvas, 0, 0, recordingCanvas.width, recordingCanvas.height);
     
     if (recordingStepNumber > 0) {
-      recordingCtx.font = 'bold 48px "Consolas", monospace';
+      recordingCtx.font = 'bold 32px "Consolas", monospace';
       recordingCtx.textAlign = 'left';
-      recordingCtx.textBaseline = 'bottom';
+      recordingCtx.textBaseline = 'top';
+
+      const x = 20;
+      const y = recordingCanvas.height - 110;
+
+      const dt = ENV.STEP / ENV.PHYSICS_ENGINE_STEPS;
+      const line1 = `Step ${recordingStepNumber} | ${(currentlySimulatedFrame * dt).toFixed(4)}s [${String(currentlySimulatedFrame).padStart(String(ENV.PHYSICS_ENGINE_STEPS).length, "0")}]`;
+      const line2 = `────────────────────`;
+      const line3 = `${ENV.CURRENT_VERSION} (sv ${ENV.SUPPORTED_SAVE_VERSION})`;
+
       recordingCtx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      recordingCtx.fillRect(20, recordingCanvas.height - 80, 260, 60);
+      recordingCtx.fillRect(x - 10, y - 10, 400, 95);
+
       recordingCtx.fillStyle = '#fff';
-      recordingCtx.fillText(`Step ${recordingStepNumber}`, 30, recordingCanvas.height - 30);
+      recordingCtx.fillText(line1, x, y);
+      recordingCtx.fillText(line2, x, y + 30);
+      recordingCtx.fillText(line3, x, y + 60);
     }
 
     recordingCanvas.requestFrame?.();

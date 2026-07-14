@@ -26,6 +26,8 @@ let style;
 let objects;
 let toCanvas;
 
+let currentlySimulatedFrame = -1;
+
 
 function collectRenderObjects(obj, layers, renderRowAcc) {
   if (obj.visible) {
@@ -240,6 +242,8 @@ export default function init() {
     const finalize = () => {
       console.log(" ------ finalize simulation ------ ")
 
+      currentlySimulatedFrame = -1;
+
       log('system', `done! export states...`);
     
       exportPhysicsState();
@@ -286,6 +290,8 @@ export default function init() {
     const dt = ENV.STEP / ENV.PHYSICS_ENGINE_STEPS;
     const onStep = (step) => {
       exportPhysicsState();
+
+      currentlySimulatedFrame = step;
 
       const callback = {};
       for (let i of Object.keys(objects)) {
@@ -395,4 +401,4 @@ export default function init() {
   }
 }
 
-export { ctx, canvas, style, objects, toCanvas }
+export { ctx, canvas, style, objects, toCanvas, currentlySimulatedFrame }
