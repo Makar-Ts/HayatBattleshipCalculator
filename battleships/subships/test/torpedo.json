@@ -20,9 +20,16 @@
         "category": "battle",
         "autonomous": true,
         "fuel": 102,
+        "solid_drive": false,
 
         "self_destruct_in": 120,
         "guidanceDelay": 3,
+
+        "guidance": {
+          "responseTime": 1,
+          "rotation": 5,
+          "sideScale": 0.05
+        },
 
         "poximity_fuse": {
           "passive": null,

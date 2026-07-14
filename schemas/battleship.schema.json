@@ -62,9 +62,19 @@
 
                 "autonomous": { "type": "boolean" },
                 "fuel": { "type": "number" },
+                "solid_drive": { "type": "boolean" },
 
                 "self_destruct_in": { "type": "number" },
                 "guidanceDelay": { "type": "number" },
+
+                "guidance": {
+                  "type": "object",
+                  "properties": {
+                    "rotation": { "type": "number" },
+                    "side_scale": { "type": "number" },
+                    "response_time": { "type": "number" }
+                  }
+                },
 
                 "drone": {
                   "safe_distance": { "type": "number" }
