@@ -80,6 +80,11 @@ export default class SelfguidedSubgridObject extends ExplosiveSubgridObject {
     const vrx = Vt.x - Vm.x;
     const vry = Vt.y - Vm.y;
 
+    // Скорость изменения дальности.
+    // < 0 - сближение
+    // > 0 - удаление
+    const rangeRate = vrx * ux + vry * uy;
+
 
     const pf = this.currentCharacteristics.constant.body.subgrid.poximity_fuse;
     if (pf) {
@@ -94,7 +99,7 @@ export default class SelfguidedSubgridObject extends ExplosiveSubgridObject {
         if (virtualSignature != target.size) {
           const md = ppf.min_distance;
 
-          if (range <= md && (vrx < 0 || vry < 0)) {
+          if (range <= md && rangeRate > 0) {
             log(this.path, `Passive PF triggered by ${obj.id}`);
             this.destroy();
 
