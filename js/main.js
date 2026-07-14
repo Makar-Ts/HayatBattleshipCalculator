@@ -10,7 +10,9 @@ import loadModules, { setReadyFunction as modulesReady } from '../modules/module
 import ReadyFunctionsCombiner from '../libs/combineReadyFunctions.js'
 import ui from './ui/ui.js'
 import settings from './settings/settings.js'
+import ENV from './enviroments/env.js';
 
+console.log(` version ${ENV.CURRENT_VERSION}, supported saves ${ENV.SUPPORTED_SAVE_VERSION}+ `)
 console.log(" ------ loading ------ ")
 
 settings();
