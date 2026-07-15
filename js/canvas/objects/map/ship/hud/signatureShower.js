@@ -103,4 +103,4 @@ export default class SignatureShower extends StandartObject {
 }
 
 registerClass(SignatureShower);
-registerLayers(SignatureShower, ['hud', 'signature'], 2);
+registerLayers(SignatureShower, ['hud', 'signature'], 22);

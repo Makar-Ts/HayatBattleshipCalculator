@@ -1,10 +1,11 @@
 const MAP_OBJECTS_IDS = {
   CONTACT_CONTROLLER: 'contactController',
   SHIP_STATS_HUD: 'shipStatsHud',
+  SHIP_EFFECTS_CONTROLLER: 'shipEffectsController',
   VECTOR_HUD: 'vectorHud',
   SIGNATURE_HUD: 'signatureHud',
   DATA_HUD: 'hud',
-  SPRITE: 'image'
+  SPRITE: 'image',
 }
 
 window.MAP_OBJECTS_IDS = MAP_OBJECTS_IDS;

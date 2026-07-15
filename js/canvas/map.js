@@ -1,6 +1,6 @@
 import { mergeDeep } from "../../libs/deepMerge.js";
 import intentFromObject from "../../libs/generatePhysicsIntentFromObject.js";
-import { compareVersions } from "../../libs/utils.js";
+import { compareVersions, stringOrRegex } from "../../libs/utils.js";
 import { point } from "../../libs/vector/point.js";
 import { computeCenteredSquare } from "../controls/map.js";
 import { log } from "../controls/step-logs/log.js";
@@ -19,14 +19,19 @@ import { MAX_INTER_STEPS } from "./objects/map/step/stepInfoCollector.js";
 import { checkObjectRenderVisibility, getZIndexes, getZIndexIfCorrectLayer } from "./layers/layersInfoCollector.js";
 import { addRecordStringAny } from "../../libs/addRecordStringAny.js";
 import { activeLayers } from "../tab/render.js";
+import { Effect } from "./objects/map/step/effects/effect.js";
+import { uuidv4 } from "../../libs/uuid.js";
 
 let canvas;
 let ctx;
 let style;
 let objects;
+let effects;
 let toCanvas;
 
 let currentlySimulatedFrame = -1;
+/** @type {(effect: Effect) => string} */
+let registerEffect;
 
 
 function collectRenderObjects(obj, layers, renderRowAcc) {
@@ -51,6 +56,10 @@ export function drawObjects(canvas, ctx, toCanvas, style, activeLayers) {
     collectRenderObjects(objects[i], layers, renderRow);
   }
 
+  for (let i in effects) {
+    collectRenderObjects(effects[i], layers, renderRow);
+  }
+
   const sortedKeys = Object.keys(renderRow).map(Number).sort((a, b) => a - b);
   for (let i of sortedKeys) {
     for (let render of renderRow[i]) {
@@ -66,6 +75,7 @@ export default function init() {
   style = window.getComputedStyle(canvas);
 
   objects = {};
+  
 
   canvas.width = settings.mapResolution;
   canvas.height = settings.mapResolution;
@@ -117,6 +127,19 @@ export default function init() {
   layers();
 
 
+  effects = {};
+  registerEffect = (effect) => {
+    const id = `effect--${uuidv4()}`;
+
+    effect.register(id);
+    effects[id] = effect;
+    console.log(effects)
+
+    return id;
+  }
+
+
+
   document.addEventListener(EVENTS.MAP_SET_CHANGED, (e) => {
     const { size, grid } = e.detail;
 
@@ -137,8 +160,12 @@ export default function init() {
 
   document.addEventListener(EVENTS.MAP.DELETE, (e) => {
     const { id, redraw } = e.detail;
-
-    delete objects[id];
+    
+    if (objects[id]) {
+      delete objects[id];
+    } else {
+      delete effects[id];
+    }
     if (redraw) redrawMap();
   });
 
@@ -181,6 +208,13 @@ export default function init() {
       data[i] = objects[i].next();
       stepLoading('step', 1);
     }
+    
+    for (let i of Object.keys(effects)) {
+      data[i] = effects[i].next();
+      stepLoading('step', 1);
+    }
+
+    let objectsWithEffects = { ...objects, ...effects };
 
     stepLoading('step', 1);
     console.log(" ------ steps ------ ")
@@ -191,8 +225,8 @@ export default function init() {
       log('system', `starting ${step} inter step`)
       console.log(prevData)
 
-      for (let i of Object.keys(objects)) {
-        data[i] = objects[i].step(step, prevData);
+      for (let i of Object.keys(objectsWithEffects)) {
+        data[i] = objectsWithEffects[i].step(step, prevData);
         stepLoading('step', 1);
       }
 
@@ -211,9 +245,9 @@ export default function init() {
 
     console.log(" ------ register objects ------ ")
 
-    for (let id of Object.keys(objects)) {
-      if (!objects[id].collision) continue;
-      physics.registerIntent(intentFromObject(objects[id]));
+    for (let id of Object.keys(objectsWithEffects)) {
+      if (!objectsWithEffects[id].collision) continue;
+      physics.registerIntent(intentFromObject(objectsWithEffects[id]));
     }
 
     console.log(" ------ setup sim ------ ")
@@ -223,7 +257,7 @@ export default function init() {
     const exportPhysicsState = () => {
       const physRes = physics.exportStates();
 
-      for (let id of Object.keys(objects)) {
+      for (let id of Object.keys(objectsWithEffects)) {
         prevData[id] = {
           ...prevData[id],
           _physics: physRes.states[id] ? {
@@ -250,8 +284,8 @@ export default function init() {
       
       console.log(" ------ after simulation ------ ")
 
-      for (let i of Object.keys(objects)) {
-        objects[i].afterSimulation?.(prevData);
+      for (let i of Object.keys(objectsWithEffects)) {
+        objectsWithEffects[i].afterSimulation?.(prevData);
 
         stepLoading('step', 1);
       }
@@ -262,8 +296,8 @@ export default function init() {
 
       console.log(" ------ finalize ------ ")
 
-      for (let i of Object.keys(objects)) {
-        objects[i].finalize(prevData);
+      for (let i of Object.keys(objectsWithEffects)) {
+        objectsWithEffects[i].finalize(prevData);
 
         stepLoading('step', 1);
       }
@@ -301,6 +335,10 @@ export default function init() {
           ...f,
           objectRef: intentFromObject(objects[i]),
         };
+      }
+
+      for (let i of Object.keys(effects)) {
+        effects[i].physicsSimulationStep?.(step, dt, prevData);
       }
 
       stepLoading('step', 1);
@@ -362,6 +400,7 @@ export default function init() {
 
   document.addEventListener(EVENTS.RESET, () => {
     objects = {};
+    effects = {};
     redrawMap();
   })
 
@@ -401,4 +440,4 @@ export default function init() {
   }
 }
 
-export { ctx, canvas, style, objects, toCanvas, currentlySimulatedFrame }
+export { ctx, canvas, style, objects, effects, toCanvas, currentlySimulatedFrame, registerEffect }

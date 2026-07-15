@@ -116,6 +116,10 @@ export default class BasicMovingObject extends BasicStepObject {
       this._y = phys.pos.y;
       this.velocity = point(phys.vel.x, phys.vel.y);
     }
+
+    for (let i of Object.keys(this.children)) {
+      this.children[i].physicsSimulationStep?.(step, delta, objectsData);
+    }
   }
 
 

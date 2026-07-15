@@ -213,7 +213,7 @@ let MODULES_CALCULATION_FUNCTIONS = {
     return num > 0 ? -num : 0;
   },
 
-  ыLaserAttack: (modificator, module, parent, target) => {
+  LaserAttack: (modificator, module, parent, target) => {
     if (parent.state != "step 0" || module.functionsSharedData.perStep.processed) return 0;
 
     module.functionsSharedData.perStep.hit          = false;

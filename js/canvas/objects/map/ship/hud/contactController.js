@@ -207,7 +207,7 @@ export class ContactController extends BasicStepObject {
       const l1_offset = toCanvas({ direction: calc(() => point(lines[0].p1.x, lines[0].p1.y) - point(this.parent._x, this.parent._y))}).normalize();
       const l2_offset = toCanvas({ direction: calc(() => point(lines[1].p1.x, lines[1].p1.y) - point(this.parent._x, this.parent._y))}).normalize();
 
-      ctx.strokeStyle = isMain ? style.getPropertyValue("--accent") : style.getPropertyValue("--target-non-active");
+      ctx.strokeStyle = isMain ? style.getPropertyValue("--accent-transparent") : style.getPropertyValue("--target-non-active");
       ctx.lineWidth = toCurrentCanvasSize(canvas, 20);
       ctx.setLineDash([toCurrentCanvasSize(canvas, 60), toCurrentCanvasSize(canvas, 60)]);
 
@@ -229,7 +229,7 @@ export class ContactController extends BasicStepObject {
         p12.y + l2_offset.y * dist,
       ];
     } else {
-      ctx.strokeStyle = isMain ? style.getPropertyValue("--accent") : style.getPropertyValue("--target-non-active");
+      ctx.strokeStyle = isMain ? style.getPropertyValue("--accent-transparent") : style.getPropertyValue("--target-non-active");
       ctx.lineWidth = toCurrentCanvasSize(canvas, 20);
 
       const p01 = toCanvas(lines[0].p1),
@@ -298,7 +298,7 @@ export class ContactController extends BasicStepObject {
       if (progress < 0.5) {
         ctx.strokeStyle = style.getPropertyValue("--target");
       } else {
-        ctx.strokeStyle = isMain ? style.getPropertyValue("--accent") : style.getPropertyValue("--target-non-active")
+        ctx.strokeStyle = isMain ? style.getPropertyValue("--accent-transparent") : style.getPropertyValue("--target-non-active")
       }
 
       drawArrow(...posl1);
@@ -359,4 +359,4 @@ export class ContactController extends BasicStepObject {
 
 registerClass(ContactController);
 registerSteps(ContactController, 0, []);
-registerLayers(ContactController, ['hud', 'contact'], 1);
+registerLayers(ContactController, ['hud', 'contact'], 21);

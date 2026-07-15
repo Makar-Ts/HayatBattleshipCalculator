@@ -5,6 +5,7 @@ import { registerSteps } from "../../../step/stepInfoCollector.js";
 import ContactSubgridObject from "./contactSubgridObject.js";
 import { log } from "../../../../../../controls/step-logs/log.js";
 import { registerLayers } from "../../../../../layers/layersInfoCollector.js";
+import { createExplosion, ExplosionColors } from "../../../step/effects/predefined/explosion.js";
 
 export default class ExplosiveSubgridObject extends ContactSubgridObject {
   exploded = false;
@@ -126,6 +127,16 @@ ${Object.entries(l).map(([k, v]) =>
     : `${k}: ${v}`
 ).join('<br>')}`)
     }
+
+    let t = "kinetic", p = 0;
+    for (let [k, v] of Object.entries(effect.damage)) {
+      if (p < v) {
+        p = v;
+        t = k;
+      }
+    }
+
+    createExplosion(this._x, this._y, this.velocity, p * 3, ExplosionColors[t].primary, ExplosionColors[t].secondary);
 
     this.exploded = true;
   }

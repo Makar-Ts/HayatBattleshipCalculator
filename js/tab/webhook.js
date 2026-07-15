@@ -130,25 +130,46 @@ export default function () {
     }
   }
 
+
+  const downloadVideo = (blob, filename = "battle-step.webm") => {
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.style.display = "none";
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
   const uploadStepVideo = async (blob) => {
-    if (!webhook()) return;
+    if (!webhook()) {
+      downloadVideo(blob);
+      return;
+    }
 
     const formData = new FormData();
-    formData.append('file', blob, 'battle-step.webm');
+    formData.append("file", blob, "battle-step.webm");
 
     try {
       const response = await fetch(webhook(), {
-        method: 'POST',
-        body: formData
+        method: "POST",
+        body: formData,
       });
 
       if (response.ok) {
-        console.log('Step video successfully sent!');
+        console.log("Step video successfully sent!");
       } else {
-        console.error('Video upload failed:', response.status);
+        console.error("Video upload failed:", response.status);
+        downloadVideo(blob);
       }
     } catch (err) {
-      console.error('Network error:', err);
+      console.error("Network error:", err);
+      downloadVideo(blob);
     }
   };
 
