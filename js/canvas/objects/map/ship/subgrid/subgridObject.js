@@ -26,6 +26,7 @@ export default class SubgridObject extends ShipObject {
 
   controlledBy = new ObjectConnection(() => objects);
 
+  subgrid = true;
   active = false;
   activationInfo = {
     delay: 0,

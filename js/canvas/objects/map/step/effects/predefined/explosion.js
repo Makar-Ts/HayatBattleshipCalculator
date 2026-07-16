@@ -3,6 +3,7 @@ import { ParticleSystem } from "../particleSystem/particleSystem.js";
 import { Bezier } from "../../../../../../../libs/beizer/bezier.js";
 import { point } from "../../../../../../../libs/vector/point.js";
 import { rgba } from "../../../../../../../libs/color.js";
+import { HexParticle } from "../particleSystem/particles/hexParticle.js";
 
 
 export const ExplosionColors = {
@@ -52,6 +53,7 @@ export function createExplosion(
       velocity: startVelocity,
       simulateVelocity: true,
 
+      particle: HexParticle,
       frequency: 0.003,
       emitTime: 0.15,
       lifetime: smokeLifetime,
@@ -92,6 +94,7 @@ export function createExplosion(
       velocity: startVelocity,
       simulateVelocity: true,
 
+      particle: HexParticle,
       frequency: 0.0015,
       emitTime: 0.05,
       lifetime: fireLifetime,
@@ -157,7 +160,7 @@ export function createExplosion(
 
       sizeFunc: (p) => {
         const s = (1 - p.age / sparkLifetime) * Math.sqrt(power * 6) / 2;
-        return [s, s];
+        return [s, s * 5];
       },
 
       velFunc: (p) => point(p.velocity.x * 0.995, p.velocity.y * 0.995),
@@ -175,6 +178,7 @@ export function createExplosion(
 
       velocity: startVelocity,
 
+      particle: HexParticle,
       frequency: 1,
       lifetime: waveLifetime,
       systemLifetime: waveLifetime,

@@ -42,7 +42,10 @@ export class ContactController extends BasicStepObject {
   }
 
   onParentDestroy() {
+    if (!this._calculateModifiersHandler) return;
+
     document.removeEventListener('calculateModifiers', this._calculateModifiersHandler);
+    this._calculateModifiersHandler = undefined;
 
     super.onParentDestroy();
   }

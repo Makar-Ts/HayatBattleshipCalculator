@@ -6,7 +6,7 @@ import { registerClass } from "../../../../../../save&load/objectCollector.js";
 import { registerLayers } from "../../../../../layers/layersInfoCollector.js";
 import { registerSteps } from "../../stepInfoCollector.js";
 import { Effect } from "../effect.js";
-import { Particle } from "./particle.js";
+import { Particle } from "./particles/particle.js";
 
   /**
  * @typedef {Object} ParticleSystemOptions
@@ -15,6 +15,7 @@ import { Particle } from "./particle.js";
  * @property {number} [direction=0]
  * @property {Point} [velocity]
  * @property {boolean} [simulateVelocity=false]
+ * @property {typeof Particle} [particle=Particle]
  * @property {number} [frequency=1]
  * @property {number} lifetime
  * @property {number} [emitTime=6]
@@ -47,6 +48,8 @@ export class ParticleSystem extends Effect {
     startVelocityFunc = () => point(0, 0),
     startRotationFunc = (p) => p.direction,
 
+    particle = Particle,
+
     frequency = 1,
     lifetime,
     emitTime = ENV.STEP,
@@ -69,6 +72,7 @@ export class ParticleSystem extends Effect {
     this.startVelocityFunc = startVelocityFunc;
     this.startRotationFunc = startRotationFunc;
 
+    this.particle = particle;
     this.frequency = frequency;
     this.particleMaxLifetime = lifetime;
     this.emitTime = emitTime;
@@ -93,7 +97,7 @@ export class ParticleSystem extends Effect {
     const baseVelocity = calc(() => getLocalVelocity(rotation, velocity.x, velocity.y) + this.velocity)
     const lifetime = this.particleMaxLifetime;
     this._seq += 1;
-    const particle = new Particle(
+    const particle = new this.particle(
       basePosition.x, basePosition.y, 
       baseVelocity, 
       lifetime, 
@@ -121,7 +125,7 @@ export class ParticleSystem extends Effect {
       this._y += this.velocity.y * this.__dt;
     }
 
-    if (this._livetime <= this.emitTime) {
+    if (this._livetime <= this.emitTime || this.emitTime === -1) {
       if (this.frequency <= this.__dt) {
         this.spawn(Math.floor(this.__dt / this.frequency))
       } else if ((this._livetime % this.frequency) <= this.__dt) {

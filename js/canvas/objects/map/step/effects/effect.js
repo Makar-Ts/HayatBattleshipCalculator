@@ -19,7 +19,7 @@ export class Effect extends BasicStaticObject {
     this.mass = 1;
 
     this._maxLifetime = lifetime;
-    this._deleteOnSimEnd = true;
+    this._deleteOnSimEnd = deleteOnSimEnd;
   }
 
 
@@ -31,7 +31,7 @@ export class Effect extends BasicStaticObject {
   physicsSimulationStep(step, objectsData) {
     this._livetime += this.__dt;
 
-    if (this._livetime >= this._maxLifetime) {
+    if (this._livetime >= this._maxLifetime && this._maxLifetime !== -1) {
       this.visible = false;
       this.destroy();
       return {
@@ -45,17 +45,14 @@ export class Effect extends BasicStaticObject {
 
     this._livetime -= this._step;
 
-    if (this._deleteOnSimEnd || this._livetime >= this._maxLifetime) {
+    if (this._deleteOnSimEnd || (this._livetime >= this._maxLifetime && this._maxLifetime !== -1)) {
       this.destroy();
     }
   }
 
 
   save(realParent = null) {
-    return {
-      ...super.save(realParent),
-      maxLifetime: this._maxLifetime,
-    };
+    return false;
   }
 
   load(data, loadChildren = false) {

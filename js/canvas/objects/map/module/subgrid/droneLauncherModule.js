@@ -13,6 +13,7 @@ import { objects } from "../../../../map.js";
 import BasicDataHud from "../../hud/basicDataHud.js";
 import MAP_OBJECTS_IDS from "../../mapObjectsIds.constant.js";
 import { ContactController } from "../../ship/hud/contactController.js";
+import { ShipEffectController } from "../../ship/hud/shipEffectController.js";
 import ShipStatsHUD from "../../ship/hud/shipStatsHud.js";
 import SignatureShower from "../../ship/hud/signatureShower.js";
 import DroneObject from "../../ship/subgrid/drone/droneObject.js";
@@ -77,6 +78,9 @@ export class DroneLauncherModule extends BaseModule {
             (object.size ?? 30) * 10,
           )
         )
+      
+      if (!object.children[MAP_OBJECTS_IDS.SHIP_EFFECTS_CONTROLLER])
+        object.setChildren(MAP_OBJECTS_IDS.SHIP_EFFECTS_CONTROLLER,      new ShipEffectController(true))
 
       object.afterLoad();
       
@@ -100,6 +104,8 @@ export class DroneLauncherModule extends BaseModule {
       );
 
       this.launched.Connection = object;
+
+      object?.next();
     }
   }
 
