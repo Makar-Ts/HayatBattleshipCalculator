@@ -70,14 +70,18 @@ export class DroneLauncherModule extends BaseModule {
           { func: (hud) => `speed: ${Math.round(hud.parent.velocity.length)}m/s` },
         ]))
       
-      if (!object.children[MAP_OBJECTS_IDS.SPRITE])
+      if (!object.children[MAP_OBJECTS_IDS.SPRITE]) {
         object.setChildren(MAP_OBJECTS_IDS.SPRITE, 
           new SpriteShower(
             './img/Apparatus.svg', 
-            '#ff0000',
+            this.parent.children[MAP_OBJECTS_IDS.SPRITE]?.color ?? '#ff0000',
             (object.size ?? 30) * 10,
           )
         )
+      } else {
+        object.children[MAP_OBJECTS_IDS.SPRITE].color = 
+          this.parent.children[MAP_OBJECTS_IDS.SPRITE]?.color ?? object.children[MAP_OBJECTS_IDS.SPRITE].color;
+      }
       
       if (!object.children[MAP_OBJECTS_IDS.SHIP_EFFECTS_CONTROLLER])
         object.setChildren(MAP_OBJECTS_IDS.SHIP_EFFECTS_CONTROLLER,      new ShipEffectController(true))

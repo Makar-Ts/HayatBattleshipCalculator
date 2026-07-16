@@ -53,7 +53,7 @@ export class ShipEffectController extends BasicStepObject {
       startOffsetFunc: (p) => a,
 
       particle: DoubleTrailParticle,
-      frequency: spacing / Math.max(speed, 1),
+      frequency: 0.005,
       lifetime: particleLifetime,
       emitTime: -1,
       systemLifetime: -1,
@@ -84,7 +84,7 @@ export class ShipEffectController extends BasicStepObject {
     const startVel = this.combinedForcesLength / 1000000;
 
     const sizem = this.parent.subgrid ? 4 : 10;
-    const velm = this.parent.subgrid ? 200 : 1;
+    const velm = this.parent.subgrid ? 2000 : 1;
 
     this._thrustParticleSystem = new ParticleSystem({
       x: pos.x,
@@ -154,10 +154,6 @@ export class ShipEffectController extends BasicStepObject {
     this._afterlineParticleSystem.direction = angle;
     this._afterlineParticleSystem._x = this.parent._x;
     this._afterlineParticleSystem._y = this.parent._y;
-
-    const spacing = this.parent.size / 2;
-    const speed = this.parent.velocity.length;
-    this._afterlineParticleSystem.frequency = spacing / Math.max(speed, 1);
 
 
     if (!this._thrustParticleSystem) {
