@@ -1,0 +1,43 @@
+{
+  "main": {
+    "name": "Ангар дрона «Кадуцей»",
+    "type": "Ангары",
+    "category": "Малые ангары",
+    "class": "DroneLauncherModule",
+
+    "size": 1,
+    "position": "internal",
+    "tags": []
+  },
+  "activation": "active",
+  "interference": 0,
+
+  "launcher": {
+    "vector": [0, 50],
+    "heading": 180,
+
+    "subgridRotation": 0,
+    "distanceOffset": 0,
+    
+    "backupDistance": 100,
+    "recovery": {
+      "fuel": 12,
+      "temperature": -0.01,
+      "hp": {
+        "armor": 4,
+        "hull": 10
+      }
+    }
+  },
+
+  "modificators": {
+    "offline": [],
+    "online": [],
+    "active": [],
+    "overload": []
+  },
+
+  "external": {
+    "battleship_template": "templates/Caduceus-Drone.json"
+  }
+}

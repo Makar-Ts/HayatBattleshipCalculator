@@ -7,9 +7,6 @@
   "Ангар дрона «Миллер»": "hangars/test/hangar-test.json",
   "Мод. нав. системы дронов": "subgrid-support/test/mod-drone-nav-system.json",
   "Улучшенная взрывчатка": "subgrid-support/test/better-explosives.json",
-
-
-
   "Средний трюм M": "construction/cargohold.json",
   "Малый ангар M": "construction/hangar.json",
   "Золотая проточная катушка M": "energetics/golden-flowcoil.json",
@@ -57,5 +54,13 @@
   "Неостальная броня": "regeneration/neosteel-coating.json",
   "Модуль откачки барьера M": "regeneration/active-barrier-recharger-m.json",
   "Модуль откачки барьера S": "regeneration/active-barrier-recharger-s.json",
-  "Комплекс «Громовержец»": "electronics/thunderer.json"
+  "Комплекс «Громовержец»": "electronics/thunderer.json",
+  "ПУ Ракет «Нора»": "weapons/mls.json",
+  "ПУ Ракет «Гнездо»": "weapons/mlm.json",
+  "ПУ Ракет «Улей»": "weapons/mll.json",
+  "Вундерваффе S": "weapons/wwfd-s.json",
+  "Вундерваффе M": "weapons/wwfc-m.json",
+  "Вундерваффе L": "weapons/wwfb-l.json",
+  "Система радиоподавления «Лжец»": "EW/lyer.json",
+  "Ангар Дрона «Кадуцей»": "hangars/caduceus-hangar.json"
 }

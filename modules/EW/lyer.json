@@ -1,34 +1,34 @@
 {
   "main": {
-    "name": "RES Vampire",
+    "name": "Система радиоподавления «Лжец»",
     "type": "РЭБ",
-    "category": "Система нейтрализации накопителя",
+    "category": "Система радиоподавления",
 
     "size": 2,
     "position": "internal",
-    "tags": ["capacitorew", "ew"]
+    "tags": ["jammer", "contactjammer", "ew"]
   },
   "activation": "active",
   "cycle": 1,
   "reload": 0,
   "interference": 0,
-  
+
   "modificators": {
     "offline": [],
     "online": [],
     "active": [
       {
         "target": "this",
-        "characteristic": "constant.capacitor.generation",
+        "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": "5 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>EW_strenght_modifier']",
+        "modificator": "0.01 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>heating_modifier']",
         "isAffectedByInterference": false
       },
       {
-        "target": "target",
+        "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": "-5 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>EW_strenght_modifier']",
+        "modificator": "-6 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>capacitor_consumption_modifier']",
         "isAffectedByInterference": false
       }
     ],

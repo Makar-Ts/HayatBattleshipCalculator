@@ -17,7 +17,7 @@
   "additionalInfo": {
     "baseRepair": 250,
     "baseHeating": 0.20,
-    "baseConsumption": -30
+    "baseConsumption": -35
   },
 
   "modificators": {

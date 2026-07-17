@@ -1,0 +1,182 @@
+{
+  "class": "DroneObject",
+  "visible": true,
+  "id": "Caduceus Drone",
+  "parent": null,
+  "children": {},
+  "tasks": [],
+  "collision": true,
+  "velocity": [
+    0,
+    0
+  ],
+  "direction": 180,
+  "forces": [],
+  "baseCharacteristics": {
+    "dynamic": {
+      "recived_damage": {
+        "kinetic": 0,
+        "high_explosive": 0,
+        "electro_magnetic": 0,
+        "thermal": 0
+      },
+      "hp": {
+        "hull": 200,
+        "armor": 0,
+        "barrier": 0
+      },
+      "temperature": 0,
+      "charge": 10,
+      "fuel": 1200
+    },
+    "constant": {
+      "body": {
+        "tonnage": -1,
+        "core": 3,
+        "mass": 400,
+        "layers": [
+          "drone"
+        ],
+        "containers": {
+          "storage": 0,
+          "hangar": 0
+        },
+        "signature": 40,
+        "subgrid": {
+          "size": 40,
+          "category": "battle",
+          "fuel": 1200,
+          "autonomous": false,
+          "drone": {
+            "safe_distance": 2500
+          }
+        }
+      },
+      "acceleration": 50,
+      "jumpdistance": 0,
+      "maneuverability": 4,
+      "sensors_power": 0,
+      "capture_range": 5000,
+      "capacitor": {
+        "charge": 10,
+        "generation": 2
+      },
+      "slots": {
+        "external": 1,
+        "internal": 2
+      },
+      "hp": {
+        "hull": 200,
+        "armor": 0,
+        "barrier": 0
+      },
+      "collision_energy_distribution": {
+        "damage": 0.69,
+        "velocity": 0.3,
+        "heat": 0.01
+      },
+      "temperature": 1,
+      "heating": 0,
+      "resistance": {
+        "kinetic": {
+          "hull": 0,
+          "armor": 0,
+          "barrier": 0
+        },
+        "high_explosive": {
+          "hull": 0,
+          "armor": 0,
+          "barrier": 0
+        },
+        "electro_magnetic": {
+          "hull": 0,
+          "armor": 0,
+          "barrier": 0
+        },
+        "thermal": {
+          "hull": 0,
+          "armor": 0,
+          "barrier": 0
+        },
+        "EW": 0
+      },
+      "barrier": {
+        "passive_regeneration": 0.01,
+        "resonance": {
+          "frequency": 0.3,
+          "tendency": 0.01,
+          "range": 0.4
+        }
+      }
+    }
+  },
+  "dynamicCharacteristics": {
+    "recived_damage": {
+      "kinetic": 0,
+      "high_explosive": 0,
+      "electro_magnetic": 0,
+      "thermal": 0
+    },
+    "hp": {
+      "hull": 200,
+      "armor": 0,
+      "barrier": 0
+    },
+    "temperature": 0,
+    "charge": 10,
+    "fuel": 1200
+  },
+  "externalModules": [],
+  "internalModules": [
+    {
+      "class": "BaseModule",
+      "state": "active",
+      "uuid": "0c9947a6-f22d-4413-be31-8af8e47d8d05-1775601637166",
+      "characteristics": {
+        "main": {
+          "name": "Система дистанционной инъекции барьера",
+          "type": "Восстановление",
+          "category": "Система откачки барьера",
+          "size": 2,
+          "position": "internal",
+          "tags": [
+            "shieldrecharger"
+          ]
+        },
+        "activation": "active",
+        "modificators": {
+          "offline": [],
+          "online": [],
+          "active": [
+            {
+              "target": "target",
+              "characteristic": "dynamic.hp.barrier",
+              "modificationType": "number",
+              "modificator": "50 * parent.currentCharacteristics.constant.module_modifiers['support>shield_injection_modifier']",
+              "isAffectedByInterference": false
+            }
+          ],
+          "overload": []
+        },
+        "interference": 0,
+        "reload": 0,
+        "cycle": 1,
+        "additionalInfo": {
+          "baseRecharge": 28,
+          "baseHeating": 0,
+          "baseConsumption": 0
+        }
+      },
+      "previousState": "offline",
+      "inOnlineSteps": 0,
+      "inStageSteps": 0,
+      "functionsSharedData": {
+        "perStep": {},
+        "perState": {},
+        "uncleared": {}
+      }
+    }
+  ],
+  "otherModules": [],
+  "__version": "1.11.0"
+}

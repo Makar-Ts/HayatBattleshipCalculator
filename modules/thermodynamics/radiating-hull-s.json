@@ -18,14 +18,14 @@
         "target": "this",
         "characteristic": "constant.body.signature",
         "modificationType": "percent",
-        "modificator": 1.06,
+        "modificator": "1.06 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>signature_penalty_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": -0.03,
+        "modificator": "-0.03 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>radiation_modifier']",
         "isAffectedByInterference": true
       }
     ],

@@ -21,21 +21,21 @@
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": 0.01,
+        "modificator": "0.01 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>heating_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -3,
+        "modificator": "-6 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>capacitor_consumption_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "target",
         "characteristic": "constant.body.signature",
         "modificationType": "percent",
-        "modificator": 1.7,
+        "modificator": "( 1.7 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>EW_strenght_modifier'] ) * ( 1 - target.characteristics.constant.resistance.EW )",
         "isAffectedByInterference": false
       }
     ],

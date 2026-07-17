@@ -22,21 +22,21 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -2,
+        "modificator": "-4 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>consumption_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.body.signature",
         "modificationType": "percent",
-        "modificator": 1.08,
+        "modificator": "1.08 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>radiation_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": -0.04,
+        "modificator": "-0.04 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>signature_penalty_modifier']",
         "isAffectedByInterference": true
       }
     ],
