@@ -20,6 +20,13 @@
         "modificationType": "number",
         "modificator": 0.15,
         "isAffectedByInterference": false
+      },
+      {
+        "target": "this",
+        "characteristic": "constant.capacitor.generation",
+        "modificationType": "number",
+        "modificator": -2,
+        "isAffectedByInterference": false
       }
     ],
     "active": [],

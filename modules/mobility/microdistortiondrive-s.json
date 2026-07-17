@@ -22,28 +22,28 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -10,
+        "modificator": "-30 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>micro_distortion_drive>capacitor_consumption_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.acceleration",
         "modificationType": "percent",
-        "modificator": 1.5,
+        "modificator": "1.5 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>micro_distortion_drive>effectiveness_modifier']",
         "isAffectedByInterference": true
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": 0.03,
+        "modificator": "0.03 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>micro_distortion_drive>heating_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.body.signature",
         "modificationType": "percent",
-        "modificator": 2.5,
+        "modificator": "1.5 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>micro_distortion_drive>signature_penalty_modifier']",
         "isAffectedByInterference": false
       }
     ],

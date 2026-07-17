@@ -17,10 +17,26 @@
   "additionalInfo": {
     "baseDamage": 42,
     "targetHeating": 0.03,
-    "effectiveRange": 17000,
-    "maxRange": 25500,
-    "tracking": 35
+    "effectiveRange": 8000,
+    "maxRange": 12000,
+    "tracking": 45
   },
+
+  "effects": [
+    {
+      "class": "LaserAttackModuleEffect",
+      "activateOn": ["active"],
+      "settings": {
+        "beamColor": "#3802fa",
+        "beamSize": 10,
+
+        "flashColor": "#3802fa",
+        "flashSize": 40,
+
+        "effectivnessImpact": 0.3
+      }
+    }
+  ],
 
   "initFunctions": "<[LaserAttack]>",
 
@@ -32,14 +48,14 @@
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": 0.09,
+        "modificator": 0.06,
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -7,
+        "modificator": -12,
         "isAffectedByInterference": false
       },
       {

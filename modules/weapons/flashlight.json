@@ -17,9 +17,9 @@
   "additionalInfo": {
     "baseDamage": 24,
     "targetHeating": 0.02,
-    "effectiveRange": 8000,
-    "maxRange": 12000,
-    "tracking": 45
+    "effectiveRange": 17000,
+    "maxRange": 25500,
+    "tracking": 35
   },
 
   "effects": [
@@ -55,7 +55,7 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -4,
+        "modificator": -8,
         "isAffectedByInterference": false
       },
       {

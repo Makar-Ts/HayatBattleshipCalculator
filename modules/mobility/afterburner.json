@@ -18,25 +18,25 @@
     "offline": [],
     "online": [],
     "active": [
-        {
+      {
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -15,
+        "modificator": "-25 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>afterburner>capacitor_consumption_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.acceleration",
         "modificationType": "percent",
-        "modificator": 1.8,
+        "modificator": "1.8 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>afterburner>effectiveness_modifier']",
         "isAffectedByInterference": true
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": 0.06,
+        "modificator": "0.06 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>afterburner>heating_modifier']",
         "isAffectedByInterference": false
       },
       {

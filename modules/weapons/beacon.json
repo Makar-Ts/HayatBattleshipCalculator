@@ -1,6 +1,6 @@
 {
   "main": {
-    "name": "ИК Лазер «Светило»",
+    "name": "ИК Лазер «Маяк»",
     "type": "Орудия",
     "category": "Лазеры",
 
@@ -17,10 +17,26 @@
   "additionalInfo": {
     "baseDamage": 66,
     "targetHeating": 0.06,
-    "effectiveRange": 27000,
-    "maxRange": 40500,
-    "tracking": 8
+    "effectiveRange": 52000,
+    "maxRange": 78000,
+    "tracking": 7
   },
+
+  "effects": [
+    {
+      "class": "LaserAttackModuleEffect",
+      "activateOn": ["active"],
+      "settings": {
+        "beamColor": "#FF0000DD",
+        "beamSize": 10,
+
+        "flashColor": "#FF0000CC",
+        "flashSize": 40,
+
+        "effectivnessImpact": 0.3
+      }
+    }
+  ],
 
   "initFunctions": "<[LaserAttack]>",
 
@@ -39,7 +55,7 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -76,
+        "modificator": -72,
         "isAffectedByInterference": false
       },
       {

@@ -54,6 +54,13 @@
         "isAffectedByInterference": false
       },
       {
+        "target": "this",
+        "characteristic": "constant.capacitor.generation",
+        "modificationType": "number",
+        "modificator": -3,
+        "isAffectedByInterference": false
+      },
+      {
         "target": "target",
         "characteristic": "dynamic.recived_damage.kinetic",
         "modificationType": "number",

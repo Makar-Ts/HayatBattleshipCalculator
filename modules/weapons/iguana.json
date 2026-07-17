@@ -23,6 +23,23 @@
     "tracking": 4
   },
 
+  "effects": [
+    {
+      "class": "BallisticAttackModuleEffect",
+      "activateOn": ["active"],
+      "settings": {
+        "ammoSize": [20, 80],
+        "tracerColor": "#FF7700",
+        "ammoSpeed": 1500,
+        "spread": 0.1,
+        "maxFlyTime": 3,
+
+        "burst": 1,
+        "ammoFrequency": 0.01
+      }
+    }
+  ],
+
   "initFunctions": "<[BallisticAttack]>",
 
   "modificators": {
@@ -34,6 +51,13 @@
         "characteristic": "constant.heating",
         "modificationType": "number",
         "modificator": 0.08,
+        "isAffectedByInterference": false
+      },
+      {
+        "target": "this",
+        "characteristic": "constant.capacitor.generation",
+        "modificationType": "number",
+        "modificator": -3,
         "isAffectedByInterference": false
       },
       {

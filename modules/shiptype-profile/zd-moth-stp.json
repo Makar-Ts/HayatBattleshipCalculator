@@ -16,28 +16,28 @@
     "online": [
       {
         "target": "this",
-        "characteristic": "constant.module_modifiers.offence>launcher>fuel_modifier",
-        "modificationType": "number",
-        "modificator": -0.25,
+        "characteristic": "constant.body.subgrid.fuel",
+        "modificationType": "percent",
+        "modificator": 0.75,
         "isAffectedByInterference": false
       },
       {
         "target": "this",
-        "characteristic": "constant.module_modifiers.offence>launcher>acceleration_modifier",
-        "modificationType": "number",
-        "modificator": 0.5,
+        "characteristic": "constant.body.subgrid.acceleration",
+        "modificationType": "percent",
+        "modificator": 1.5,
         "isAffectedByInterference": true
       },
       {
         "target": "this",
-        "characteristic": "constant.module_modifiers.offence>launcher>explosion_signature_modifier",
-        "modificationType": "number",
-        "modificator": -0.175,
+        "characteristic": "constant.body.subgrid.explosion.effect.damage.high_explosive",
+        "modificationType": "percent",
+        "modificator": 1.15,
         "isAffectedByInterference": true
       },
       {
         "target": "this",
-        "characteristic": "constant.module_modifiers.engineering>barrier>resonance>tendency",
+        "characteristic": "constant.modulemodifier.engineering.barrier.resonance.tendency",
         "modificationType": "number",
         "modificator": 0.15,
         "isAffectedByInterference": true

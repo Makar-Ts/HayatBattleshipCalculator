@@ -1,0 +1,55 @@
+{
+  "main": {
+    "name": "ПУ Ракет «Улей»",
+    "type": "ПУ Ракет",
+    "category": "Орудия",
+    "class": "SubgridLauncherModule",
+
+    "size": 3,
+    "position": "external",
+    "tags": ["catapult", "subgrid"]
+  },
+  "activation": "active",
+  "cycle": 1,
+  "reload": 0,
+
+  "interference": 0,
+
+  "launcher": {
+    "heading": 0,
+    "instances": [
+      {
+        "vector": [0, 50],
+
+        "headingOffset": 0,
+        "distanceOffset": 15,
+        "subgridRotation": 0,
+
+        "fire": {
+          "type": "single",
+          "delay": 0
+        },
+
+        "subgrid": {
+          "class": "SelfguidedSubgridObject",
+          "dataRef": "missile-l"
+        }
+      }
+    ]
+  },
+
+  "modificators": {
+    "offline": [],
+    "online": [],
+    "active": [
+      {
+        "target": "this",
+        "characteristic": "constant.heating",
+        "modificationType": "number",
+        "modificator": "0.02",
+        "isAffectedByInterference": false
+      }
+    ],
+    "overload": []
+  }
+}

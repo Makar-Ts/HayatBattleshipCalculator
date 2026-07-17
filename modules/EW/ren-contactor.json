@@ -28,14 +28,14 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -5,
+        "modificator": "-15 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>capacitor_consumption_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": 0.03,
+        "modificator": "0.03 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>heating_modifier']",
         "isAffectedByInterference": false
       },
       {

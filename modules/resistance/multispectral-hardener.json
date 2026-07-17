@@ -15,7 +15,7 @@
   "additionalInfo": {
     "effectiveness": 0.25,
     "baseHeating": 0.04,
-    "baseConsumption": -3
+    "baseConsumption": -7
   },
   
   "interference": -0.0625,

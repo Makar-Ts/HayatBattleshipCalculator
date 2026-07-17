@@ -1,26 +1,26 @@
 {
   "main": {
-    "name": "Артиллерия «Крокодил» L",
+    "name": "«Вундерваффе» D - type",
     "type": "Орудия",
     "category": "Баллистика",
 
-    "size": 3,
+    "size": 1,
     "position": "external",
-    "tags": ["gun", "offencive", "ballistic"]
+    "tags": ["gun", "offencive", "ballistic", "distortion"]
   },
   "activation": "active",
   "cycle": 1,
-  "reload": 3,
+  "reload": 0,
 
   "interference": 0,
 
   "additionalInfo": {
-    "baseDamage": 303,
-    "targetHeating": 0,
-    "effectiveRange": 80000,
-    "penaltyStep": 10000,
+    "baseDamage": 54,
+    "targetHeating": 2,
+    "effectiveRange": 4000,
+    "penaltyStep": 1000,
     "penalty": 1,
-    "tracking": 2
+    "tracking": 30
   },
 
   "effects": [
@@ -28,14 +28,14 @@
       "class": "BallisticAttackModuleEffect",
       "activateOn": ["active"],
       "settings": {
-        "ammoSize": [30, 80],
-        "tracerColor": "#FF7700",
-        "ammoSpeed": 1500,
-        "spread": 0.5,
+        "ammoSize": [10, 20],
+        "tracerColor": "#fa0202",
+        "ammoSpeed": 3000,
+        "spread": 0.3,
         "maxFlyTime": 1,
 
-        "burst": 1,
-        "ammoFrequency": 0.01
+        "burst": 15,
+        "ammoFrequency": 0.02
       }
     }
   ],
@@ -50,14 +50,14 @@
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": 0.08,
+        "modificator": 0.06,
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -2,
+        "modificator": -6,
         "isAffectedByInterference": false
       },
       {

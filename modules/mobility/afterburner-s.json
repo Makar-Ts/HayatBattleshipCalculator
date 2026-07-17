@@ -22,21 +22,21 @@
         "target": "this",
         "characteristic": "constant.capacitor.generation",
         "modificationType": "number",
-        "modificator": -5,
+        "modificator": "-15 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>afterburner>capacitor_consumption_modifier']",
         "isAffectedByInterference": false
       },
       {
         "target": "this",
         "characteristic": "constant.acceleration",
         "modificationType": "percent",
-        "modificator": 1.4,
+        "modificator": "1.4 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>afterburner>effectiveness_modifier']",
         "isAffectedByInterference": true
       },
       {
         "target": "this",
         "characteristic": "constant.heating",
         "modificationType": "number",
-        "modificator": 0.03,
+        "modificator": "0.03 * parent.currentCharacteristics.constant.module_modifiers['engineering>mobility>afterburner>heating_modifier']",
         "isAffectedByInterference": false
       }
     ],

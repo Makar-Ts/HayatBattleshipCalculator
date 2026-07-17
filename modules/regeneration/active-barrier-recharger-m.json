@@ -17,7 +17,7 @@
   "additionalInfo": {
     "baseRecharge": 80,
     "baseHeating": 0.07,
-    "baseConsumption": -15
+    "baseConsumption": -25
   },
 
   "modificators": {
