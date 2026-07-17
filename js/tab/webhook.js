@@ -3,7 +3,7 @@ import { generateProgressbar } from "../../libs/generateProgressbar.js";
 import { overheatDamage, passiveBarrierRegeneration, tonnage } from "../../libs/hayat/battleships.js";
 import { point } from "../../libs/vector/point.js";
 import { drawGrid, mapProps } from "../canvas/grid.js";
-import { drawObjects, objects, style } from "../canvas/map.js";
+import { canvas, drawObjects, objects, style, currentlySimulatedFrame } from "../canvas/map.js";
 import { check_id } from "../canvas/map/check_id.js";
 import { getInArea } from "../canvas/map/get_in_area.js";
 import MAP_OBJECTS_IDS from "../canvas/objects/map/mapObjectsIds.constant.js";
@@ -15,6 +15,7 @@ import { calculateRelativeData } from "../controls/show_rdata.js";
 import ENV from "../enviroments/env.js";
 import { EVENTS } from "../events.js";
 import { activeLayers } from "./render.js";
+import { settings } from "../settings/settings.js";
 
 
 const states = {
@@ -31,7 +32,237 @@ export default function () {
   const webhook = () => $('#modal-webhook-webhook').val();
 
   const sendCanvasButton = $('#modal-webhook-send_canvas');
+  const recordStepVideoButton = $('#modal-webhook-record_step_video');
+  const recordStepCountInput = $('#modal-webhook-record_step_count');
 
+  let shouldRecordNextStepVideo = false;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let recordingCanvas = null;
+  let recordingCtx = null;
+  let originalPhysicsSpeed = null;
+  let originalInstantSimulation = null;
+  let stepsToRecord = 1;
+  let remainingRecordingSteps = 0;
+  let recordingStepNumber = 0;
+
+  const resetVideoButton = () => {
+    recordStepVideoButton.prop('disabled', false);
+    recordStepVideoButton.text('Record Next Step Video');
+  }
+
+  const updateRecordButtonLabel = () => {
+    if (mediaRecorder?.state === 'recording') {
+      recordStepVideoButton.text(`Recording ${remainingRecordingSteps} step${remainingRecordingSteps === 1 ? '' : 's'}...`);
+    } else if (mediaRecorder?.state === 'paused') {
+      recordStepVideoButton.text(`Paused, ${remainingRecordingSteps} step${remainingRecordingSteps === 1 ? '' : 's'} left`);
+    } else if (shouldRecordNextStepVideo) {
+      recordStepVideoButton.text(`Waiting for next step...`);
+    } else {
+      recordStepVideoButton.text('Record Next Step Video');
+    }
+  }
+
+  const createRecordingCanvas = () => {
+    if (!recordingCanvas) {
+      recordingCanvas = document.createElement('canvas');
+      recordingCanvas.width = 1600;
+      recordingCanvas.height = 1600;
+      recordingCtx = recordingCanvas.getContext('2d');
+    }
+  }
+
+  const updateRecordingCanvas = () => {
+    if (!recordingCtx) return;
+
+    const gridCanvas = document.getElementById('grid');
+    const mapCanvas = document.getElementById('map');
+    const overlayCanvas = document.getElementById('overlay');
+
+    if (!gridCanvas || !mapCanvas || !overlayCanvas) return;
+
+    recordingCtx.clearRect(0, 0, recordingCanvas.width, recordingCanvas.height);
+    recordingCtx.fillStyle = '#000';
+    recordingCtx.fillRect(0, 0, recordingCanvas.width, recordingCanvas.height);
+    recordingCtx.drawImage(gridCanvas, 0, 0, recordingCanvas.width, recordingCanvas.height);
+    recordingCtx.drawImage(mapCanvas, 0, 0, recordingCanvas.width, recordingCanvas.height);
+    
+    if (recordingStepNumber > 0) {
+      recordingCtx.font = 'bold 32px "Consolas", monospace';
+      recordingCtx.textAlign = 'left';
+      recordingCtx.textBaseline = 'top';
+
+      const x = 20;
+      const y = recordingCanvas.height - 110;
+
+      const dt = ENV.STEP / ENV.PHYSICS_ENGINE_STEPS;
+      const line1 = `Step ${recordingStepNumber} | ${(currentlySimulatedFrame * dt).toFixed(4)}s [${String(currentlySimulatedFrame).padStart(String(ENV.PHYSICS_ENGINE_STEPS).length, "0")}]`;
+      const line2 = `────────────────────`;
+      const line3 = `${ENV.CURRENT_VERSION} (sv ${ENV.SUPPORTED_SAVE_VERSION})`;
+
+      recordingCtx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      recordingCtx.fillRect(x - 10, y - 10, 400, 95);
+
+      recordingCtx.fillStyle = '#fff';
+      recordingCtx.fillText(line1, x, y);
+      recordingCtx.fillText(line2, x, y + 30);
+      recordingCtx.fillText(line3, x, y + 60);
+    }
+
+    recordingCanvas.requestFrame?.();
+  }
+
+  const enableRecordingSimulationSpeed = () => {
+    originalPhysicsSpeed = settings.physicsSimulationSpeedupMultiplier;
+    originalInstantSimulation = settings.instantSimulation;
+    settings.physicsSimulationSpeedupMultiplier = 1;
+    settings.instantSimulation = false;
+  }
+
+  const restoreSimulationSpeed = () => {
+    if (originalPhysicsSpeed !== null) {
+      settings.physicsSimulationSpeedupMultiplier = originalPhysicsSpeed;
+      originalPhysicsSpeed = null;
+    }
+    if (originalInstantSimulation !== null) {
+      settings.instantSimulation = originalInstantSimulation;
+      originalInstantSimulation = null;
+    }
+  }
+
+
+  const downloadVideo = (blob, filename = "battle-step.webm") => {
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.style.display = "none";
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const uploadStepVideo = async (blob) => {
+    if (!webhook()) {
+      downloadVideo(blob);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", blob, "battle-step.webm");
+
+    try {
+      const response = await fetch(webhook(), {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log("Step video successfully sent!");
+      } else {
+        console.error("Video upload failed:", response.status);
+        downloadVideo(blob);
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+      downloadVideo(blob);
+    }
+  };
+
+  const startStepVideoRecording = () => {
+    createRecordingCanvas();
+    updateRecordingCanvas();
+    enableRecordingSimulationSpeed();
+
+    if (!recordingCanvas?.captureStream) {
+      console.warn('Canvas captureStream is not supported in this browser.');
+      resetVideoButton();
+      restoreSimulationSpeed();
+      return;
+    }
+
+    const stream = recordingCanvas.captureStream(25);
+    recordedChunks = [];
+
+    try {
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+    } catch {
+      try {
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      } catch (innerError) {
+        console.error('MediaRecorder initialization failed:', innerError);
+        restoreSimulationSpeed();
+        resetVideoButton();
+        return;
+      }
+    }
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data && event.data.size > 0) {
+        recordedChunks.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      await uploadStepVideo(blob);
+      restoreSimulationSpeed();
+      resetVideoButton();
+    };
+
+    mediaRecorder.start();
+    recordingStepNumber = 1;
+    recordStepVideoButton.prop('disabled', true);
+    recordingCanvas.requestFrame?.();
+    updateRecordButtonLabel();
+  };
+
+  const resumeStepVideoRecording = () => {
+    if (!mediaRecorder || mediaRecorder.state !== 'paused') return;
+    recordingStepNumber += 1;
+    try {
+      mediaRecorder.resume();
+    } catch (error) {
+      console.error('Failed to resume MediaRecorder:', error);
+    }
+    updateRecordButtonLabel();
+  };
+
+  const pauseStepVideoRecording = () => {
+    if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
+    try {
+      mediaRecorder.pause();
+    } catch (error) {
+      console.error('Failed to pause MediaRecorder:', error);
+    }
+    updateRecordButtonLabel();
+  };
+
+  const stopStepVideoRecording = () => {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+    } else {
+      restoreSimulationSpeed();
+      resetVideoButton();
+    }
+    recordingStepNumber = 0;
+  };
+
+  recordStepVideoButton.on('click', () => {
+    if (!webhook()) return;
+    if (mediaRecorder?.state === 'recording') return;
+
+    stepsToRecord = parseInt(recordStepCountInput.val(), 10) || 1;
+    stepsToRecord = Math.max(1, stepsToRecord);
+    shouldRecordNextStepVideo = true;
+    remainingRecordingSteps = 0;
+
+    updateRecordButtonLabel();
+  });
 
   button.on('click', () => {
     const setTo = modal.attr("data-active") == "true" ? "false" : "true";
@@ -152,6 +383,40 @@ export default function () {
 
 
   const sendShipData = $('#modal-webhook-send_ship_data');
+
+  document.addEventListener(EVENTS.MAP.STEP, () => {
+    if (mediaRecorder?.state === 'paused' && remainingRecordingSteps > 0) {
+      resumeStepVideoRecording();
+      return;
+    }
+
+    if (!shouldRecordNextStepVideo) return;
+
+    shouldRecordNextStepVideo = false;
+    remainingRecordingSteps = stepsToRecord;
+    startStepVideoRecording();
+    updateRecordButtonLabel();
+  });
+
+  document.addEventListener(EVENTS.MAP.REDRAW_COMPLETED, () => {
+    if (mediaRecorder?.state === 'recording') {
+      updateRecordingCanvas();
+    }
+  });
+
+  document.addEventListener(EVENTS.CALCULATION_ENDED, () => {
+    if (mediaRecorder?.state === 'recording') {
+      remainingRecordingSteps = Math.max(0, remainingRecordingSteps - 1);
+      if (remainingRecordingSteps <= 0) {
+        updateRecordingCanvas();
+        requestAnimationFrame(() => stopStepVideoRecording());
+      } else {
+        pauseStepVideoRecording();
+      }
+    } else {
+      restoreSimulationSpeed();
+    }
+  });
 
   sendShipData.on('click', async () => {
     if (!webhook()) return;

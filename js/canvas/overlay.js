@@ -84,14 +84,20 @@ export default function init() {
     }
   }
 
-  const redrawOverlay = () => {
-    requestAnimationFrame(() => {
+  const redrawOverlay = (AF = true) => {
+    const d = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i of Object.keys(objectsOnOverlay)) {
         objectsOnOverlay[i].visible && objectsOnOverlay[i].draw(canvas, ctx, toCanvas, style);
       }
-    })
+    }
+
+    if (AF) {
+      requestAnimationFrame(d)
+    } else {
+      d();
+    }
   };
 
   canvas.onclick = (e) => {
@@ -109,7 +115,7 @@ export default function init() {
     canvas.height = settings.overlayResolution;
     raito = canvas.width / size;
 
-    redrawOverlay();
+    redrawOverlay(false);
   });
 
   document.addEventListener(EVENTS.OVERLAY.NEW, (e) => {

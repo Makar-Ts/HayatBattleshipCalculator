@@ -59,6 +59,8 @@ export default class SubgridLauncherModule extends BaseModule {
               },
             })
           );
+
+          object?.next();
         }
       }
     }

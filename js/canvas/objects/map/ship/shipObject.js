@@ -262,7 +262,7 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
         type: "number",
         current: () => this.dices.contactQuality,
         func: (val) => {
-          this.dices.contact_quality = +val;
+          this.dices.contactQuality = +val;
         },
       },
       {

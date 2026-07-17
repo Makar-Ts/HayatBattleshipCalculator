@@ -36,6 +36,9 @@ export default class BasicStepObject extends StandartObject {
       super.destroy();
     } else {
       this._kill = true;
+      for (let i of Object.keys(this.children)) {
+        this.children[i].onParentDestroy?.();
+      }
     }
   }
 

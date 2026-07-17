@@ -19,6 +19,11 @@ export default function () {
     settings.autoFocusOnSimulation = $('#modal-settings-auto_focus').is(':checked');
     saveSettings();
   })
+  $('#modal-settings-auto_resize_grid').prop('checked', settings.autoResizeGrid);
+  $('#modal-settings-auto_resize_grid').on('change', (e) => {
+    settings.autoResizeGrid = $('#modal-settings-auto_resize_grid').is(':checked');
+    saveSettings();
+  })
 
   $('#modal-settings-updateres').on('click', () => {
     settings.mapResolution = $('#modal-settings-mapres').val() || settings.mapResolution;

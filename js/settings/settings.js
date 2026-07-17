@@ -5,6 +5,7 @@ let settings = {
   mapResolution: 8000,
   overlayResolution: 2000,
   autoFocusOnSimulation: false,
+  autoResizeGrid: true,
 
   hudSize: 1,
 
@@ -23,6 +24,7 @@ const fromString = {
   mapResolution: Number,
   overlayResolution: Number,
   autoFocusOnSimulation: (v) => v === "true",
+  autoResizeGrid: (v) => v === "true",
 
   hudSize: Number,
 

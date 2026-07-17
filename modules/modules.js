@@ -121,6 +121,56 @@ export default function init() {
 
 export { isReady, modules, setReadyFunction };
 
+// ==========================================
+// --- HAYAT TARGETING CORE FUNCTION ---
+// ==========================================
+function calculateHitChance(parent, target, module, currentContactBonus) {
+  // 1. ВСТРЕЧНЫЙ БРОСОК: Контакт vs Уклонение
+  const targetManeuverability = getFullManeuverability(target.currentCharacteristics, target.dices.maneuvering);
+  const delta = currentContactBonus - targetManeuverability;
+  const baseContactChance = 1 / (1 + Math.exp(-delta / 5));
+
+  // 2. РАЗРЕШЕНИЕ СЕНСОРОВ
+  const moduleAddInfo = module.characteristics.additionalInfo;
+  const isAutonomous = moduleAddInfo.resolution !== undefined;
+  
+  // ИСПРАВЛЕНИЕ 1: Правильный путь к тоннажу стреляющего корабля
+  const shipTonnage = parent.currentCharacteristics?.constant?.body?.tonnage ?? 4;
+  const shipResolution = tonnageToResolution[shipTonnage] || 100;
+  
+  const baseResolution = isAutonomous ? moduleAddInfo.resolution : shipResolution;
+  
+  const auxMultiplier = parent.currentCharacteristics?.constant?.module_modifiers?.['sensors>resolution_multiplier'] || 1.0;
+  const effectiveResolution = baseResolution * auxMultiplier;
+  
+  const targetSignature = target.currentCharacteristics?.constant?.body?.signature || 1;
+  const signatureRatio = effectiveResolution / targetSignature;
+
+  // 3. ДИНАМИЧЕСКАЯ ОШИБКА
+  const { angularVelocity } = calculateRelativeData(parent, target);
+  const tracking = moduleAddInfo.tracking || 1; 
+  
+  const angularVelocityDeg = Math.abs(angularVelocity); 
+  
+  let trackingError = 0;
+  if (angularVelocityDeg > 0.1) {
+    const speedFactor = angularVelocityDeg / tracking;
+    trackingError = Math.pow(speedFactor * signatureRatio, 2);
+  }
+
+  // 4. СТАТИЧЕСКАЯ ОШИБКА
+  let precisionError = 0;
+  if (signatureRatio > 1.0) {
+    const forgivenessFactor = 2.0; 
+    precisionError = Math.pow((signatureRatio - 1) / forgivenessFactor, 2);
+  }
+
+  // 5. ИТОГ
+  const chance = baseContactChance * Math.pow(0.5, trackingError + precisionError);
+
+  return chance;
+}
+
 /**
  * @type { Record<string, 
  * (
@@ -136,58 +186,7 @@ export { isReady, modules, setReadyFunction };
  *    target: ShipObject
  *  ) => number }
  */
-
-// ==========================================
-// --- HAYAT TARGETING CORE FUNCTION ---
-// ==========================================
-function calculateHitChance(parent, target, module, currentContactBonus) {
-    // 1. ВСТРЕЧНЫЙ БРОСОК: Контакт vs Уклонение
-    const targetManeuverability = getFullManeuverability(target.currentCharacteristics, target.dices.maneuvering);
-    const delta = currentContactBonus - targetManeuverability;
-    const baseContactChance = 1 / (1 + Math.exp(-delta / 5));
-
-    // 2. РАЗРЕШЕНИЕ СЕНСОРОВ
-    const moduleAddInfo = module.characteristics.additionalInfo;
-    const isAutonomous = moduleAddInfo.resolution !== undefined;
-    
-    // ИСПРАВЛЕНИЕ 1: Правильный путь к тоннажу стреляющего корабля
-    const shipTonnage = parent.currentCharacteristics?.constant?.body?.tonnage ?? 4;
-    const shipResolution = tonnageToResolution[shipTonnage] || 100;
-    
-    const baseResolution = isAutonomous ? moduleAddInfo.resolution : shipResolution;
-    
-    const auxMultiplier = parent.currentCharacteristics?.constant?.module_modifiers?.['sensors>resolution_multiplier'] || 1.0;
-    const effectiveResolution = baseResolution * auxMultiplier;
-    
-    const targetSignature = target.currentCharacteristics?.constant?.body?.signature || 1;
-    const signatureRatio = effectiveResolution / targetSignature;
-
-    // 3. ДИНАМИЧЕСКАЯ ОШИБКА
-    const { angularVelocity } = calculateRelativeData(parent, target);
-    const tracking = moduleAddInfo.tracking || 1; 
-    
-    const angularVelocityDeg = Math.abs(angularVelocity); 
-    
-    let trackingError = 0;
-    if (angularVelocityDeg > 0.1) {
-        const speedFactor = angularVelocityDeg / tracking;
-        trackingError = Math.pow(speedFactor * signatureRatio, 2);
-    }
-
-    // 4. СТАТИЧЕСКАЯ ОШИБКА
-    let precisionError = 0;
-    if (signatureRatio > 1.0) {
-        const forgivenessFactor = 2.0; 
-        precisionError = Math.pow((signatureRatio - 1) / forgivenessFactor, 2);
-    }
-
-    // 5. ИТОГ
-    const chance = baseContactChance * Math.pow(0.5, trackingError + precisionError);
-
-    return chance;
-}
 let MODULES_CALCULATION_FUNCTIONS = {
-  
   RENContactor: (modificator, module, parent, target) => {
     if (!target || !parent) return 0;
 
@@ -214,7 +213,7 @@ let MODULES_CALCULATION_FUNCTIONS = {
     return num > 0 ? -num : 0;
   },
 
-LaserAttack: (modificator, module, parent, target) => {
+  LaserAttack: (modificator, module, parent, target) => {
     if (parent.state != "step 0" || module.functionsSharedData.perStep.processed) return 0;
 
     module.functionsSharedData.perStep.hit          = false;
@@ -323,27 +322,6 @@ LaserAttack: (modificator, module, parent, target) => {
     module.functionsSharedData.perStep.processed = true;
     return 0;
   },
-
-
-//  _    _ _____ ______  _______ _______  _____  ______  _______
-//   \  /    |   |_____] |______ |       |     | |     \ |______
-//    \/   __|__ |_____] |______ |_____  |_____| |_____/ |______
-//                                                              
-//                  ⠄⠄⠄⠄⠄⠄⠄⣀⣠⣤⣤⣤⣤⣀⡀
-//                  ⠄⠄⠄⣠⣤⢶⣻⣿⣻⣿⣿⣿⣿⣿⣿⣦⣤⣀
-//                  ⠄⠄⣼⣺⢷⣻⣽⣾⣿⢿⣿⣷⣿⣿⢿⣿⣿⣿⣇
-//                  ⠠⡍⢾⣺⢽⡳⣻⡺⣽⢝⢗⢯⣻⢽⣻⣿⣿⣿⣿⢿⡄
-//                  ⡨⣖⢹⠜⢅⢫⢊⢎⠜⢌⠣⢑⠡⣹⡸⣜⣯⣿⢿⣻⣷
-//                  ⢜⢔⡹⡭⣪⢼⠽⠷⠧⣳⢘⢔⡝⠾⠽⢿⣷⣿⣟⢷⣟
-//                  ⢸⢘⢼⠿⠟⠁⠄⠄⡀⠄⠃⠑⡌⠄⠄⠈⠙⠿⣷⢽⣻
-//                  ⢌⠂⠅⠄⠄⠄⠄⠄⠄⡀⣲⣢⢂⠄⠄⠄⠄⠄⠈⣯⠏
-//                  ⠐⠨⡂⠄⠄⠄⠄⠄⡀⡔⠋⢻⣤⡀⠄⠄⢀⠄⢸⣯⠇
-//                  ⠈⣕⠝⠒⠄⠄⠒⢉⠪⠄⠄⠄⢿⠜⠑⠢⠠⡒⡺⣿⠖
-//                  ⠄⠐⠅⠁⡀⠄⠐⢔⠁⠄⠄⠄⢀⢇⢌⠄⠄⠄⠸⠕
-//                  ⠄⠄⠂⠄⠄⠨⣔⡝⠼⡄⠂⣦⡆⣿⣲⠐⠑⠁⠄⠃
-//                  ⠄⠄⠄⠄⠄⠄⠃⢫⢛⣙⡊⣜⣏⡝⣝⠆
-//                  ⠄⠄⠄⠄⠄⠄⠈⠈⠁⠁⠁⠈⠈⠊
-//                     Мне стыдно перед богом...
 };
 
 export { MODULES_CALCULATION_FUNCTIONS };

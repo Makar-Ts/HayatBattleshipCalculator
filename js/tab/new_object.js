@@ -32,6 +32,7 @@ import { load } from "../save&load/load.js";
 import { compareVersions } from "../../libs/utils.js";
 import ENV from "../enviroments/env.js";
 import { point } from "../../libs/vector/point.js";
+import { ShipEffectController } from "../canvas/objects/map/ship/hud/shipEffectController.js";
 
 const BATTLESHIP_ICONS = [
   "Fregate.svg",
@@ -252,6 +253,7 @@ export default function init() {
         obj = new ShipObject(x, y, dir, vel, battleships[$('#modal-new_object-ships').attr('value')] || {});
         obj.setChildren(MAP_OBJECTS_IDS.CONTACT_CONTROLLER, new ContactController())
         obj.setChildren(MAP_OBJECTS_IDS.SHIP_STATS_HUD,     new ShipStatsHUD())
+        obj.setChildren(MAP_OBJECTS_IDS.SHIP_EFFECTS_CONTROLLER, new ShipEffectController())
         obj.setChildren(MAP_OBJECTS_IDS.VECTOR_HUD,         new VectorHud())
         obj.setChildren(MAP_OBJECTS_IDS.SIGNATURE_HUD,      new SignatureShower())
         obj.setChildren(MAP_OBJECTS_IDS.DATA_HUD,           new BasicDataHud([

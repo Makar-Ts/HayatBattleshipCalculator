@@ -28,7 +28,10 @@ export function getJSONedData() {
     map: {...mapProps},
     logs: dumpLogs(),
     objects: Object.entries(objects).reduce((acc, [id, v]) => {
-      acc[id] = v.save();
+      const s = v.save();
+      if (!s) return acc;
+
+      acc[id] = s;
 
       return acc;
     }, {})

@@ -14,7 +14,8 @@
 
   --main: white;
   --accent: lime;
-  --target: red;
+  --accent-transparent: color-mix(in srgb, var(--accent) 40%, transparent);
+  --target: rgba(255, 0, 0, 0.4);
   --target-non-active: rgba(255, 255, 0, 0.233);
 
   --border: rgb(95, 95, 95);
@@ -35,7 +36,7 @@ body {
   margin: 0;
 
   color: var(--main);
-  font-family: Consolas;
+  font-family: Consolas, 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 button, input, select {

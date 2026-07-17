@@ -149,6 +149,7 @@ export default class DroneObject extends SubgridObject {
 
     this._direction -= Math.min(delta * 180 / Math.PI, rotatingSpeed);
 
+    this.forces = [{ x: resultedForce.x, y: resultedForce.y }];
     return {
       ...data,
       forces: [...(data?.forces ?? []), { x: resultedForce.x, y: resultedForce.y }]

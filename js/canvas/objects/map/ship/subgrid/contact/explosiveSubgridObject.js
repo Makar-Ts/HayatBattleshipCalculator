@@ -5,6 +5,7 @@ import { registerSteps } from "../../../step/stepInfoCollector.js";
 import ContactSubgridObject from "./contactSubgridObject.js";
 import { log } from "../../../../../../controls/step-logs/log.js";
 import { registerLayers } from "../../../../../layers/layersInfoCollector.js";
+import { createExplosion, ExplosionColors } from "../../../step/effects/predefined/explosion.js";
 
 export default class ExplosiveSubgridObject extends ContactSubgridObject {
   exploded = false;
@@ -24,6 +25,7 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
       const layers = apf.triggers.layers ?? ['all'];
       const noLayerFilter = layers.includes('all');
       const minSize = apf.triggers.min_size ?? 0;
+      const vel = this.velocity;
 
       for (let obj of Object.values(objects)) {
         const rx = obj._x - this._x;
@@ -32,6 +34,10 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
 
         if (range > mdsqr) continue;
         if ((obj.size ?? 0) < minSize) continue;
+
+        const objV = obj.velocity ?? { x: 0, y: 0 };
+        if ((rx * (objV.x - vel.x) + ry * (objV.y - vel.y)) <= 0) continue;
+
         if (noLayerFilter || (obj.layers).some(v => layers.includes(v))) {
           log(this.path, `Active PF triggered by ${obj.id}`);
           this.destroy();
@@ -121,6 +127,16 @@ ${Object.entries(l).map(([k, v]) =>
     : `${k}: ${v}`
 ).join('<br>')}`)
     }
+
+    let t = "kinetic", p = 0;
+    for (let [k, v] of Object.entries(effect.damage)) {
+      if (p < v) {
+        p = v;
+        t = k;
+      }
+    }
+
+    createExplosion(this._x, this._y, this.velocity, p * 3, ExplosionColors[t].primary, ExplosionColors[t].secondary);
 
     this.exploded = true;
   }

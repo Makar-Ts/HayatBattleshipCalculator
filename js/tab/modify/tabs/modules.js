@@ -129,8 +129,8 @@ export default class {
           func: "newTask",
           attr: [ new BasicTask(
             (target, origin) => {
-              const t = target.getModule(origin.data.uuid)
-              t && t.setState(origin.data.state)
+              const t = target.getModule(origin.data.uuid);
+              t && t.setState(origin.data.state);
             }, { uuid: uuid, state: state }, "changeModuleState-"+uuid
           ), true ],
           redraw: false,
