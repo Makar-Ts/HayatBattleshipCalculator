@@ -20,6 +20,7 @@ import { Particle } from "./particles/particle.js";
  * @property {number} lifetime
  * @property {number} [emitTime=6]
  * @property {number} [systemLifetime=6]
+ * @property {number} [maxEmmitedParticles=-1]
  * @property {(p: ParticleSystem) => Point} [startOffsetFunc]
  * @property {(p: ParticleSystem) => Point} [startVelocityFunc]
  * @property {(p: ParticleSystem) => number} [startRotationFunc]
@@ -54,6 +55,7 @@ export class ParticleSystem extends Effect {
     lifetime,
     emitTime = ENV.STEP,
     systemLifetime = ENV.STEP,
+    maxEmmitedParticles = -1,
 
     colorFunc = () => "rgba(255,255,255,0.9)",
     sizeFunc = (p) => p.size,
@@ -76,11 +78,14 @@ export class ParticleSystem extends Effect {
     this.frequency = frequency;
     this.particleMaxLifetime = lifetime;
     this.emitTime = emitTime;
+    this.maxEmmitedParticles = maxEmmitedParticles;
 
     this.colorFunc = colorFunc;
     this.sizeFunc = sizeFunc;
     this.velFunc = velFunc;
     this.rotFunc = rotFunc;
+
+    this.emit = true;
   }
 
   spawn(count = 1) {
@@ -101,7 +106,7 @@ export class ParticleSystem extends Effect {
       basePosition.x, basePosition.y, 
       baseVelocity, 
       lifetime, 
-      this.direction + this.startRotationFunc(this), 
+      rotation, 
       this._seq
     );
 
@@ -125,9 +130,10 @@ export class ParticleSystem extends Effect {
       this._y += this.velocity.y * this.__dt;
     }
 
-    if (this._livetime <= this.emitTime || this.emitTime === -1) {
+    if ((this._livetime <= this.emitTime || this.emitTime === -1) && this.emit && (this.maxEmmitedParticles === -1 || this._seq < this.maxEmmitedParticles)) {
       if (this.frequency <= this.__dt) {
-        this.spawn(Math.floor(this.__dt / this.frequency))
+        const amount = Math.floor(this.__dt / this.frequency);
+        this.spawn(this.maxEmmitedParticles !== -1 ? Math.min(amount, this.maxEmmitedParticles - this._seq) : amount)
       } else if ((this._livetime % this.frequency) <= this.__dt) {
         this.spawn(1);
       }

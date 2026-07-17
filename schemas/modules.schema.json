@@ -128,6 +128,27 @@
       "type": "object"
     },
 
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["class", "isWeapon", "activateOn"],
+        "properties": {
+          "class": { "type": "string", "minLength": 1 },
+          "activateOn": { 
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["passive", "active", "overload"]
+            }
+          },
+          "settings": {
+            "type": "object"
+          }
+        }
+      }
+    },
+
     "modificators": {
       "type": "object",
       "required": ["offline", "online", "active", "overload"],

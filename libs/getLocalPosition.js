@@ -1,7 +1,16 @@
 import { point } from "./vector/point.js";
 
-export function getLocalPosition(object, x, y) {
-  const dirRad = ((object._direction ?? object.direction ?? 0) / 180) * Math.PI;
+export function getLocalPosition(object, x, y, dirOffset = 0) {
+  const dirRad = (((object._direction ?? object.direction ?? 0) + dirOffset) / 180) * Math.PI;
+
+  return point(
+    (object._x ?? object.x) + x * Math.cos(-dirRad) - y * Math.sin(-dirRad),
+    (object._y ?? object.y) + x * Math.sin(-dirRad) + y * Math.cos(-dirRad)
+  );
+}
+
+export function getLocalPositionWithOverride(object, x, y, direction) {
+  const dirRad = (direction / 180) * Math.PI;
 
   return point(
     (object._x ?? object.x) + x * Math.cos(-dirRad) - y * Math.sin(-dirRad),

@@ -146,10 +146,9 @@ export function createExplosion(
       lifetime: sparkLifetime,
 
       startVelocityFunc: () => {
-        const a = Math.random() * Math.PI * 2;
         const s = Math.sqrt(power * 6) * (2 + Math.random()) * 10;
 
-        return point(Math.cos(a) * s, Math.sin(a) * s);
+        return point(0, s);
       },
       startRotationFunc: () => Math.random() * 360,
 

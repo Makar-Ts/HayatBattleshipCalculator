@@ -35,7 +35,7 @@ export class HexParticle extends Particle {
     const width = toCanvas(this.size[0]);
     const height = toCanvas(this.size[1]);
 
-    const radians = (this.direction * Math.PI) / 180;
+    const radians = (-this.direction * Math.PI) / 180;
 
     ctx.save();
     ctx.fillStyle = this.color;

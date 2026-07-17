@@ -113,13 +113,19 @@ export default function init() {
     }
   };
 
-  const redrawMap = () => {
-    requestAnimationFrame(() => {
+  const redrawMap = (AF = false) => {
+    const d = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       drawObjects(canvas, ctx, toCanvas, style, activeLayers);
       document.dispatchEvent(new Event(EVENTS.MAP.REDRAW_COMPLETED));
-    })
+    }
+
+    if (AF) {
+      requestAnimationFrame(d);
+    } else {
+      d();
+    }
   };
 
   get_in_area();
@@ -147,7 +153,7 @@ export default function init() {
     canvas.height = settings.mapResolution;
     raito = canvas.width / size;
 
-    redrawMap();
+    redrawMap(false);
   });
 
   document.addEventListener(EVENTS.MAP.NEW, (e) => {
@@ -338,7 +344,7 @@ export default function init() {
       }
 
       for (let i of Object.keys(effects)) {
-        effects[i].physicsSimulationStep?.(step, dt, prevData);
+        effects[i]?.physicsSimulationStep?.(step, dt, prevData);
       }
 
       stepLoading('step', 1);
@@ -393,8 +399,56 @@ export default function init() {
       }, time - deltaTime)
     }
 
-    next();
-    sim(0);
+    let accumulator = 0;
+    const physicsDt = ENV.STEP / ENV.PHYSICS_ENGINE_STEPS; // в секундах
+    let lastTime = performance.now();
+    let simRunning = true;
+    let stepCount = 0;
+
+    function loop(now) {
+      if (!simRunning) return;
+
+      const realDelta = Math.min(0.1, (now - lastTime) / 1000);
+      lastTime = now;
+      accumulator += realDelta * settings.physicsSimulationSpeedupMultiplier;
+
+      while (accumulator >= physicsDt) {
+        const simResult = next();
+        if (simResult === false) {
+          simRunning = false;
+          finalize();
+          return;
+        }
+        accumulator -= physicsDt;
+        stepCount++;
+      }
+
+      if (stepCount > 0 && (stepCount % settings.renderPerFrame) === 0) {
+        if (settings.autoFocusOnSimulation) {
+          const size = computeCenteredSquare();
+          if (size) {
+            const data = { 
+              size: size.size, 
+              grid: mapProps.grid ?? 500, 
+              offset: { 
+                x: -size.x,
+                y: -size.y
+              },
+            }
+
+            document.dispatchEvent(new CustomEvent(
+              EVENTS.MAP_SET_CHANGED, { detail: data }
+            ));
+          }
+        } else {
+          redrawMap();
+        }
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    requestAnimationFrame(loop);
   });
 
 

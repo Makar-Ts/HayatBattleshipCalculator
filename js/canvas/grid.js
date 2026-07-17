@@ -124,12 +124,18 @@ export default function init() {
   }
 
 
-  const gridDraw = (size, grid, offset) => { 
-    requestAnimationFrame(() => {
+  const gridDraw = (size, grid, offset, AF = false) => { 
+    const d = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       drawGrid(canvas, ctx, toCanvas, size, grid, offset);
-    })
+    }
+
+    if (AF) {
+      requestAnimationFrame(d);
+    } else {
+      d();
+    }
   }
 
 

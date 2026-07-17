@@ -10,6 +10,9 @@ import BasicStepObject from "../../step/basicStepObject.js";
 import { DoubleTrailParticle } from "../../step/effects/particleSystem/particles/doubleTrailParticle.js";
 import { ParticleSystem } from "../../step/effects/particleSystem/particleSystem.js";
 import { registerSteps } from "../../step/stepInfoCollector.js";
+import { LaserAttackModuleEffect } from "../../step/effects/module/laserAttack.js";
+import { createObject } from "../../../../../save&load/load.js";
+import { BallisticAttackModuleEffect } from "../../step/effects/module/ballisticAttack.js";
 
 export class ShipEffectController extends BasicStepObject {
   /** @type {ParticleSystem | undefined} */
@@ -132,11 +135,44 @@ export class ShipEffectController extends BasicStepObject {
 
 
 
+  _moduleWeaponEffects = {};
+  _moduleWeaponOffsets = {};
+
+  getWeaponEffectOffset(id) {
+    return this._moduleWeaponOffsets[id];
+  }
+
+
   next() {
     super.next();
 
     if (this.parent.forces?.length && this.combinedForcesLength > 0 || this.ignoreNoForces) {
       this.createThrurstPS();
+    }
+
+    let weaponEffectsCounter = 0;
+    for (const module of this.parent.allModules) {
+      const effects = module.characteristics.effects;
+      if (!effects?.length) continue;
+
+      for (let i in effects) {
+        const effect = effects[i];
+
+        if (!effect.activateOn.some(v => v.startsWith("pred:") ? v == module.previousState : v == module.state)) continue;
+
+        const object = createObject(effect.class, i, this, module, this.parent);
+
+        const id = registerEffect(object);
+
+        if (object.isWeapon) {
+          this._moduleWeaponEffects[id] = weaponEffectsCounter;
+          weaponEffectsCounter += 1;
+        }
+      }
+    }
+
+    for (const id in this._moduleWeaponEffects) {
+      this._moduleWeaponOffsets[id] = ((this._moduleWeaponEffects[id] + 1) / (weaponEffectsCounter + 1)) * 180 - 90;
     }
   }
 
@@ -177,6 +213,8 @@ export class ShipEffectController extends BasicStepObject {
     let data = super.finalize(objectsData);
 
     this._thrustParticleSystem = undefined;
+    this._moduleWeaponEffects = {};
+    this._moduleWeaponOffsets = {};
 
     return data;
   }
