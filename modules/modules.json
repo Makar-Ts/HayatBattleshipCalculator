@@ -3,6 +3,7 @@
   "Электромагнитная торпедная катапульта": "launchers/test/electromagnetic-catapult-test.json",
   "Миноукладчик S (электромагнитный)": "launchers/test/mine-layer-test.json",
   "Рельсотрон (10m снаряд)": "launchers/test/railgun-test.json",
+  "380mm Scheißkanone": "launchers/380mm.json",
   "Ракетный комплекс «Рой»": "launchers/test/rapid-fire-launcher.json",
   "Ангар дрона «Миллер»": "hangars/test/hangar-test.json",
   "Мод. нав. системы дронов": "subgrid-support/test/mod-drone-nav-system.json",

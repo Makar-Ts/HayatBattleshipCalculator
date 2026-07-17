@@ -1,0 +1,75 @@
+{
+  "dynamic": {
+    "hp": {
+      "hull": 150,
+      "armor": 0,
+      "barrier": 0
+    },
+    "charge": 0,
+    "fuel": 48
+  },
+  "constant": {
+    "body": {
+      "tonnage": -1,
+      "core": 0,
+      "mass": 60,
+      "signature": 8,
+      "layers": ["missile"],
+      "subgrid": {
+        "size": 35,
+        "category": "battle",
+        "autonomous": true,
+        "fuel": 48,
+
+        "self_destruct_in": 120,
+        "guidanceDelay": 3,
+
+        "guidance": {
+          "response_time": 0.2,
+          "rotation": 60,
+          "side_scale": 0.2
+        },
+
+        "poximity_fuse": {
+          "passive": null,
+          "active": {
+            "min_distance": 100,
+            "trigger_activation_delay": 3,
+            "triggers": {
+              "layers": ["battleship", "drone"]
+            }
+          }
+        },
+
+        "explosion": {
+          "radius": 200,
+          "effect": {
+            "damage": {
+              "kinetic": 0,
+              "high_explosive": 87,
+              "electro_magnetic": 0,
+              "thermal": 0
+            },
+            "temperature": 0.01
+          },
+          "falloff": 2
+        }
+      }
+    },
+    "acceleration": 500,
+    "maneuverability": 10,
+    "capacitor": {
+      "charge": 0,
+      "generation": 0
+    },
+    "slots": {
+      "external": 4,
+      "internal": 12
+    },
+    "hp": {
+      "hull": 150,
+      "armor": 0,
+      "barrier": 0
+    }
+  }
+}

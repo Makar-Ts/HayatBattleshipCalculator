@@ -46,9 +46,10 @@ export default class SubgridLauncherModule extends BaseModule {
             new SpriteShower(
               './img/Projectail.svg', 
               '#ff0000',
-              (object.size ?? 30) * 20,
+              Math.max((object.size ?? 30) * 10, 40),
             )
           )
+          object.setChildren(MAP_OBJECTS_IDS.SIGNATURE_HUD,      new SignatureShower())
 
           document.dispatchEvent(
             new CustomEvent(EVENTS.MAP.NEW, {
