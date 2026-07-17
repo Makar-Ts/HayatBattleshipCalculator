@@ -42,7 +42,7 @@
               "electro_magnetic": 0,
               "thermal": 0
             },
-            "temperature": 0.3
+            "temperature": 0.2
           },
           "falloff": 2
         }
