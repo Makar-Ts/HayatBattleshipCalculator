@@ -1,7 +1,18 @@
 <div style="
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+" id="modal-settings-nav">
+  <button class="fit" data-tab="qlt">Quality</button>
+  <button class="fit" data-tab="sim">Sim.</button>
+  <button class="fit" data-tab="save">Saves</button>
+  <button class="fit" data-tab="hud">HUD</button>
+</div>
+
+<div style="
   display: grid;
   grid-template-columns: 1fr 60px 20px
-">
+" data-tab-id="qlt">
   <label for="modal-settings-mapres"
     >Map Resolution: </label
   ><input type="number" id="modal-settings-mapres" class="small" placeholder="8000" />px
@@ -11,20 +22,29 @@
   <label for="modal-settings-overlayres"
     >Overlay Resolution: </label
   ><input type="number" id="modal-settings-overlayres" class="small" placeholder="2000" />px
-  <label for="modal-settings-auto_focus"
-    >Auto focus on sim.</label
-  ><input type="checkbox" id="modal-settings-auto_focus" /><span></span>
-  <label for="modal-settings-auto_resize_grid"
-    >Auto resize grid</label
-  ><input type="checkbox" id="modal-settings-auto_resize_grid" /><span></span>
+  <button id="modal-settings-updateres" style="grid-column: 1 / 4;">Update Resolutions</button>
+
+  <label for="modal-settings-webhook_video_res" style="margin-top: 20px;"
+    >Webhook Recording Res.: </label
+  ><select id="modal-settings-webhook_video_res" style="grid-column: 2 / 4; margin-top: 20px;">
+    <option value="800">800x800</option>
+    <option value="1600">1600x1600</option>
+    <option value="2400">2400x2400</option>
+    <option value="3200">3200x3200</option>
+    <option value="4000">4000x4000</option>
+  </select>
+  <span style="
+    grid-column: 1 / 4; 
+    text-align: end;
+    font-size: 12px;
+    color: var(--border);
+  ">Dont set it more than Map Res.</span>
 </div>
-<button id="modal-settings-updateres" class="fit">Update Resolutions</button>
 
 <div style="
   display: grid;
   grid-template-columns: 1fr 60px 20px;
-  margin-top: 20px;
-">
+" data-tab-id="sim">
   <label for="modal-settings-sim_speedup"
     >Simulation Speedup (mult): </label
   ><input type="number" id="modal-settings-sim_speedup" class="small" placeholder="4" /><span></span>
@@ -33,23 +53,32 @@
   ><input type="number" id="modal-settings-render_per_frame" class="small" placeholder="1" /><span>fr.</span>
   <label for="modal-settings-instant_sim"
     >Instant simulation</label
-  ><input type="checkbox" id="modal-settings-instant_sim" />
+  ><input type="checkbox" id="modal-settings-instant_sim" /><span></span>
+  <label for="modal-settings-auto_focus"
+    >Auto focus on sim.</label
+  ><input type="checkbox" id="modal-settings-auto_focus" /><span></span>
 </div>
 
-<div style="margin-top: 20px;">
+<div style="display:grid; grid-template-columns: 1fr 20px;" data-tab-id="save">
   <label for="modal-settings-savestate"
     >Save state on exit?</label
   ><input type="checkbox" id="modal-settings-savestate" />
-</div>
-
-<div>
   <label for="modal-settings-savelogs"
     >Save logs in state/files?</label
   ><input type="checkbox" id="modal-settings-savelogs" />
 </div>
 
-<div style="margin-top: 20px;">
+<div style="
+  display: grid;
+  grid-template-columns: 1fr 60px 20px
+" data-tab-id="hud">
+  <label for="modal-settings-alternate_layout"
+    >Alternate Layout: </label
+  ><input type="checkbox" id="modal-settings-alternate_layout" /><span></span>
   <label for="modal-settings-hudsize"
     >Hud Size: </label
-  ><input class="small" type="number" id="modal-settings-hudsize" />
+  ><input class="small" type="number" id="modal-settings-hudsize" /><span></span>
+  <label for="modal-settings-auto_resize_grid"
+    >Auto resize grid</label
+  ><input type="checkbox" id="modal-settings-auto_resize_grid" /><span></span>
 </div>

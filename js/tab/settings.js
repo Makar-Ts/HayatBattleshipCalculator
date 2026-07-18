@@ -3,6 +3,8 @@ import { EVENTS } from "../events.js";
 import { saveSettings, settings } from "../settings/settings.js";
 
 export default function () {
+  $('#modal-settings > *[data-tab-id]').hide();
+
   $('#tab-settings').on('click', () => {
     let modal = $("#modal-settings");
 
@@ -10,6 +12,20 @@ export default function () {
     modal.attr("data-active", setTo);
     $('#tab-settings').attr("data-active", setTo);
   })
+
+  $('#modal-settings-nav > button').each((i ,element) => {
+    const j = $(element);
+
+    j.on('click', () => {
+      $('#modal-settings > *[data-tab-id]').hide();
+      $(`#modal-settings > *[data-tab-id="${j.attr('data-tab')}"]`).show();
+    })
+
+    if (i === 0) {
+      $(`#modal-settings > *[data-tab-id="${j.attr('data-tab')}"]`).show();
+    }
+  });
+
 
   $('#modal-settings-mapres').val(settings.mapResolution);
   $('#modal-settings-gridres').val(settings.gridResolution);
@@ -24,6 +40,26 @@ export default function () {
     settings.autoResizeGrid = $('#modal-settings-auto_resize_grid').is(':checked');
     saveSettings();
   })
+
+  $('#modal-settings-alternate_layout').prop('checked', settings.alternateLayout);
+  $('#modal-settings-alternate_layout').on('change', (e) => {
+    settings.alternateLayout = $('#modal-settings-alternate_layout').is(':checked');
+    if (settings.alternateLayout) {
+      document.body.setAttribute('alternate-layout', '');
+    } else {
+      document.body.removeAttribute('alternate-layout', '');
+    }
+      
+    saveSettings();
+  })
+
+
+  $('#modal-settings-webhook_video_res').val(String(settings.webhookVideoResolution ?? 1600));
+  $('#modal-settings-webhook_video_res').on('change', (e) => {
+    settings.webhookVideoResolution = Number($('#modal-settings-webhook_video_res').val());
+    saveSettings();
+  })
+
 
   $('#modal-settings-updateres').on('click', () => {
     settings.mapResolution = $('#modal-settings-mapres').val() || settings.mapResolution;

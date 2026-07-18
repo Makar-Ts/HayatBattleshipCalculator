@@ -5,7 +5,7 @@
     "category": "Высокомощные ускорители",
     "class": "SubgridLauncherModule",
 
-    "size": 1,
+    "size": 3,
     "position": "external",
     "tags": ["catapult", "subgrid", "mortar"]
   },

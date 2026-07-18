@@ -4,10 +4,12 @@ let settings = {
   gridResolution: 2000,
   mapResolution: 8000,
   overlayResolution: 2000,
+  webhookVideoResolution: 1600,
   autoFocusOnSimulation: false,
   autoResizeGrid: true,
 
   hudSize: 1,
+  alternateLayout: false,
 
   physicsSimulationSpeedupMultiplier: 20,
   renderPerFrame: 1,
@@ -23,10 +25,12 @@ const fromString = {
   gridResolution: Number,
   mapResolution: Number,
   overlayResolution: Number,
+  webhookVideoResolution: Number,
   autoFocusOnSimulation: (v) => v === "true",
   autoResizeGrid: (v) => v === "true",
 
   hudSize: Number,
+  alternateLayout: (v) => v === "true",
 
   physicsSimulationSpeedupMultiplier: Number,
   renderPerFrame: Number,

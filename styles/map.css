@@ -18,3 +18,10 @@
     box-sizing: border-box;
   }
 }
+
+body[alternate-layout] .map {
+  height: 100vh;
+  width: initial;
+  margin-left: auto;
+  border-left: var(--main) dashed 1px;
+}

@@ -66,8 +66,8 @@ export default function () {
   const createRecordingCanvas = () => {
     if (!recordingCanvas) {
       recordingCanvas = document.createElement('canvas');
-      recordingCanvas.width = 1600;
-      recordingCanvas.height = 1600;
+      recordingCanvas.width = settings.webhookVideoResolution;
+      recordingCanvas.height = settings.webhookVideoResolution;
       recordingCtx = recordingCanvas.getContext('2d');
     }
   }
@@ -79,6 +79,9 @@ export default function () {
     const mapCanvas = document.getElementById('map');
     const overlayCanvas = document.getElementById('overlay');
 
+    recordingCanvas.width = settings.webhookVideoResolution;
+    recordingCanvas.height = settings.webhookVideoResolution;
+
     if (!gridCanvas || !mapCanvas || !overlayCanvas) return;
 
     recordingCtx.clearRect(0, 0, recordingCanvas.width, recordingCanvas.height);
@@ -88,25 +91,40 @@ export default function () {
     recordingCtx.drawImage(mapCanvas, 0, 0, recordingCanvas.width, recordingCanvas.height);
     
     if (recordingStepNumber > 0) {
-      recordingCtx.font = 'bold 32px "Consolas", monospace';
+      const scale = recordingCanvas.width / 1600;
+
+      const fontSize = 32 * scale;
+      const x = 20 * scale;
+      const margin = 10 * scale;
+      const lineHeight = 30 * scale;
+
+      recordingCtx.font = `bold ${fontSize}px Consolas, monospace`;
       recordingCtx.textAlign = 'left';
       recordingCtx.textBaseline = 'top';
-
-      const x = 20;
-      const y = recordingCanvas.height - 110;
 
       const dt = ENV.STEP / ENV.PHYSICS_ENGINE_STEPS;
       const line1 = `Step ${recordingStepNumber} | ${(currentlySimulatedFrame * dt).toFixed(4)}s [${String(currentlySimulatedFrame).padStart(String(ENV.PHYSICS_ENGINE_STEPS).length, "0")}]`;
       const line2 = `────────────────────`;
       const line3 = `${ENV.CURRENT_VERSION} (sv ${ENV.SUPPORTED_SAVE_VERSION})`;
 
+      const metrics = [
+        recordingCtx.measureText(line1).width,
+        recordingCtx.measureText(line2).width,
+        recordingCtx.measureText(line3).width,
+      ];
+
+      const width = Math.max(...metrics) + margin * 2;
+      const height = fontSize * 3 + lineHeight * 2 + margin * 2;
+
+      const y = recordingCanvas.height - height - 20 * scale;
+
       recordingCtx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      recordingCtx.fillRect(x - 10, y - 10, 400, 95);
+      recordingCtx.fillRect(x - margin, y - margin, width, height);
 
       recordingCtx.fillStyle = '#fff';
       recordingCtx.fillText(line1, x, y);
-      recordingCtx.fillText(line2, x, y + 30);
-      recordingCtx.fillText(line3, x, y + 60);
+      recordingCtx.fillText(line2, x, y + lineHeight);
+      recordingCtx.fillText(line3, x, y + lineHeight * 2);
     }
 
     recordingCanvas.requestFrame?.();

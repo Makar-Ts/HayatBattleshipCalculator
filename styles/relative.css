@@ -15,6 +15,8 @@
   background-color: var(--bg);
   border: 1px solid var(--border);
 
+  z-index: 5;
+
   &[data-active="true"] {
     right: 0px;
     transform: translate(0, 50%);
@@ -67,5 +69,22 @@
         }
       }
     }
+  }
+}
+
+body[alternate-layout] .relative {
+  bottom: initial;
+  top: 20px;
+  right: calc(100vh + 5px);
+  transform: initial;
+  transform: translate(0, -400px);
+
+  &[data-active="true"] {
+    right: calc(100vh + 5px);
+    transform: translate(0, 0px);
+  }
+
+  > div {
+    max-height: 30vh;
   }
 }
