@@ -75,13 +75,13 @@
 body[alternate-layout] .relative {
   bottom: initial;
   top: 20px;
-  right: calc(100vh + 5px);
-  transform: initial;
-  transform: translate(0, -400px);
+  right: inherit;
+  left: max(350px, calc(100vw - 100vh - 10px));
+  transform: translate(-100%, -400px);
 
   &[data-active="true"] {
-    right: calc(100vh + 5px);
-    transform: translate(0, 0px);
+    right: inherit;
+    transform: translate(-100%, 0px);
   }
 
   > div {

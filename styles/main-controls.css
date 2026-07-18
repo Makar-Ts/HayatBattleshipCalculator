@@ -2,6 +2,8 @@
   height: 50px;
   width: fit-content;
 
+  z-index: 4;
+
   position: fixed;
   bottom: 0;
   left: 50%;
@@ -143,6 +145,13 @@
 body[alternate-layout] .main-controls {
   position: fixed;
   bottom: 0;
-  left: 0;
-  transform: initial;
+  left: max(600px, calc(100vw - 100vh - 10px));
+  transform: translate(-100%, 0);
+
+  .step-logs {
+    right: initial;
+    left: -10px;
+
+    transform: translate(-100%, 0);
+  }
 }
