@@ -7,6 +7,7 @@ let settings = {
   webhookVideoResolution: 1600,
   autoFocusOnSimulation: false,
   autoResizeGrid: true,
+  showSpatialGrid: false,
 
   hudSize: 1,
   alternateLayout: false,
@@ -28,6 +29,7 @@ const fromString = {
   webhookVideoResolution: Number,
   autoFocusOnSimulation: (v) => v === "true",
   autoResizeGrid: (v) => v === "true",
+  showSpatialGrid: (v) => v === "true",
 
   hudSize: Number,
   alternateLayout: (v) => v === "true",

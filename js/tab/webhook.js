@@ -16,6 +16,7 @@ import ENV from "../enviroments/env.js";
 import { EVENTS } from "../events.js";
 import { activeLayers } from "./render.js";
 import { settings } from "../settings/settings.js";
+import { SHIP_STATS_TRANSLATIONS } from "../../libs/hayat/translations.js";
 
 
 const states = {
@@ -461,8 +462,8 @@ export default function () {
     }
 
     const capacitor = {
-      current: object.currentCharacteristics.constant.capacitor.charge,
-      max: object.baseCharacteristics.constant.capacitor.charge
+      current: object.currentCharacteristics.dynamic.charge,
+      max: object.currentCharacteristics.constant.capacitor.charge
     }
     const temperature = {
       current: object.currentCharacteristics.dynamic.temperature,
@@ -477,20 +478,51 @@ export default function () {
     const formatModule = r => {
       const changeTask = object.tasks.find(v => v.id == "changeModuleState-"+r.uuid && v.data.uuid == r.uuid)
 
+      const module = r,
+        parent = object,
+        target = object.children[MAP_OBJECTS_IDS.CONTACT_CONTROLLER]?.target || null;
+
+      let reload = "";
+      if (module.characteristics.activation == "active" && module.characteristics.cycle && module.characteristics.reload) {
+        if (module.state == "active") {
+          reload = ` (цикл закончится через ${module.characteristics.cycle - (module.inStageSteps + 1)} ходов)`;
+        } else if (module.state == "online") {
+          reload = ` (перезарядка закончится через ${module.characteristics.reload - (module.inStageSteps + 1)} ходов)`
+        }
+      }
+
       return { 
         name: `${
           states[r.state] + (changeTask ? '>' + states[changeTask.data.state] : "")
-        } ${r.characteristics.main.name}`, 
+        } ${r.characteristics.main.name}${reload}`, 
         value: r.characteristics.modificators[r.state]
-          .map(v => `__${
-            v.characteristic.startsWith('constant.') ? 'const' : 'dnmc'
-          }__ | **${
-            v.target}${v.affectedLayers ? '['+v.affectedLayers.join(', ')+']' : ''
-          }** | ${v.characteristic.replaceAll('constant.', '')} | **${
-          v.modificationType == "percent" 
-            ? addPlus(Math.round((v.modificator - 1)*100))+"%" 
-            : addPlus(v.modificator)
-          }** | ${v.isAffectedByInterference ? '♒︎' : '══'}`)
+          .map(v => {
+            const modificator = v;
+
+            let res;
+            try {
+              let m = v.modificator;
+              if (/<\[[^\]]+]>/.test(m)) res = v.modificator;
+              else res = eval(m);
+            } catch {
+              res = v.modificator;
+            }
+
+
+            let val = res;
+            if (!Number.isNaN(val)) {
+              val = v.modificationType == "percent" 
+                ? addPlus(Math.round((val - 1)*100))+"%" 
+                : addPlus(val)
+            }
+
+
+            return `${v.isAffectedByInterference ? '♒︎' : '══'} ${
+              v.target !== 'this' ? "["+v.target+(
+                v.affectedLayers ? ' ('+v.affectedLayers.join(', ')+')' : ''
+              )+"]" : ''} ${SHIP_STATS_TRANSLATIONS[v.characteristic] ?? v.characteristic.replaceAll('constant.', '')}: **${
+                val}${res != v.modificator ? ' (calculated)' : ''}**`
+          })
           .join('\n'), 
         inline: false 
       }

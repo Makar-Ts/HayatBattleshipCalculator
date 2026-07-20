@@ -1,4 +1,4 @@
-import loading, { closeLoading } from './loading.js'
+import loading, { closeLoading, stepLoading, updateLoading } from './loading.js'
 import grid from './canvas/grid.js'
 import tab from './tab/tab.js'
 import map from './canvas/map.js'
@@ -19,15 +19,17 @@ settings();
 loading();
 
 new ReadyFunctionsCombiner(() => {
-  console.log(" ------ init ------ ")
+  updateLoading('default', 7, 0, 0);
 
-  ui();
-  tab();
-  controls();
-  saveload();
-  grid();
-  overlay();
-  map();
+  console.log(" ------ init ------ ");
+
+  ui();         stepLoading('default', 1);
+  tab();        stepLoading('default', 1);
+  controls();   stepLoading('default', 1);
+  saveload();   stepLoading('default', 1);
+  grid();       stepLoading('default', 1);
+  overlay();    stepLoading('default', 1);
+  map();        stepLoading('default', 1);
 
   closeLoading();
 }, battleshipsReady, modulesReady)

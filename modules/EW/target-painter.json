@@ -35,7 +35,7 @@
         "target": "target",
         "characteristic": "constant.body.signature",
         "modificationType": "percent",
-        "modificator": "( 1.7 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>EW_strenght_modifier'] ) * ( 1 - target.characteristics.constant.resistance.EW )",
+        "modificator": "( 1.7 * parent.currentCharacteristics.constant.module_modifiers['offence>EW>EW_strenght_modifier'] ) * ( 1 - (target?.currentCharacteristics?.constant.resistance.EW ?? 0) )",
         "isAffectedByInterference": false
       }
     ],

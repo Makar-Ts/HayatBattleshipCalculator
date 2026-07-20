@@ -1,6 +1,12 @@
 import { EVENTS } from "./events.js";
 
 let loadbars = {
+  default: {
+    id: "loading-inital-bar-default",
+    max: 1,
+    min: 0,
+    cur: 0,
+  },
   modules: {
     id: "loading-inital-bar-modules",
     max: 1,

@@ -1,6 +1,6 @@
 import { point, calc } from "../../../libs/vector/vector.js";
 import { mapProps } from "../grid.js";
-import { objects, toCanvas } from "../map.js";
+import { objects, spatialGrid, toCanvas } from "../map.js";
 
 export let getInArea = (x, y) => [];
 
@@ -9,8 +9,9 @@ export default function () {
 
   getInArea = (x, y) => {
     const clicked = [];
+    const candidateIds = spatialGrid.queryCells(x, y, CLICK_AREA);
 
-    for (let i of Object.keys(objects)) {
+    for (let i of candidateIds) {
       if (objects[i].visible) {
         const length = toCanvas({ direction: calc(() => point(objects[i]._x, objects[i]._y) - point(x, y)) }).length;
 
@@ -20,7 +21,7 @@ export default function () {
       }
     }
 
-    return clicked.sort((a, b) => a[1] - b[1]).map(v => v[0]);
+    return clicked.toSorted((a, b) => a[1] - b[1]).map(v => v[0]);
   }
 
   return getInArea;

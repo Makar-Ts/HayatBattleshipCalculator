@@ -40,6 +40,22 @@ export default function () {
     settings.autoResizeGrid = $('#modal-settings-auto_resize_grid').is(':checked');
     saveSettings();
   })
+  $('#modal-settings-show_spatial_grid').prop('checked', settings.showSpatialGrid);
+  $('#modal-settings-show_spatial_grid').on('change', (e) => {
+    settings.showSpatialGrid = $('#modal-settings-show_spatial_grid').is(':checked');
+
+    document.dispatchEvent(new CustomEvent(
+      EVENTS.MAP_SET_CHANGED,
+      {
+        detail: {
+          size: mapProps.size,
+          grid: mapProps.grid,
+        },
+      }
+    ))
+
+    saveSettings();
+  })
 
   $('#modal-settings-alternate_layout').prop('checked', settings.alternateLayout);
   $('#modal-settings-alternate_layout').on('change', (e) => {

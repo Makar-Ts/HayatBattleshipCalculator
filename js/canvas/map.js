@@ -1,6 +1,6 @@
 import { mergeDeep } from "../../libs/deepMerge.js";
 import intentFromObject from "../../libs/generatePhysicsIntentFromObject.js";
-import { compareVersions, stringOrRegex } from "../../libs/utils.js";
+import { compareVersions } from "../../libs/utils.js";
 import { point } from "../../libs/vector/point.js";
 import { computeCenteredSquare } from "../controls/map.js";
 import { log } from "../controls/step-logs/log.js";
@@ -16,11 +16,13 @@ import layers from './layers/main.js';
 
 import get_in_area from "./map/get_in_area.js";
 import { MAX_INTER_STEPS } from "./objects/map/step/stepInfoCollector.js";
-import { checkObjectRenderVisibility, getZIndexes, getZIndexIfCorrectLayer } from "./layers/layersInfoCollector.js";
-import { addRecordStringAny } from "../../libs/addRecordStringAny.js";
+import { getZIndexIfCorrectLayer } from "./layers/layersInfoCollector.js";
 import { activeLayers } from "../tab/render.js";
 import { Effect } from "./objects/map/step/effects/effect.js";
 import { uuidv4 } from "../../libs/uuid.js";
+import { SpatialGrid } from "../physics/spatialGrid.js";
+import BasicStaticObject from "./objects/map/step/basicStaticObject.js";
+import BasicMovingObject from "./objects/map/step/basicMovingObject.js";
 
 let canvas;
 let ctx;
@@ -28,6 +30,9 @@ let style;
 let objects;
 let effects;
 let toCanvas;
+
+/** @type {SpatialGrid<BasicStaticObject | BasicMovingObject>} */
+let spatialGrid = new SpatialGrid(ENV.SPATIAL_GRID_CELL_SIZE);
 
 let currentlySimulatedFrame = -1;
 /** @type {(effect: Effect) => string} */
@@ -113,20 +118,26 @@ export default function init() {
     }
   };
 
-  const redrawMap = (AF = false) => {
-    const d = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      drawObjects(canvas, ctx, toCanvas, style, activeLayers);
-      document.dispatchEvent(new Event(EVENTS.MAP.REDRAW_COMPLETED));
+  const draw = () => {
+    if (currentlySimulatedFrame < 0) {
+      spatialGrid.rebuild(objects);
     }
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawObjects(canvas, ctx, toCanvas, style, activeLayers);
+    document.dispatchEvent(new Event(EVENTS.MAP.REDRAW_COMPLETED));
+  }
+
+  const redrawMap = (AF = false) => {
     if (AF) {
-      requestAnimationFrame(d);
+      requestAnimationFrame(draw);
     } else {
-      d();
+      draw();
     }
   };
+
 
   get_in_area();
   check_id(objects);
@@ -134,12 +145,12 @@ export default function init() {
 
 
   effects = {};
+  let objectsWithEffects = { ...objects, ...effects };
   registerEffect = (effect) => {
     const id = `effect--${uuidv4()}`;
 
     effect.register(id);
     effects[id] = effect;
-    console.log(effects)
 
     return id;
   }
@@ -161,6 +172,8 @@ export default function init() {
 
     object.id = id;
     objects[id] = object;
+    spatialGrid.insert(id, object._x, object._y, object.size ?? 0, object);
+
     if (redraw) redrawMap();
   });
 
@@ -168,6 +181,7 @@ export default function init() {
     const { id, redraw } = e.detail;
     
     if (objects[id]) {
+      spatialGrid.remove(id);
       delete objects[id];
     } else {
       delete effects[id];
@@ -213,14 +227,14 @@ export default function init() {
     for (let i of Object.keys(objects)) {
       data[i] = objects[i].next();
       stepLoading('step', 1);
+
+      spatialGrid.updateObject(objects[i]);
     }
     
     for (let i of Object.keys(effects)) {
       data[i] = effects[i].next();
       stepLoading('step', 1);
     }
-
-    let objectsWithEffects = { ...objects, ...effects };
 
     stepLoading('step', 1);
     console.log(" ------ steps ------ ")
@@ -231,8 +245,15 @@ export default function init() {
       log('system', `starting ${step} inter step`)
       console.log(prevData)
 
-      for (let i of Object.keys(objectsWithEffects)) {
-        data[i] = objectsWithEffects[i].step(step, prevData);
+      for (let i of Object.keys(objects)) {
+        data[i] = objects[i].step(step, prevData);
+        stepLoading('step', 1);
+
+        spatialGrid.updateObject(objects[i]);
+      }
+
+      for (let i of Object.keys(effects)) {
+        data[i] = effects[i].step(step, prevData);
         stepLoading('step', 1);
       }
 
@@ -251,6 +272,7 @@ export default function init() {
 
     console.log(" ------ register objects ------ ")
 
+    let objectsWithEffects = { ...objects, ...effects };
     for (let id of Object.keys(objectsWithEffects)) {
       if (!objectsWithEffects[id].collision) continue;
       physics.registerIntent(intentFromObject(objectsWithEffects[id]));
@@ -263,6 +285,7 @@ export default function init() {
     const exportPhysicsState = () => {
       const physRes = physics.exportStates();
 
+      objectsWithEffects = { ...objects, ...effects };
       for (let id of Object.keys(objectsWithEffects)) {
         prevData[id] = {
           ...prevData[id],
@@ -290,6 +313,7 @@ export default function init() {
       
       console.log(" ------ after simulation ------ ")
 
+      objectsWithEffects = { ...objects, ...effects };
       for (let i of Object.keys(objectsWithEffects)) {
         objectsWithEffects[i].afterSimulation?.(prevData);
 
@@ -302,6 +326,7 @@ export default function init() {
 
       console.log(" ------ finalize ------ ")
 
+      objectsWithEffects = { ...objects, ...effects };
       for (let i of Object.keys(objectsWithEffects)) {
         objectsWithEffects[i].finalize(prevData);
 
@@ -335,12 +360,15 @@ export default function init() {
 
       const callback = {};
       for (let i of Object.keys(objects)) {
-        const f = objects[i].physicsSimulationStep?.(step, dt, prevData);
+        const object = objects[i];
+        const f = object.physicsSimulationStep?.(step, dt, prevData);
 
-        if (f !== undefined && objects[i]) callback[i] = {
+        if (f !== undefined && object) callback[i] = {
           ...f,
-          objectRef: intentFromObject(objects[i]),
+          objectRef: intentFromObject(object),
         };
+
+        spatialGrid.updateObject(object);
       }
 
       for (let i of Object.keys(effects)) {
@@ -494,4 +522,4 @@ export default function init() {
   }
 }
 
-export { ctx, canvas, style, objects, effects, toCanvas, currentlySimulatedFrame, registerEffect }
+export { ctx, canvas, style, objects, effects, toCanvas, currentlySimulatedFrame, registerEffect, spatialGrid }

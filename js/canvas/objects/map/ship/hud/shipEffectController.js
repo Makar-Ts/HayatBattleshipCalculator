@@ -5,7 +5,7 @@ import { calc, point } from "../../../../../../libs/vector/point.js";
 import ENV from "../../../../../enviroments/env.js";
 import { registerClass } from "../../../../../save&load/objectCollector.js";
 import { registerLayers } from "../../../../layers/layersInfoCollector.js";
-import { registerEffect } from "../../../../map.js";
+import { effects, registerEffect } from "../../../../map.js";
 import BasicStepObject from "../../step/basicStepObject.js";
 import { DoubleTrailParticle } from "../../step/effects/particleSystem/particles/doubleTrailParticle.js";
 import { ParticleSystem } from "../../step/effects/particleSystem/particleSystem.js";
@@ -149,31 +149,43 @@ export class ShipEffectController extends BasicStepObject {
     if (this.parent.forces?.length && this.combinedForcesLength > 0 || this.ignoreNoForces) {
       this.createThrurstPS();
     }
+  }
 
-    let weaponEffectsCounter = 0;
-    for (const module of this.parent.allModules) {
-      const effects = module.characteristics.effects;
-      if (!effects?.length) continue;
+  step(index, objectsData) {
+    let data = super.step(index, objectsData);
 
-      for (let i in effects) {
-        const effect = effects[i];
+    if (index === 0) {
+      let weaponEffectsCounter = 0;
+      for (const module of this.parent.allModules) {
+        const effects = module.characteristics.effects;
+        if (!effects?.length) continue;
 
-        if (!effect.activateOn.some(v => v.startsWith("pred:") ? v == module.previousState : v == module.state)) continue;
+        for (let i in effects) {
+          const effect = effects[i];
 
-        const object = createObject(effect.class, i, this, module, this.parent);
+          if (!effect.activateOn.some(v => v.startsWith("pred:") ? v == module.previousState : v == module.state)) continue;
 
-        const id = registerEffect(object);
+          const object = createObject(effect.class, i, this, module, this.parent);
 
-        if (object.isWeapon) {
-          this._moduleWeaponEffects[id] = weaponEffectsCounter;
-          weaponEffectsCounter += 1;
+          const id = registerEffect(object);
+
+          if (object.isWeapon) {
+            this._moduleWeaponEffects[id] = weaponEffectsCounter;
+            weaponEffectsCounter += 1;
+          }
         }
+      }
+
+      for (const id in this._moduleWeaponEffects) {
+        this._moduleWeaponOffsets[id] = ((this._moduleWeaponEffects[id] + 1) / (weaponEffectsCounter + 1)) * 180 - 90;
+      }
+
+      for (const id in this._moduleWeaponEffects) {
+        effects[id].next();
       }
     }
 
-    for (const id in this._moduleWeaponEffects) {
-      this._moduleWeaponOffsets[id] = ((this._moduleWeaponEffects[id] + 1) / (weaponEffectsCounter + 1)) * 180 - 90;
-    }
+    return data;
   }
 
   physicsSimulationStep(step, delta, objectsData) {

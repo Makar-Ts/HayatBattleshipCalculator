@@ -1,5 +1,5 @@
 import { registerClass } from "../../../../../../save&load/objectCollector.js";
-import { objects } from "../../../../../map.js";
+import { objects, spatialGrid } from "../../../../../map.js";
 import SIMULATION_STATES, { parceSimulationState } from "../../../step/simulationStates.constant.js";
 import { registerSteps } from "../../../step/stepInfoCollector.js";
 import ContactSubgridObject from "./contactSubgridObject.js";
@@ -21,25 +21,25 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
       if (!apf) return data;
       if ((apf.trigger_activation_delay ?? 0) - this._livetime - dt*step > 0) return data;
 
-      const mdsqr = apf.min_distance * apf.min_distance;
       const layers = apf.triggers.layers ?? ['all'];
       const noLayerFilter = layers.includes('all');
       const minSize = apf.triggers.min_size ?? 0;
       const vel = this.velocity;
 
-      for (let obj of Object.values(objects)) {
-        const rx = obj._x - this._x;
-        const ry = obj._y - this._y;
-        const range = rx*rx + ry*ry - Math.pow(obj.size ?? 0, 2);
+      const ids = spatialGrid.query(this._x, this._y, apf.min_distance);
+      for (let entry of ids) {
+        const { r2, object } = entry;
 
-        if (range > mdsqr) continue;
-        if ((obj.size ?? 0) < minSize) continue;
+        const rx = object._x - this._x;
+        const ry = object._y - this._y;
+        
+        if ((object.size ?? 0) < minSize) continue;
 
-        const objV = obj.velocity ?? { x: 0, y: 0 };
+        const objV = object.velocity ?? { x: 0, y: 0 };
         if ((rx * (objV.x - vel.x) + ry * (objV.y - vel.y)) <= 0) continue;
 
-        if (noLayerFilter || (obj.layers).some(v => layers.includes(v))) {
-          log(this.path, `Active PF triggered by ${obj.id}`);
+        if (noLayerFilter || (object.layers).some(v => layers.includes(v))) {
+          log(this.path, `Active PF triggered by ${object.id}`);
           this.destroy();
 
           return {
@@ -70,18 +70,15 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
         }
       };
 
-    
-    for (let obj of Object.values(objects)) {
+    const ids = spatialGrid.query(this._x, this._y, radius);
+    for (let entry of ids) {
+      const obj = entry.object;
+      const r2 = entry.r2;
+
       if (obj.id === this.id || !obj.collision) continue;
       if (!("applyDamage" in obj) || !("currentCharacteristics" in obj)) continue;
 
-      const rx = obj._x - this._x;
-      const ry = obj._y - this._y;
-      const range = rx*rx + ry*ry - Math.pow(obj.size ?? 0, 2);
-
-      if (range > (radius*radius)) continue;
-
-      const mult = Math.pow(1 - Math.sqrt(range) / radius, falloff)
+      const mult = Math.pow(1 - Math.sqrt(r2) / radius, falloff)
       const l = {};
 
       if (effect.damage) {
