@@ -39,7 +39,7 @@ export class ShipEffectController extends BasicStepObject {
     const color = hexToRgb(this.parent.children[MAP_OBJECTS_IDS.SPRITE]?.color ?? "#00FFFF");
     console.log()
     const size = this.parent.size;
-    const angle = Math.atan2(-this.parent.velocity.y, this.parent.velocity.x) / Math.PI * 180 - 90;
+    const angle = Math.atan2(-this.parent.velocity.y, this.parent.velocity.x) / Math.PI * 180;
 
     const spacing = size / 2;
     const speed = this.parent.velocity.length;
@@ -72,8 +72,6 @@ export class ShipEffectController extends BasicStepObject {
       },
 
       velFunc: (p) => a,
-
-      rotFunc: (p) => p.direction,
     })
 
     registerEffect(this._afterlineParticleSystem);
@@ -192,33 +190,30 @@ export class ShipEffectController extends BasicStepObject {
     if (!this._afterlineParticleSystem) {
       if (this.parent.velocity.length || (this.parent.forces?.length && this.combinedForcesLength > 0)) {
         this.createAfterlinePS();
-      } else {
-        return;
       }
+    } else {
+      const angle = Math.atan2(-this.parent.velocity.y, this.parent.velocity.x) / Math.PI * 180;
+      this._afterlineParticleSystem.direction = angle;
+      this._afterlineParticleSystem._x = this.parent._x;
+      this._afterlineParticleSystem._y = this.parent._y;
     }
 
-    const angle = Math.atan2(-this.parent.velocity.y, this.parent.velocity.x) / Math.PI * 180 - 90;
-
-    this._afterlineParticleSystem.direction = angle;
-    this._afterlineParticleSystem._x = this.parent._x;
-    this._afterlineParticleSystem._y = this.parent._y;
+    
 
 
     if (!this._thrustParticleSystem) {
       if (this.parent.forces?.length && this.combinedForcesLength > 0 || this.ignoreNoForces) {
         this.createThrurstPS();
-      } else {
-        return;
       }
+    } else {
+      const pos = getLocalPosition(this.parent, 0, -this.parent.size);
+
+      this._thrustParticleSystem.direction = this.parent._direction;
+      this._thrustParticleSystem._x = pos.x;
+      this._thrustParticleSystem._y = pos.y;
+      this._thrustParticleSystem.velocity.x = this.parent.velocity.x;
+      this._thrustParticleSystem.velocity.y = this.parent.velocity.y;
     }
-
-    const pos = getLocalPosition(this.parent, 0, -this.parent.size);
-
-    this._thrustParticleSystem.direction = this.parent._direction;
-    this._thrustParticleSystem._x = pos.x;
-    this._thrustParticleSystem._y = pos.y;
-    this._thrustParticleSystem.velocity.x = this.parent.velocity.x;
-    this._thrustParticleSystem.velocity.y = this.parent.velocity.y;
   }
 
   finalize(objectsData) {

@@ -1,0 +1,148 @@
+{
+  "main": {
+    "name": "Диспенсер ЛТЦ L",
+    "type": "Стартовые площадки",
+    "category": "Диспенсеры ЛТЦ",
+    "class": "SubgridLauncherModule",
+
+    "size": 1,
+    "position": "external",
+    "tags": ["catapult", "subgrid", "decoy"]
+  },
+  "activation": "active",
+  "cycle": 1,
+  "reload": 0,
+
+  "interference": 0,
+
+  "launcher": {
+    "heading": 0,
+    "instances": [
+      {
+        "vector": [0, 300],
+
+        "headingOffset": 30,
+        "distanceOffset": 10,
+        "subgridRotation": 0,
+
+        "fire": {
+          "type": "rapid",
+          "delay": [0, 2, 4]
+        },
+
+        "subgrid": {
+          "class": "DecoySubgridObject",
+          "dataRef": "[Test] Ловушка (L)"
+        }
+      },
+      {
+        "vector": [0, 300],
+
+        "headingOffset": -30,
+        "distanceOffset": 10,
+        "subgridRotation": 0,
+
+        "fire": {
+          "type": "rapid",
+          "delay": [0, 2, 4]
+        },
+
+        "subgrid": {
+          "class": "DecoySubgridObject",
+          "dataRef": "[Test] Ловушка (L)"
+        }
+      },
+      {
+        "vector": [0, 150],
+
+        "headingOffset": 50,
+        "distanceOffset": 10,
+        "subgridRotation": 0,
+
+        "fire": {
+          "type": "rapid",
+          "delay": [0.3, 2.3, 4.3]
+        },
+
+        "subgrid": {
+          "class": "DecoySubgridObject",
+          "dataRef": "[Test] Ловушка (L)"
+        }
+      },
+      {
+        "vector": [0, 150],
+
+        "headingOffset": -50,
+        "distanceOffset": 10,
+        "subgridRotation": 0,
+
+        "fire": {
+          "type": "rapid",
+          "delay": [0.3, 2.3, 4.3]
+        },
+
+        "subgrid": {
+          "class": "DecoySubgridObject",
+          "dataRef": "[Test] Ловушка (L)"
+        }
+      },
+      {
+        "vector": [0, 30],
+
+        "headingOffset": 100,
+        "distanceOffset": 10,
+        "subgridRotation": 0,
+
+        "fire": {
+          "type": "rapid",
+          "delay": [0.6, 2.6, 4.6]
+        },
+
+        "subgrid": {
+          "class": "DecoySubgridObject",
+          "dataRef": "[Test] Ловушка (L)"
+        }
+      },
+      {
+        "vector": [0, 30],
+
+        "headingOffset": -100,
+        "distanceOffset": 10,
+        "subgridRotation": 0,
+
+        "fire": {
+          "type": "rapid",
+          "delay": [0.6, 2.6, 4.6]
+        },
+
+        "subgrid": {
+          "class": "DecoySubgridObject",
+          "dataRef": "[Test] Ловушка (L)"
+        }
+      }
+    ]
+  },
+
+  "modificators": {
+    "offline": [],
+    "online": [
+      {
+        "target": "this",
+        "characteristic": "constant.capacitor.generation",
+        "modificationType": "number",
+        "modificator": -15,
+        "isAffectedByInterference": false
+      }
+    ],
+    "active": [
+      {
+        "target": "this",
+        "characteristic": "constant.capacitor.generation",
+        "modificationType": "number",
+        "modificator": -40,
+        "isAffectedByInterference": false
+      }
+    ],
+    "overload": []
+  }
+}

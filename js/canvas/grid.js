@@ -60,8 +60,6 @@ function drawSpatialGrid() {
   if (!settings.showSpatialGrid) return;
   if (!spatialGrid) return;
 
-  console.log(spatialGrid)
-
   const cellSize = spatialGrid.cellSize;
   const { size, offset } = mapProps;
 

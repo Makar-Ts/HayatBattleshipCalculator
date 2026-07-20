@@ -47,7 +47,7 @@ export class ParticleSystem extends Effect {
 
     startOffsetFunc = () => point(0, 0),
     startVelocityFunc = () => point(0, 0),
-    startRotationFunc = (p) => p.direction,
+    startRotationFunc = (p) => 0,
 
     particle = Particle,
 

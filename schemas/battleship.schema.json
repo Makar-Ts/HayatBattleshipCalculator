@@ -37,11 +37,12 @@
             "core": { "type": "number" },
             "mass": { "type": "number" },
             "signature": { "type": "number" },
+            "jamming": { "type": "number" },
             "layers": {
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["battleship", "missile", "drone", "shell", "mine"]
+                "enum": ["battleship", "missile", "drone", "shell", "mine", "decoy"]
               }
             },
 
@@ -114,7 +115,7 @@
                                   "type": "array",
                                   "items": {
                                     "type": "string",
-                                    "enum": ["battleship", "missile", "drone", "shell", "mine"]
+                                    "enum": ["battleship", "missile", "drone", "shell", "mine", "decoy"]
                                   }
                                 },
                                 "min_size": { "type": "number" }

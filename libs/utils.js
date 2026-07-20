@@ -1,3 +1,5 @@
+import { point } from "./vector/point.js";
+
 /**
  *
  * @param {string} value
@@ -38,4 +40,8 @@ export function compareVersions(v1, v2) {
   }
 
   return 0; // Versions are equal
+}
+
+export function randomDirection() {
+  return point(Math.random() * 2 - 1, Math.random() * 2 - 1);
 }

@@ -14,7 +14,7 @@ function getSquared(v1, v2) {
 }
 
 export function computeCenteredSquare() {
-  const items = Object.values(objects).filter(o => o.visible);
+  const items = Object.values(objects).filter(o => o.visible && !o.decoy);
   const padding = fromCanvas(200);
 
   if (items.length === 0) {

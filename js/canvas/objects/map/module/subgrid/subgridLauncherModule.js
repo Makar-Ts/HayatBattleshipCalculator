@@ -6,7 +6,9 @@ import { createObject } from "../../../../../save&load/load.js";
 import { registerClass } from "../../../../../save&load/objectCollector.js";
 import BasicDataHud from "../../hud/basicDataHud.js";
 import VectorHud from "../../hud/vectorHud.js";
+import MAP_OBJECTS_IDS from "../../mapObjectsIds.constant.js";
 import { ContactController } from "../../ship/hud/contactController.js";
+import JammingShower from "../../ship/hud/jammingShower.js";
 import ShipStatsHUD from "../../ship/hud/shipStatsHud.js";
 import SignatureShower from "../../ship/hud/signatureShower.js";
 import SpriteShower from "../../spriteShow.js";
@@ -37,19 +39,31 @@ export default class SubgridLauncherModule extends BaseModule {
 
           this.applyCorrection(k, object);
 
-          object.setChildren(MAP_OBJECTS_IDS.SHIP_STATS_HUD,     new ShipStatsHUD())
-          object.setChildren(MAP_OBJECTS_IDS.DATA_HUD,           new BasicDataHud([
-            { func: (hud) => `pos: ${Math.round(hud.parent._x)}m, ${Math.round(hud.parent._y)}m` },
-            { func: (hud) => `speed: ${Math.round(hud.parent.velocity.length)}m/s` },
-          ]))
-          object.setChildren(MAP_OBJECTS_IDS.SPRITE, 
-            new SpriteShower(
-              './img/Projectail.svg', 
-              '#ff0000',
-              Math.max((object.size ?? 30) * 10, 40),
+          if (object.decoy) {
+            object.setChildren(MAP_OBJECTS_IDS.SPRITE, 
+              new SpriteShower(
+                './img/Decoy.svg', 
+                '#ffbb00',
+                Math.max((object.size ?? 30) * 10, 40),
+              )
+            );
+            object.setChildren(MAP_OBJECTS_IDS.JAMMING_HUD, new JammingShower());
+            object.setChildren(MAP_OBJECTS_IDS.SIGNATURE_HUD,      new SignatureShower());
+          } else {
+            object.setChildren(MAP_OBJECTS_IDS.SHIP_STATS_HUD,     new ShipStatsHUD())
+            object.setChildren(MAP_OBJECTS_IDS.DATA_HUD,           new BasicDataHud([
+              { func: (hud) => `pos: ${Math.round(hud.parent._x)}m, ${Math.round(hud.parent._y)}m` },
+              { func: (hud) => `speed: ${Math.round(hud.parent.velocity.length)}m/s` },
+            ]))
+            object.setChildren(MAP_OBJECTS_IDS.SPRITE, 
+              new SpriteShower(
+                './img/Projectail.svg', 
+                '#ff0000',
+                Math.max((object.size ?? 30) * 10, 40),
+              )
             )
-          )
-          object.setChildren(MAP_OBJECTS_IDS.SIGNATURE_HUD,      new SignatureShower())
+            object.setChildren(MAP_OBJECTS_IDS.SIGNATURE_HUD,      new SignatureShower())
+          }
 
           document.dispatchEvent(
             new CustomEvent(EVENTS.MAP.NEW, {

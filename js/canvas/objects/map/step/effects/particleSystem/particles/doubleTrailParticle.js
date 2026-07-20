@@ -10,8 +10,7 @@ export class DoubleTrailParticle extends Particle {
     const height = toCanvas(this.size[1]);
     const lineWidth = toCurrentCanvasSize(canvas, 20);
 
-    const radians = (this.direction * Math.PI) / 180;
-
+    const radians = ((-this.direction + 90) * Math.PI) / 180;
     ctx.save();
     ctx.fillStyle = this.color;
     ctx.translate(x, y);

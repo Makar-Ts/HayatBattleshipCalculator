@@ -23,8 +23,9 @@ export default class {
         }
 
         this.currentOverridableValues = curObj.getValues();
+        console.log(curObj, this.currentOverridableValues)
       }
-
+      
       this.changeOverrideValues();
     })
   }

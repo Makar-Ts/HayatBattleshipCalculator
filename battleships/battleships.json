@@ -30,6 +30,7 @@
   "[Test] Ракета типа \"Рой\"": "subships/test/missile-swarm.json",
   "[Test] Railgun Shell (10m)": "subships/test/railgun-shell.json",
   "[Test] Дрон «Миллер»": "subships/test/miller-drone-test.json",
+  "[Test] Ловушка (L)": "subships/test/decoy-l.json",
 
   "380mm HE": "subships/380mm-he.json",
   "missile-s": "subships/missile-s.json",

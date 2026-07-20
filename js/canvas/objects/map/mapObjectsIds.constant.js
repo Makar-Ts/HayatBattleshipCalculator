@@ -4,6 +4,7 @@ const MAP_OBJECTS_IDS = {
   SHIP_EFFECTS_CONTROLLER: 'shipEffectsController',
   VECTOR_HUD: 'vectorHud',
   SIGNATURE_HUD: 'signatureHud',
+  JAMMING_HUD: 'jammingHud',
   DATA_HUD: 'hud',
   SPRITE: 'image',
 }

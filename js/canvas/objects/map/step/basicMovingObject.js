@@ -122,6 +122,12 @@ export default class BasicMovingObject extends BasicStepObject {
     }
   }
 
+  afterPhysicsSimulationStep(step, delta, objectsData) {
+    for (let i of Object.keys(this.children)) {
+      this.children[i].afterPhysicsSimulationStep?.(step, delta, objectsData);
+    }
+  }
+
 
   afterSimulation(objectsData) {
     this.state = generateSimulationState(SIMULATION_STATES.AFTER_SIMULATION);

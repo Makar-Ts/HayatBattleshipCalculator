@@ -122,6 +122,8 @@ const baseBattleshipCharacteristics = {
       },
       /** радиус сигнатуры */
       signature: 0,
+      /** количество создаваемых помех */
+      jamming: 0,
       /** параметры если это субтело */
       subgrid: {
         size: 0,

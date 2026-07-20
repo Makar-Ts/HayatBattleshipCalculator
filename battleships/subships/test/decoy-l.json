@@ -1,0 +1,41 @@
+{
+  "dynamic": {
+    "hp": {
+      "hull": 5,
+      "armor": 0,
+      "barrier": 0
+    },
+    "charge": 0
+  },
+  "constant": {
+    "body": {
+      "tonnage": -1,
+      "core": 0,
+      "mass": 5,
+      "signature": 1,
+      "jamming": 15,
+      "layers": ["decoy"],
+      "subgrid": {
+        "size": 1,
+        "category": "defence",
+        "autonomous": true,
+        "self_destruct_in": 6
+      }
+    },
+    "acceleration": 0,
+    "maneuverability": 0,
+    "capacitor": {
+      "charge": 0,
+      "generation": 0
+    },
+    "slots": {
+      "external": 0,
+      "internal": 0
+    },
+    "hp": {
+      "hull": 5,
+      "armor": 0,
+      "barrier": 0
+    }
+  }
+}

@@ -20,7 +20,7 @@ import { log } from "../../../../controls/step-logs/log.js";
 import { load } from "../../../../save&load/load.js";
 import { registerClass } from "../../../../save&load/objectCollector.js";
 import { registerLayers } from "../../../layers/layersInfoCollector.js";
-import { objects } from "../../../map.js";
+import { objects, spatialGrid } from "../../../map.js";
 import BaseModule from "../module/baseModule.js";
 import BasicMovingObject from "../step/basicMovingObject.js";
 import { registerSteps } from "../step/stepInfoCollector.js";
@@ -226,6 +226,41 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
     this.currentCharacteristics.dynamic.temperature += heat;
     this.applyDamage()
   }
+
+
+  _lastJammingUpdate = -1;
+  _jammingLevel = 0;
+  afterPhysicsSimulationStep(step, delta, objectsData) {
+    const jamming = this.currentCharacteristics.constant.body.jamming;
+    if (jamming > 0) {
+      const ids = spatialGrid.query(this._x, this._y, jamming * 100 + this.size);
+      const radius2 = Math.pow(jamming * 100, 2);
+      const size2 = Math.pow(this.size, 2);
+      for (const { object, r2 } of ids) {
+        if (!("addJammingLevel" in object) || object.id === this.id) continue;
+
+        const dist2 = r2 - size2;
+        const level = jamming * (1 - dist2 / radius2);
+
+        object.addJammingLevel(step, level);
+      }
+    }
+
+    super.afterPhysicsSimulationStep(step, delta, objectsData);
+  }
+
+  addJammingLevel(step, amount) {
+    if (this._lastJammingUpdate !== step) {
+      this._jammingLevel = this.currentCharacteristics.constant.body.jamming ?? 0;
+    }
+
+    this._jammingLevel += amount;
+  }
+
+  get jammingLevel() {
+    return this._jammingLevel;
+  }
+
 
 
   afterSimulation(objectsData) {

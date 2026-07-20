@@ -6,6 +6,8 @@ import ContactSubgridObject from "./contactSubgridObject.js";
 import { log } from "../../../../../../controls/step-logs/log.js";
 import { registerLayers } from "../../../../../layers/layersInfoCollector.js";
 import { createExplosion, ExplosionColors } from "../../../step/effects/predefined/explosion.js";
+import { point } from "../../../../../../../libs/vector/point.js";
+import { randomDirection } from "../../../../../../../libs/utils.js";
 
 export default class ExplosiveSubgridObject extends ContactSubgridObject {
   exploded = false;
@@ -29,14 +31,27 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
       const ids = spatialGrid.query(this._x, this._y, apf.min_distance);
       for (let entry of ids) {
         const { r2, object } = entry;
-
-        const rx = object._x - this._x;
-        const ry = object._y - this._y;
-        
+        if (object.id === this.controlledBy.Connection?.id) continue;
         if ((object.size ?? 0) < minSize) continue;
 
+
+        const distanceToTarget = Math.sqrt(r2) || 1e-6;
+        const jamStrength = object.jammingLevel ?? 0;
+
+        const error1 = point(() => 
+          randomDirection() *
+          jamStrength *
+          distanceToTarget);
+
+        const rx = object._x - this._x + error1.x;
+        const ry = object._y - this._y + error1.y;
+
         const objV = object.velocity ?? { x: 0, y: 0 };
-        if ((rx * (objV.x - vel.x) + ry * (objV.y - vel.y)) <= 0) continue;
+        const error2 = point(() => 
+          randomDirection() *
+          jamStrength *
+          distanceToTarget / 10);
+        if ((rx * (objV.x - vel.x + error2.x) + ry * (objV.y - vel.y + error2.y)) <= 0) continue;
 
         if (noLayerFilter || (object.layers).some(v => layers.includes(v))) {
           log(this.path, `Active PF triggered by ${object.id}`);

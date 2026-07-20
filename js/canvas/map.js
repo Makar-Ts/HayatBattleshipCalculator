@@ -375,6 +375,12 @@ export default function init() {
         effects[i]?.physicsSimulationStep?.(step, dt, prevData);
       }
 
+
+      for (let i of Object.keys(objects)) {
+        objects[i].afterPhysicsSimulationStep?.(step, dt, prevData);
+      }
+
+
       stepLoading('step', 1);
 
       return callback;

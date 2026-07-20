@@ -76,6 +76,16 @@ export default class BasicStaticObject extends BasicStepObject {
       this._y = phys.pos.y;
       this.velocity = phys.vel;
     }
+
+    for (let i of Object.keys(this.children)) {
+      this.children[i].physicsSimulationStep?.(step, delta, objectsData);
+    }
+  }
+
+  afterPhysicsSimulationStep(step, delta, objectsData) {
+    for (let i of Object.keys(this.children)) {
+      this.children[i].afterPhysicsSimulationStep?.(step, delta, objectsData);
+    }
   }
 
 
