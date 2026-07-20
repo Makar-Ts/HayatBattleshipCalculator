@@ -489,6 +489,7 @@ export default function init() {
   document.addEventListener(EVENTS.RESET, () => {
     objects = {};
     effects = {};
+    spatialGrid.clear();
     redrawMap();
   })
 

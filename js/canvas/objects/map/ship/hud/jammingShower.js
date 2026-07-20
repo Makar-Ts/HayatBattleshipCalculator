@@ -6,54 +6,68 @@ import { registerLayers } from "../../../../layers/layersInfoCollector.js";
 import { currentlySimulatedFrame } from "../../../../map.js";
 import StandartObject from "../../../standartObject.js";
 
+
+const COLOR_RANGE = [60, 80];
+const NOISE_STEPS = 30;
+
+
 export default class JammingShower extends StandartObject {
-  static _noisePattern = null;
-  static _lastUpdate = -1;
+  static _textureCache = new Map();
 
-  static _generateNoisePattern(ctx, size = 64, blockSize = 1) {
-    // Итоговый размер паттерна (в пикселях холста)
-    const patternSize = size * blockSize;
+  static _getTexture(color, step) {
+    if (this._textureCache.has(`${color}_${step}`)) return this._textureCache.get(`${color}_${step}`);
 
-    const offscreen = document.createElement('canvas');
-    offscreen.width = offscreen.height = patternSize;
-    const offCtx = offscreen.getContext('2d');
+    const SIZE = 128;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = SIZE;
 
-    const imageData = offCtx.createImageData(patternSize, patternSize);
-    const data = imageData.data;
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
 
-    // Генерируем случайные значения для каждого блока (i, j)
-    for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-            const gray = Math.random() * 255;
-            const alpha = Math.random() * 200 + 55;
+    const center = SIZE / 2;
 
-            // Заполняем блок размером blockSize × blockSize одним цветом
-            for (let dy = 0; dy < blockSize; dy++) {
-                for (let dx = 0; dx < blockSize; dx++) {
-                    const pixelIndex = (
-                        (i * blockSize + dy) * patternSize +
-                        (j * blockSize + dx)
-                    ) * 4;
+    const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
 
-                    data[pixelIndex]     = gray;
-                    data[pixelIndex + 1] = gray;
-                    data[pixelIndex + 2] = gray;
-                    data[pixelIndex + 3] = alpha;
-                }
-            }
-        }
+    const defaultAlpha = 1;
+
+    for (let i = 0; i <= 8; i++) {
+      const t = i / 8;
+      const alpha = (1 - t * t) * defaultAlpha;
+
+      gradient.addColorStop(t, `rgba(${color},${color},${color * 1.1},${alpha})`);
     }
 
-    offCtx.putImageData(imageData, 0, 0);
-    return ctx.createPattern(offscreen, 'repeat');
-  }
+    gradient.addColorStop(1, `rgba(${color},${color},${color * 1.1},${defaultAlpha})`);
 
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(center, center, center, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ---------- шум ----------
+    const image = ctx.getImageData(0, 0, SIZE, SIZE);
+    const data = image.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const noise = (Math.random() - 0.5) * 140;
+
+      data[i] += noise;
+      data[i + 1] += noise;
+      data[i + 2] += noise;
+    }
+
+    ctx.putImageData(image, 0, 0);
+
+    this._textureCache.set(`${color}_${step}`, canvas);
+
+    return canvas;
+  }
 
   constructor() {
     super(0, 0);
   }
 
-  _сolor = lerp(60, 100, Math.random());
+  _сolor = Math.round(lerp(COLOR_RANGE[0], COLOR_RANGE[1], Math.random()));
   draw(canvas, ctx, toCanvas, style) {
     super.draw(canvas, ctx, toCanvas, style);
 
@@ -72,48 +86,32 @@ export default class JammingShower extends StandartObject {
       y: this.parent._y,
     });
 
-    const inner = toCanvas(innerRadius);
     const outer = toCanvas(outerRadius);
 
-    const gradient = ctx.createRadialGradient(
-      x, y, inner,
-      x, y, outer
+    const texture = JammingShower._getTexture(this._сolor, currentlySimulatedFrame % NOISE_STEPS);
+
+    const size = outer * 2;
+
+    ctx.globalAlpha = jamming / 50;
+
+    ctx.drawImage(
+      texture,
+      x - outer,
+      y - outer,
+      size,
+      size
     );
 
-    const defaultAlpha = jamming / 500;
-    for (let i = 0; i <= 32; i++) {
-      const t = i / 32;
-      const alpha = 1 - t * t;
-
-      gradient.addColorStop(
-        t,
-        `rgba(${this._сolor}, ${this._сolor}, ${this._сolor * 1.2}, ${alpha * defaultAlpha})`
-      );
-    }
-
-    gradient.addColorStop(1, `rgba(${this._сolor},${this._сolor},${this._сolor * 1.2},${defaultAlpha})`);
-
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, outer, 0, Math.PI * 2);
-    ctx.fill();
-
-    // if (JammingShower._lastUpdate !== currentlySimulatedFrame) {
-    //   JammingShower._noisePattern = JammingShower._generateNoisePattern(ctx, 4, 16);
-    //   JammingShower._lastUpdate = currentlySimulatedFrame;
-    // }
-    // if (JammingShower._noisePattern) {
-    //   ctx.save();
-    //   ctx.globalCompositeOperation = 'multiply'; // или 'multiply', 'screen'
-    //   ctx.fillStyle = JammingShower._noisePattern;
-    //   ctx.globalAlpha = defaultAlpha;
-    //   ctx.beginPath();
-    //   ctx.arc(x, y, outer, 0, Math.PI * 2);
-    //   ctx.fill();
-    //   ctx.restore();
-    // }
+    ctx.globalAlpha = 1;
   }
 }
 
 registerClass(JammingShower);
-registerLayers(JammingShower, ["hud", "jamming"], 0);
+registerLayers(JammingShower, ["hud", "jamming"], -1);
+
+
+for (let color = COLOR_RANGE[0]; color <= COLOR_RANGE[1]; color++) {
+  for (let step = 0; step < NOISE_STEPS; step++) {
+    JammingShower._getTexture(color, step);
+  }
+}
