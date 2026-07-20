@@ -71,7 +71,7 @@ export default class SelfguidedSubgridObject extends ExplosiveSubgridObject {
     const isSolidDrive = (this.currentCharacteristics?.constant?.body?.subgrid?.solid_drive ?? false);
 
     const distanceToTarget = Math.sqrt(Math.hypot(target._x - this._x, target._y - this._y) || 1e-6);
-    const jamStrength = target.jammingLevel ?? 0;
+    const jamStrength = Math.max(target.jammingLevel ?? 0, 0);
     const error1 = point(() => 
       randomDirection() *
       jamStrength *

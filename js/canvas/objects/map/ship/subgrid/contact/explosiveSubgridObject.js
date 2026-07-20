@@ -36,7 +36,7 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
 
 
         const distanceToTarget = Math.sqrt(r2) || 1e-6;
-        const jamStrength = object.jammingLevel ?? 0;
+        const jamStrength = Math.max(object.jammingLevel ?? 0, 0);
 
         const error1 = point(() => 
           randomDirection() *
