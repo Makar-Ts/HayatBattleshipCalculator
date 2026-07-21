@@ -37,7 +37,13 @@
             "core": { "type": "number" },
             "mass": { "type": "number" },
             "signature": { "type": "number" },
-            "jamming": { "type": "number" },
+            "jamming": {
+              "type": "object",
+              "properties": {
+                "strength": { "type": "number" },
+                "density": { "type": "number" }
+              }
+            },
             "layers": {
               "type": "array",
               "items": {

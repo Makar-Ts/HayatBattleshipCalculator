@@ -231,10 +231,13 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
   _lastJammingUpdate = -1;
   _jammingLevel = 0;
   afterPhysicsSimulationStep(step, delta, objectsData) {
-    const jamming = this.currentCharacteristics.constant.body.jamming;
+    const jamming = this.currentCharacteristics.constant.body.jamming?.strength;
+    const density = Math.max(this.currentCharacteristics.constant.body.jamming?.density ?? 1, 0.01);
     if (jamming > 0) {
-      const ids = spatialGrid.query(this._x, this._y, jamming * 100 + this.size);
-      const radius2 = Math.pow(jamming * 100, 2);
+      const radius = (jamming * 100 / density) + this.size
+
+      const ids = spatialGrid.query(this._x, this._y, radius);
+      const radius2 = Math.pow(radius, 2);
       const size2 = Math.pow(this.size, 2);
       for (const { object, r2 } of ids) {
         if (!("addJammingLevel" in object) || object.id === this.id) continue;
@@ -244,6 +247,11 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
 
         object.addJammingLevel(step, level);
       }
+
+      if (this._lastJammingUpdate !== step) {
+        this._jammingLevel = this.currentCharacteristics.constant.body.jamming?.strength ?? 0;
+        this._lastJammingUpdate = step;
+      }
     }
 
     super.afterPhysicsSimulationStep(step, delta, objectsData);
@@ -251,7 +259,8 @@ damage.map(([n, v])=> `------ | - | ${n}: ${v}`).join('<br>')}<br>
 
   addJammingLevel(step, amount) {
     if (this._lastJammingUpdate !== step) {
-      this._jammingLevel = this.currentCharacteristics.constant.body.jamming ?? 0;
+      this._jammingLevel = this.currentCharacteristics.constant.body.jamming?.strength ?? 0;
+      this._lastJammingUpdate = step;
     }
 
     this._jammingLevel += amount;

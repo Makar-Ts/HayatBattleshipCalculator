@@ -13,7 +13,10 @@
       "core": 0,
       "mass": 5,
       "signature": 1,
-      "jamming": 15,
+      "jamming": {
+        "strength": 8,
+        "density": 5
+      },
       "layers": ["decoy"],
       "subgrid": {
         "size": 1,

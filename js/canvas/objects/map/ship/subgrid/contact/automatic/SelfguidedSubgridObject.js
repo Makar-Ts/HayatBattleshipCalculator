@@ -70,20 +70,24 @@ export default class SelfguidedSubgridObject extends ExplosiveSubgridObject {
     const responseTime = 1 / (this.currentCharacteristics?.constant?.body?.subgrid?.guidance?.response_time || 0.15);
     const isSolidDrive = (this.currentCharacteristics?.constant?.body?.subgrid?.solid_drive ?? false);
 
-    const distanceToTarget = Math.sqrt(Math.hypot(target._x - this._x, target._y - this._y) || 1e-6);
-    const jamStrength = Math.max(target.jammingLevel ?? 0, 0);
-    const error1 = point(() => 
-      randomDirection() *
-      jamStrength *
-      distanceToTarget);
+    let targetPosition, targetVelocity;
+    if (target.jammingLevel) {
+      const distanceToTarget = Math.sqrt(Math.hypot(target._x - this._x, target._y - this._y) || 1e-6);
+      const jamStrength = Math.max(target.jammingLevel ?? 0, 0);
+      const rd1 = randomDirection();
+      const mult1 = jamStrength * distanceToTarget;
+      const error1 = point(rd1.x * mult1, rd1.y * mult1);
 
-    const error2 = point(() => 
-      randomDirection() *
-      jamStrength *
-      distanceToTarget / 100);
-
-    const targetPosition = point(target._x + error1.x, target._y + error1.y);
-    const targetVelocity = point((target.velocity?.x || 0) + error2.x, (target.velocity?.y || 0) + error2.y);
+      const rd2 = randomDirection();
+      const mult2 = mult1 / 100;
+      const error2 = point(rd2.x * mult2, rd2.y * mult2);
+      
+      targetPosition = point(target._x + error1.x, target._y + error1.y);
+      targetVelocity = point((target.velocity?.x || 0) + error2.x, (target.velocity?.y || 0) + error2.y);
+    } else {
+      targetPosition = point(target._x, target._y);
+      targetVelocity = point((target.velocity?.x || 0), (target.velocity?.y || 0));
+    }
 
 
     // Позиции и скорости

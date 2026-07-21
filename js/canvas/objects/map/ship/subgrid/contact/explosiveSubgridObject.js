@@ -28,7 +28,7 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
       const minSize = apf.triggers.min_size ?? 0;
       const vel = this.velocity;
 
-      const ids = spatialGrid.query(this._x, this._y, apf.min_distance);
+      const ids = spatialGrid.query(this._x, this._y, apf.min_distance * 2);
       for (let entry of ids) {
         const { r2, object } = entry;
         if (object.id === this.controlledBy.Connection?.id) continue;
@@ -38,20 +38,30 @@ export default class ExplosiveSubgridObject extends ContactSubgridObject {
         const distanceToTarget = Math.sqrt(r2) || 1e-6;
         const jamStrength = Math.max(object.jammingLevel ?? 0, 0);
 
-        const error1 = point(() => 
-          randomDirection() *
-          jamStrength *
-          distanceToTarget);
+        if (jamStrength <= 0 && distanceToTarget > apf.min_distance) continue;
 
-        const rx = object._x - this._x + error1.x;
-        const ry = object._y - this._y + error1.y;
+        if (jamStrength > 0) {
+          const rd1 = randomDirection();
+          const mult1 = jamStrength * distanceToTarget;
+          const error1 = point(rd1.x * mult1, rd1.y * mult1);
 
-        const objV = object.velocity ?? { x: 0, y: 0 };
-        const error2 = point(() => 
-          randomDirection() *
-          jamStrength *
-          distanceToTarget / 10);
-        if ((rx * (objV.x - vel.x + error2.x) + ry * (objV.y - vel.y + error2.y)) <= 0) continue;
+          const rx = object._x - this._x + error1.x;
+          const ry = object._y - this._y + error1.y;
+          const distWithError = Math.hypot(rx, ry);
+          if (distWithError > apf.min_distance) continue;
+
+          const objV = object.velocity ?? { x: 0, y: 0 };
+          const rd2 = randomDirection();
+          const mult2 = mult1 / 10;
+          const error2 = point(rd2.x * mult2, rd2.y * mult2);
+          if ((rx * (objV.x - vel.x + error2.x) + ry * (objV.y - vel.y + error2.y)) <= 0) continue;
+        } else {
+          const rx = object._x - this._x;
+          const ry = object._y - this._y;
+
+          const objV = object.velocity ?? { x: 0, y: 0 };
+          if ((rx * (objV.x - vel.x) + ry * (objV.y - vel.y)) <= 0) continue;
+        }
 
         if (noLayerFilter || (object.layers).some(v => layers.includes(v))) {
           log(this.path, `Active PF triggered by ${object.id}`);

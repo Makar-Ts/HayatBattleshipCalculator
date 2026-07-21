@@ -10,6 +10,7 @@ export default class DecoySubgridObject extends ContactSubgridObject {
     destroy: false,
   }
 
+  next() {}
   step() {}
 }
 

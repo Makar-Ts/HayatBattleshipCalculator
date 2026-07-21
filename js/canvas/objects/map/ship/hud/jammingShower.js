@@ -73,11 +73,12 @@ export default class JammingShower extends StandartObject {
 
     if (!this.parent) return;
 
-    const jamming = this.parent.currentCharacteristics?.constant.body.jamming ?? 0;
+    const jamming = this.parent.currentCharacteristics.constant.body.jamming?.strength;
+    const density = Math.max(this.parent.currentCharacteristics.constant.body.jamming?.density ?? 1, 0.01);
     if (jamming <= 0) return;
 
     const innerRadius = this.parent.size;
-    const outerRadius = jamming * 100;
+    const outerRadius = jamming * 100 / density;
 
     if (outerRadius <= innerRadius) return;
 
