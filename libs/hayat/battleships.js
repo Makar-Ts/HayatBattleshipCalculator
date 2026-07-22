@@ -215,6 +215,10 @@ const baseBattleshipCharacteristics = {
         range: 0.4,
       },
     },
+    dice_modifiers: {
+      contactQuality: 0,
+      maneuvering: 0,
+    },
 
     // modulemodifier: {
     //   /** Модификаторы для вооружения */

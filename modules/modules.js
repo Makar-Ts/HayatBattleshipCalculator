@@ -126,7 +126,10 @@ export { isReady, modules, setReadyFunction };
 // ==========================================
 function calculateHitChance(parent, target, module, currentContactBonus) {
   // 1. ВСТРЕЧНЫЙ БРОСОК: Контакт vs Уклонение
-  const targetManeuverability = getFullManeuverability(target.currentCharacteristics, target.dices.maneuvering);
+  const targetManeuverability = getFullManeuverability(
+    target.currentCharacteristics, 
+    (target.dices?.maneuvering ?? 0) + (target.currentCharacteristics?.constant?.dice_modifiers?.maneuvering ?? 0)
+  );
   const delta = currentContactBonus - targetManeuverability;
   const baseContactChance = 1 / (1 + Math.exp(-delta / 5));
 
@@ -224,7 +227,7 @@ let MODULES_CALCULATION_FUNCTIONS = {
     if (!target || !parent) return 0;
 
     // Считаем бонус контакта (Дайс + Модификаторы)
-    const baseContact = parent.dices.contactQuality || 10;
+    const baseContact = (parent.dices.contactQuality ?? 10) + (parent.currentCharacteristics.constant?.dice_modifiers?.contactQuality ?? 0);
     const dynamicContactMod = parent.currentCharacteristics.constant.module_modifiers['sensors>contact>bonus'] || 0;
     const currentContactBonus = baseContact + dynamicContactMod;
 
@@ -288,7 +291,7 @@ let MODULES_CALCULATION_FUNCTIONS = {
     const actualPenalty = penalty > 0 ? penalty : 0;
 
     // Считаем бонус контакта (Дайс + Модификаторы - Штраф дальности)
-    const baseContact = parent.dices.contactQuality || 10;
+    const baseContact = (parent.dices.contactQuality ?? 10) + (parent.currentCharacteristics.constant?.dice_modifiers?.contactQuality ?? 0);
     const dynamicContactMod = parent.currentCharacteristics.constant.module_modifiers?.['sensors>contact>bonus'] || 0;
     const currentContactBonus = baseContact + dynamicContactMod - actualPenalty;
 
