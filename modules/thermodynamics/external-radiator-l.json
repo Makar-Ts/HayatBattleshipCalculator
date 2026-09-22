@@ -1,0 +1,45 @@
+{
+  "main": {
+    "name": "Внешний радиатор L",
+    "type": "Термодинамика",
+    "category": "Радиатор",
+
+    "size": 3,
+    "position": "internal",
+    "tags": ["externalradiator", "cooler"]
+  },
+  "activation": "active",
+  "cycle": 1,
+  "reload": 0,
+  
+  "interference": 0,
+
+  "modificators": {
+    "offline": [],
+    "online": [],
+    "active": [
+      {
+        "target": "this",
+        "characteristic": "constant.capacitor.generation",
+        "modificationType": "number",
+        "modificator": "-12 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>consumption_modifier']",
+        "isAffectedByInterference": false
+      },
+      {
+        "target": "this",
+        "characteristic": "constant.body.signature",
+        "modificationType": "percent",
+        "modificator": "1.25 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>radiation_modifier']",
+        "isAffectedByInterference": false
+      },
+      {
+        "target": "this",
+        "characteristic": "constant.heating",
+        "modificationType": "number",
+        "modificator": "-0.22 * parent.currentCharacteristics.constant.module_modifiers['engineering>thermodynamic>signature_penalty_modifier']",
+        "isAffectedByInterference": true
+      }
+    ],
+    "overload": []
+  }
+}

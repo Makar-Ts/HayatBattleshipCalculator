@@ -2,6 +2,7 @@ import { toCurrentCanvasSize } from "../../../../../../libs/canvas.js";
 import { lerp } from "../../../../../../libs/math.js";
 import ENV from "../../../../../enviroments/env.js";
 import { registerClass } from "../../../../../save&load/objectCollector.js";
+import { settings } from "../../../../../settings/settings.js";
 import { registerLayers } from "../../../../layers/layersInfoCollector.js";
 import { currentlySimulatedFrame } from "../../../../map.js";
 import StandartObject from "../../../standartObject.js";
@@ -65,9 +66,9 @@ export default class JammingShower extends StandartObject {
 
   constructor() {
     super(0, 0);
+    this._сolor = Math.round(lerp(COLOR_RANGE[0], COLOR_RANGE[1], Math.random()));
   }
 
-  _сolor = Math.round(lerp(COLOR_RANGE[0], COLOR_RANGE[1], Math.random()));
   draw(canvas, ctx, toCanvas, style) {
     super.draw(canvas, ctx, toCanvas, style);
 
@@ -78,7 +79,7 @@ export default class JammingShower extends StandartObject {
     if (jamming <= 0) return;
 
     const innerRadius = this.parent.size;
-    const outerRadius = jamming * 100 / density;
+    const outerRadius = this.parent.size + jamming * 100 / density;
 
     if (outerRadius <= innerRadius) return;
 
@@ -89,21 +90,43 @@ export default class JammingShower extends StandartObject {
 
     const outer = toCanvas(outerRadius);
 
-    const texture = JammingShower._getTexture(this._сolor, currentlySimulatedFrame % NOISE_STEPS);
+    if (settings.disableJammingVisuals) {
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, outer);
 
-    const size = outer * 2;
+      const defaultAlpha = 1;
+      const color = this._сolor;
 
-    ctx.globalAlpha = jamming / 50;
+      for (let i = 0; i <= 8; i++) {
+        const t = i / 8;
+        const alpha = (1 - t * t) * defaultAlpha;
 
-    ctx.drawImage(
-      texture,
-      x - outer,
-      y - outer,
-      size,
-      size
-    );
+        gradient.addColorStop(t, `rgba(${color},${color},${color * 1.1},${alpha})`);
+      }
 
-    ctx.globalAlpha = 1;
+      gradient.addColorStop(1, `rgba(${color},${color},${color * 1.1},${defaultAlpha})`);
+
+      ctx.fillStyle = gradient;
+
+      ctx.beginPath();
+      ctx.arc(x, y, outer, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      const texture = JammingShower._getTexture(this._сolor, currentlySimulatedFrame % NOISE_STEPS);
+
+      const size = outer * 2;
+
+      ctx.globalAlpha = jamming / 50;
+
+      ctx.drawImage(
+        texture,
+        x - outer,
+        y - outer,
+        size,
+        size
+      );
+
+      ctx.globalAlpha = 1;
+    }
   }
 }
 

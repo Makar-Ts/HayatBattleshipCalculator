@@ -2,149 +2,204 @@ import { mapProps } from "../canvas/grid.js";
 import { EVENTS } from "../events.js";
 import { saveSettings, settings } from "../settings/settings.js";
 
-export default function () {
+/**
+ * Утилита для рассылки события об изменении карты
+ */
+const dispatchMapChanged = () => {
+  document.dispatchEvent(new CustomEvent(
+    EVENTS.MAP_SET_CHANGED,
+    {
+      detail: {
+        size: mapProps.size,
+        grid: mapProps.grid,
+      },
+    }
+  ));
+};
+
+/**
+ * Описание всех настроек модального окна.
+ *
+ * Поля:
+ *  - id            {string}   ID DOM-элемента (без #)
+ *  - key           {string}   Ключ в объекте `settings`
+ *  - type          {string}   'checkbox' | 'number' | 'text'
+ *  - defaultValue  {*}        Значение по умолчанию (для number — fallback при NaN)
+ *  - onChange      {Function} Побочный эффект после обновления settings
+ */
+const SETTINGS_BINDINGS = [
+  {
+    id: 'modal-settings-auto_focus',
+    key: 'autoFocusOnSimulation',
+    type: 'checkbox',
+  },
+  {
+    id: 'modal-settings-auto_resize_grid',
+    key: 'autoResizeGrid',
+    type: 'checkbox',
+    onChange: dispatchMapChanged,
+  },
+  {
+    id: 'modal-settings-show_spatial_grid',
+    key: 'showSpatialGrid',
+    type: 'checkbox',
+    onChange: dispatchMapChanged,
+  },
+  {
+    id: 'modal-settings-alternate_layout',
+    key: 'alternateLayout',
+    type: 'checkbox',
+    onChange: (value) => {
+      if (value) {
+        document.body.setAttribute('alternate-layout', '');
+      } else {
+        document.body.removeAttribute('alternate-layout');
+      }
+    },
+  },
+  {
+    id: 'modal-settings-disable_jamming_visuals',
+    key: 'disableJammingVisuals',
+    type: 'checkbox',
+    onChange: dispatchMapChanged,
+  },
+  {
+    id: 'modal-settings-webhook_video_res',
+    key: 'webhookVideoResolution',
+    type: 'number',
+    defaultValue: 1600,
+  },
+  {
+    id: 'modal-settings-sim_speedup',
+    key: 'physicsSimulationSpeedupMultiplier',
+    type: 'number',
+    defaultValue: 4,
+  },
+  {
+    id: 'modal-settings-render_per_frame',
+    key: 'renderPerFrame',
+    type: 'number',
+    defaultValue: 1,
+  },
+  {
+    id: 'modal-settings-instant_sim',
+    key: 'instantSimulation',
+    type: 'checkbox',
+  },
+  {
+    id: 'modal-settings-savestate',
+    key: 'saveLastState',
+    type: 'checkbox',
+  },
+  {
+    id: 'modal-settings-savelogs',
+    key: 'saveLogs',
+    type: 'checkbox',
+  },
+  {
+    id: 'modal-settings-hudsize',
+    key: 'hudSize',
+    type: 'text',
+    onChange: dispatchMapChanged,
+  },
+];
+
+/**
+ * Универсальная привязка одной настройки к DOM-элементу.
+ */
+function bindSetting({ id, key, type, defaultValue, onChange }) {
+  const $el = $(`#${id}`);
+  if (!$el.length) return;
+
+  const initial = settings[key] ?? defaultValue;
+
+  if (type === 'checkbox') {
+    $el.prop('checked', Boolean(initial));
+
+    $el.on('change', () => {
+      const value = $el.is(':checked');
+      settings[key] = value;
+      onChange?.(value);
+      saveSettings();
+    });
+
+    return;
+  }
+
+  // number / text
+  $el.val(initial == null ? '' : String(initial));
+
+  $el.on('change', () => {
+    const raw = $el.val();
+    let value;
+
+    if (type === 'number') {
+      const parsed = Number(raw);
+      value = Number.isNaN(parsed)
+        ? (defaultValue ?? settings[key])
+        : parsed;
+    } else {
+      value = raw;
+    }
+
+    settings[key] = value;
+    onChange?.(value);
+    saveSettings();
+  });
+}
+
+/**
+ * Логика табов внутри модалки.
+ */
+function setupTabs() {
   $('#modal-settings > *[data-tab-id]').hide();
 
   $('#tab-settings').on('click', () => {
-    let modal = $("#modal-settings");
+    const $modal = $('#modal-settings');
+    const setTo = $modal.attr('data-active') === 'true' ? 'false' : 'true';
 
-    const setTo = modal.attr("data-active") == "true" ? "false" : "true";
-    modal.attr("data-active", setTo);
-    $('#tab-settings').attr("data-active", setTo);
-  })
-
-  $('#modal-settings-nav > button').each((i ,element) => {
-    const j = $(element);
-
-    j.on('click', () => {
-      $('#modal-settings > *[data-tab-id]').hide();
-      $(`#modal-settings > *[data-tab-id="${j.attr('data-tab')}"]`).show();
-    })
-
-    if (i === 0) {
-      $(`#modal-settings > *[data-tab-id="${j.attr('data-tab')}"]`).show();
-    }
+    $modal.attr('data-active', setTo);
+    $('#tab-settings').attr('data-active', setTo);
   });
 
+  $('#modal-settings-nav > button').each((i, element) => {
+    const $btn = $(element);
+    const tabId = $btn.attr('data-tab');
 
+    $btn.on('click', () => {
+      $('#modal-settings > *[data-tab-id]').hide();
+      $(`#modal-settings > *[data-tab-id="${tabId}"]`).show();
+    });
+
+    if (i === 0) {
+      $(`#modal-settings > *[data-tab-id="${tabId}"]`).show();
+    }
+  });
+}
+
+/**
+ * Поля разрешений + кнопка их применения.
+ */
+function setupResolutionInputs() {
   $('#modal-settings-mapres').val(settings.mapResolution);
   $('#modal-settings-gridres').val(settings.gridResolution);
   $('#modal-settings-overlayres').val(settings.overlayResolution);
-  $('#modal-settings-auto_focus').prop('checked', settings.autoFocusOnSimulation);
-  $('#modal-settings-auto_focus').on('change', (e) => {
-    settings.autoFocusOnSimulation = $('#modal-settings-auto_focus').is(':checked');
-    saveSettings();
-  })
-  $('#modal-settings-auto_resize_grid').prop('checked', settings.autoResizeGrid);
-  $('#modal-settings-auto_resize_grid').on('change', (e) => {
-    settings.autoResizeGrid = $('#modal-settings-auto_resize_grid').is(':checked');
-    saveSettings();
-  })
-  $('#modal-settings-show_spatial_grid').prop('checked', settings.showSpatialGrid);
-  $('#modal-settings-show_spatial_grid').on('change', (e) => {
-    settings.showSpatialGrid = $('#modal-settings-show_spatial_grid').is(':checked');
-
-    document.dispatchEvent(new CustomEvent(
-      EVENTS.MAP_SET_CHANGED,
-      {
-        detail: {
-          size: mapProps.size,
-          grid: mapProps.grid,
-        },
-      }
-    ))
-
-    saveSettings();
-  })
-
-  $('#modal-settings-alternate_layout').prop('checked', settings.alternateLayout);
-  $('#modal-settings-alternate_layout').on('change', (e) => {
-    settings.alternateLayout = $('#modal-settings-alternate_layout').is(':checked');
-    if (settings.alternateLayout) {
-      document.body.setAttribute('alternate-layout', '');
-    } else {
-      document.body.removeAttribute('alternate-layout', '');
-    }
-      
-    saveSettings();
-  })
-
-
-  $('#modal-settings-webhook_video_res').val(String(settings.webhookVideoResolution ?? 1600));
-  $('#modal-settings-webhook_video_res').on('change', (e) => {
-    settings.webhookVideoResolution = Number($('#modal-settings-webhook_video_res').val());
-    saveSettings();
-  })
-
 
   $('#modal-settings-updateres').on('click', () => {
-    settings.mapResolution = $('#modal-settings-mapres').val() || settings.mapResolution;
-    settings.gridResolution = $('#modal-settings-gridres').val() || settings.gridResolution;
-    settings.overlayResolution = $('#modal-settings-overlayres').val() || settings.overlayResolution;
+    settings.mapResolution =
+      $('#modal-settings-mapres').val() || settings.mapResolution;
+    settings.gridResolution =
+      $('#modal-settings-gridres').val() || settings.gridResolution;
+    settings.overlayResolution =
+      $('#modal-settings-overlayres').val() || settings.overlayResolution;
 
-    document.dispatchEvent(new CustomEvent(
-      EVENTS.MAP_SET_CHANGED,
-      {
-        detail: {
-          size: mapProps.size,
-          grid: mapProps.grid,
-        },
-      }
-    ))
-
+    dispatchMapChanged();
     saveSettings();
-  })
+  });
+}
 
-
-  $('#modal-settings-sim_speedup').val(settings.physicsSimulationSpeedupMultiplier);
-  $('#modal-settings-sim_speedup').on('change', (e) => {
-    const val = Number($('#modal-settings-sim_speedup').val());
-
-    settings.physicsSimulationSpeedupMultiplier = Number.isNaN(val) ? 4 : val;
-    saveSettings();
-  })
-
-  $('#modal-settings-render_per_frame').val(settings.renderPerFrame);
-  $('#modal-settings-render_per_frame').on('change', (e) => {
-    const val = Number($('#modal-settings-render_per_frame').val());
-
-    settings.renderPerFrame = Number.isNaN(val) ? 1 : val;
-    saveSettings();
-  })
-
-  $('#modal-settings-instant_sim').prop('checked', settings.instantSimulation);
-  $('#modal-settings-instant_sim').on('change', (e) => {
-    settings.instantSimulation = $('#modal-settings-instant_sim').is(':checked');
-    saveSettings();
-  })
-
-
-  $('#modal-settings-savestate').prop('checked', settings.saveLastState);
-  $('#modal-settings-savestate').on('change', (e) => {
-    settings.saveLastState = $('#modal-settings-savestate').is(':checked');
-    saveSettings();
-  })
-
-  $('#modal-settings-savelogs').prop('checked', settings.saveLogs);
-  $('#modal-settings-savelogs').on('change', (e) => {
-    settings.saveLogs = $('#modal-settings-savelogs').is(':checked');
-    saveSettings();
-  })
-
-  $('#modal-settings-hudsize').val(settings.hudSize);
-  $('#modal-settings-hudsize').on('change', (e) => {
-    settings.hudSize = e.target.value;
-
-    document.dispatchEvent(new CustomEvent(
-      EVENTS.MAP_SET_CHANGED,
-      {
-        detail: {
-          size: mapProps.size,
-          grid: mapProps.grid,
-        },
-      }
-    ))
-
-    saveSettings();
-  })
+export default function () {
+  setupTabs();
+  setupResolutionInputs();
+  SETTINGS_BINDINGS.forEach(bindSetting);
 }

@@ -31,6 +31,7 @@
   "Внутренний радиатор M": "thermodynamics/internalradiator.json",
   "Излучающая обшивка M": "thermodynamics/radiating-hull.json",
   "Внешний радиатор S": "thermodynamics/external-radiator-s.json",
+  "Внешний радиатор L": "thermodynamics/external-radiator-l.json",
   "Внутренний радиатор S": "thermodynamics/internalradiator-s.json",
   "Излучающая обшивка S": "thermodynamics/radiating-hull-s.json",
   "RES Vampire M": "EW/res-vampire.json",
@@ -64,5 +65,6 @@
   "Вундерваффе M": "weapons/wwfc-m.json",
   "Вундерваффе L": "weapons/wwfb-l.json",
   "Система радиоподавления «Лжец»": "EW/lyer.json",
-  "Ангар Дрона «Кадуцей»": "hangars/caduceus-hangar.json"
+  "Ангар Дрона «Кадуцей»": "hangars/caduceus-hangar.json",
+  "Дипольные отражатели S": "launchers/dipole-reflector-s.json"
 }

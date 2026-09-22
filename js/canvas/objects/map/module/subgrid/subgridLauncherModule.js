@@ -111,6 +111,14 @@ export default class SubgridLauncherModule extends BaseModule {
   getOverridableValues() {
     return [
       ...super.getOverridableValues(),
+      {
+        name: `heading`,
+        type: "number",
+        current: () => this.characteristics.launcher.heading ?? 0,
+        func: (val) => {
+          this.characteristics.launcher.heading = +val;
+        },
+      },
       ...Object.entries(this.characteristics.launcher.instances).flatMap(([key, instance], index) => [
         {
           name: `instance-${index}-launchX`,
@@ -148,6 +156,14 @@ export default class SubgridLauncherModule extends BaseModule {
           current: () => instance.distanceOffset ?? 0,
           func: (val) => {
             this.characteristics.launcher.instances[key].distanceOffset = +val;
+          },
+        },
+        {
+          name: `instance-${index}-subgridRotation`,
+          type: "number",
+          current: () => instance.subgridRotation ?? 0,
+          func: (val) => {
+            this.characteristics.launcher.instances[key].subgridRotation = +val;
           },
         },
       ]),

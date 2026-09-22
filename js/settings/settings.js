@@ -9,6 +9,8 @@ let settings = {
   autoResizeGrid: true,
   showSpatialGrid: false,
 
+  disableJammingVisuals: false,
+
   hudSize: 1,
   alternateLayout: false,
 
@@ -30,6 +32,8 @@ const fromString = {
   autoFocusOnSimulation: (v) => v === "true",
   autoResizeGrid: (v) => v === "true",
   showSpatialGrid: (v) => v === "true",
+
+  disableJammingVisuals: (v) => v === "true",
 
   hudSize: Number,
   alternateLayout: (v) => v === "true",

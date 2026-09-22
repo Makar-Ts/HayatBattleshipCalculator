@@ -35,5 +35,7 @@
   "380mm HE": "subships/380mm-he.json",
   "missile-s": "subships/missile-s.json",
   "missile-m": "subships/missile-m.json",
-  "missile-l": "subships/missile-l.json"
+  "missile-l": "subships/missile-l.json",
+
+  "dipole-s": "subships/dipole-s.json"
 }
